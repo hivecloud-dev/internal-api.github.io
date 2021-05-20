@@ -1,0 +1,4668 @@
+openapi: 3.0.0
+info:
+  title: AR API
+  description: Initial AR frontend integration
+  version: 1.0.0-oas3
+
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3
+  - url: http://api.example.com/v1
+    description: Optional server description, e.g. Main (production) server
+  - url: http://staging-api.example.com
+    description: Optional server description, e.g. Internal staging server for testing
+
+paths:
+  /v1/ambientes:
+    parameters:
+        - $ref: '#/components/parameters/usuarioLogadoHeaderParam'
+    post:
+      security:
+        - tokenAuth: []
+      tags:
+        - "Ambientes"
+      summary: ""
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmbienteCreate'
+      responses:
+        '201':
+            $ref: '#/components/responses/CreateResponse'
+    get:
+      security:
+        - tokenAuth: []
+      tags:
+        - "Ambientes"
+      parameters:
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/ambienteCampoPesquisaParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmbienteResource'
+
+  /v1/ambientes/{tenantId}/acessos:
+    parameters:
+      - $ref: '#/components/parameters/tenantIdPathParam'
+      - $ref: '#/components/parameters/usuarioLogadoHeaderParam'
+    post:
+      security:
+        - tokenAuth: []
+      tags:
+        - "Acessos Ambientes"
+      summary: ""
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcessoAmbienteCreate'
+      responses:
+        '201':
+            $ref: '#/components/responses/CreateResponse'
+    get:
+      security:
+        - tokenAuth: []
+      tags:
+        - "Acessos Ambientes"
+      parameters:
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcessoAmbienteResource'
+    delete:
+      security:
+        - tokenAuth: []
+      tags:
+        - "Acessos Ambientes"
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+               type: array
+               items:
+                  type: string
+               example: ["9c015cc6-8471-4838-8391-e17fbc5a0a75","7d231cf5-5111-456b-93d0-df6401762adb"]
+
+  /v1/empresas:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Empresas"
+      summary: ""
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaCreate'
+      responses:
+        '201':
+            $ref: '#/components/responses/CreateResponse'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Empresas"
+      parameters:
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/empresaCnpjParam'
+        - $ref: '#/components/parameters/empresaIEParam'
+        - $ref: '#/components/parameters/empresaNomeParam'
+        - $ref: '#/components/parameters/empresaNomeFantasiaParam'
+        - $ref: '#/components/parameters/empresaCampoPesquisaParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpresaResource'
+
+  /v1/empresas/{empresaId}:
+    parameters:
+        - $ref: '#/components/parameters/empresaIdPathParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Empresas"
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: "Ok"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpresaView'
+    put:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Empresas"
+      summary: ""
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaCreate'
+      responses:
+        '204':
+          description: Empresa atualizada
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Empresas"
+      summary: ""
+      description: ""
+      responses:
+        '204':
+          description: Empresa deletada
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/empresas/{empresaId}/logo:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Empresas"
+      parameters:
+        - $ref: '#/components/parameters/empresaIdPathParam'
+      summary: ""
+      description: ""
+      requestBody:
+        required: true
+        content:
+            application/octet-stream:
+              schema:
+                # a binary file of any type
+                type: string
+                format: binary
+      responses:
+        '204':
+          description: Empresa atualizada
+
+
+  /v1/empresas/suggestion:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Empresas"
+      summary: ""
+      description: ""
+      parameters:
+        - $ref: '#/components/parameters/empresaCampoPesquisaParam'
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmpresaSuggestion'
+              examples:
+                empresaSuggestionExample:
+                  $ref: '#/components/examples/empresaSuggestionExemplo'
+
+  /v1/entregadores/monitoramento:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Monitoramento e Rastreamento"
+      summary: Monitoramento de entregadores
+      description: description
+      parameters:
+
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/entregadorNomeParam'
+        - $ref: '#/components/parameters/romaneioNumeroParam'
+        - $ref: '#/components/parameters/romaneioStatusParam'
+        - $ref: '#/components/parameters/entregadorStatusParam'
+      responses:
+        '200':
+          description: Um JSON array de entregadores
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoramentoResource'
+
+  /v1/entregadores/monitoramento/briefing:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Monitoramento e Rastreamento"
+      parameters:
+
+        - $ref: '#/components/parameters/entregadorNomeParam'
+        - $ref: '#/components/parameters/romaneioNumeroParam'
+        - $ref: '#/components/parameters/romaneioStatusParam'
+      summary: Brifing de entregadores
+      responses:
+        '200':
+          description: A JSON array of pagking lists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoramentoBriefing'
+              examples:
+                monitoramentoBriefing:
+                  $ref: '#/components/examples/monitoramentoBriefingExemplo'
+
+  /v1/entregadores/rastreamento:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Monitoramento e Rastreamento"
+      parameters:
+
+        - $ref: '#/components/parameters/entregadorNomeParam'
+        - $ref: '#/components/parameters/romaneioNumeroParam'
+        - $ref: '#/components/parameters/romaneioStatusParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rastreamento'
+
+  /v1/entregadores/{entregadorId}/preview:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Entregadores"
+      parameters:
+        - $ref: '#/components/parameters/entregadorIdPathParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntregadorPreview'
+
+  /v1/romaneios/{romaneioId}/preview:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Romaneios"
+      parameters:
+        - $ref: '#/components/parameters/romaneioIdPathParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RomaneioPreview'
+              examples:
+                romaneioPreviewExample:
+                  $ref: '#/components/examples/romaneioPreviewExemplo'
+
+  /v1/romaneios/suggestion:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Romaneios"
+      parameters:
+        - $ref: '#/components/parameters/romaneioCampoPesquisaParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RomaneioSuggestion'
+              examples:
+                romaneioSuggestionExample:
+                  $ref: '#/components/examples/romaneioSuggestionExemplo'
+
+  /v1/romaneios/{romaneioId}/operacoes/preview:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Romaneios"
+      parameters:
+        - $ref: '#/components/parameters/romaneioIdPathParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperacaoPreview'
+
+  /v1/romaneios/{romaneioId}/operacoes:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Romaneios"
+      parameters:
+
+        - $ref: '#/components/parameters/romaneioIdPathParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperacaoSummary'
+
+  /v1/romaneios:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Romaneios"
+      summary: ""
+      description: ""
+      parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RomaneioCreate'
+      responses:
+        '201':
+          $ref: '#/components/responses/CreateResponse'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Romaneios"
+      parameters:
+        - $ref: '#/components/parameters/empresaIdHeaderParam'
+
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/romaneioNumeroParam'
+        - $ref: '#/components/parameters/romaneioStatusParam'
+        - $ref: '#/components/parameters/romaneioTipoBuscaDataPrevisao'
+        - $ref: '#/components/parameters/romaneioPeriodoInicioParam'
+        - $ref: '#/components/parameters/romaneioPeriodoFimParam'
+        - $ref: '#/components/parameters/empresaIdListParam'
+        - $ref: '#/components/parameters/empresaTodosQueryParam'
+        - $ref: '#/components/parameters/romaneioIdValorListParam'
+        - $ref: '#/components/parameters/placaVeiculoListParam'
+        - $ref: '#/components/parameters/operacaoIdValueListParam'
+        - $ref: '#/components/parameters/entregadorIdListParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RomaneioResource'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Romaneios"
+      summary: ""
+      description: "Delete em lote"
+      parameters:
+        - $ref: "#/components/parameters/romaneioIdListParam"
+      responses:
+        '204':
+          description: Romaneios deletados
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+
+  /v1/romaneios/{romaneioId}:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Romaneios"
+      parameters:
+        - $ref: '#/components/parameters/romaneioIdPathParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RomaneioView'
+    put:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Romaneios"
+      parameters:
+
+        - $ref: '#/components/parameters/romaneioIdPathParam'
+      summary: ""
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RomaneioCreate'
+      responses:
+        '204':
+          description: Romaneio atualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Romaneios"
+      parameters:
+        - $ref: '#/components/parameters/romaneioIdPathParam'
+      summary: ""
+      description: ""
+      responses:
+        '204':
+          description: Romaneio deletado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+
+  /v1/romaneios/confirmar-atribuicao:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Romaneios"
+      summary: ""
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+              example: ["9c015cc6-8471-4838-8391-e17fbc5a0a75","7d231cf5-5111-456b-93d0-df6401762adb"]
+      responses:
+        '204':
+          description: Romaneio atribuido
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /v1/romaneios/revogar-atribuicao:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Romaneios"
+      summary: ""
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+              example: ["9c015cc6-8471-4838-8391-e17fbc5a0a75","7d231cf5-5111-456b-93d0-df6401762adb"]
+      responses:
+        '204':
+          description: Atribuição de romaneio revogado
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /v1/entregadores:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Entregadores"
+      summary: ""
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntregadorCreate'
+      responses:
+        '201':
+            $ref: '#/components/responses/CreateResponse'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Entregadores"
+      parameters:
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/entregadorLoginParam'
+        - $ref: '#/components/parameters/entregadorTelefoneParam'
+        - $ref: '#/components/parameters/entregadorCampoPesquisaParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntregadorResource'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Entregadores"
+      summary: ""
+      description: "Delete em lote"
+      parameters:
+        - $ref: "#/components/parameters/entregadorDeleteIdListParam"
+      responses:
+        '204':
+          description: Entregadores deletados
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/entregadores/suggestion:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Entregadores"
+      parameters:
+
+        - $ref: '#/components/parameters/entregadorCampoPesquisaParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EntregadorSuggestion'
+              examples:
+                entregadorPreviewExample:
+                  $ref: '#/components/examples/entregadorSuggestionExemplo'
+
+  /v1/entregadores/{entregadorId}:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Entregadores"
+      parameters:
+
+        - $ref: '#/components/parameters/entregadorIdPathParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: "Ok"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entregador'
+              examples:
+                entregadorExample:
+                  $ref: '#/components/examples/entregadorViewExemplo'
+    put:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Entregadores"
+      parameters:
+
+        - $ref: '#/components/parameters/entregadorIdPathParam'
+      summary: ""
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntregadorCreate'
+      responses:
+        '204':
+          description: Entregador atualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Entregadores"
+      parameters:
+        - $ref: '#/components/parameters/entregadorIdPathParam'
+      summary: ""
+      description: ""
+      responses:
+        '204':
+          description: Entregador deletado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/entregadores/{entregadorId}/historico:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Entregadores"
+      parameters:
+
+        - $ref: '#/components/parameters/entregadorIdPathParam'
+        - $ref: '#/components/parameters/maxPageSizeParam'
+        - $ref: '#/components/parameters/entregadorHistoricoPeriodoInicioParam'
+        - $ref: '#/components/parameters/entregadorHistoricoPeriodoFimParam'
+        - $ref: '#/components/parameters/entregadorHistoricoDataParam'
+        - $ref: '#/components/parameters/entregadorHistoricoUltimasHorasParam'
+        - $ref: '#/components/parameters/entregadorHistolastTimeRecordHorasParam'
+      description: "Consulta histórico de posição do entregador"
+      responses:
+        '200':
+          description: "Ok"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntregadorHistoricoPosicao'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/operacoes:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Operações"
+      summary: ""
+      description: ""
+      parameters:
+        - $ref: '#/components/parameters/empresaIdHeaderParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperacaoCreate'
+      responses:
+        '201':
+            $ref: '#/components/responses/CreateResponse'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Operações"
+      parameters:
+        - $ref: '#/components/parameters/empresaIdHeaderParam'
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/empresaIdListParam'
+        - $ref: '#/components/parameters/empresaTodosQueryParam'
+        - $ref: '#/components/parameters/operacaoCampoPesquisaParam'
+        - $ref: '#/components/parameters/operacaoUFParam'
+        - $ref: '#/components/parameters/operacaoStatusParam'
+        - $ref: '#/components/parameters/operacaoTipoOperacaoParam'
+        - $ref: '#/components/parameters/operacaoTipoBuscaDataPrevisao'
+        - $ref: '#/components/parameters/operacaoInicioPeriodoPrevisaoParam'
+        - $ref: '#/components/parameters/operacaoFimPeriodoPrevisaoParam'
+        - $ref: '#/components/parameters/operacaoTipoBuscaOcorrencia'
+        - $ref: '#/components/parameters/operacaoInicioPeriodoOcorrenciaParam'
+        - $ref: '#/components/parameters/operacaoFimPeriodoOcorrenciaParam'
+        - $ref: '#/components/parameters/operacaoNomeClienteParam'
+        - $ref: '#/components/parameters/operacaoDocumentoClienteParam'
+        - $ref: '#/components/parameters/operacaoNomeRementeParam'
+        - $ref: '#/components/parameters/operacaoDocumentoRementeParam'
+        - $ref: '#/components/parameters/operacaoNomeDestinatarioParam'
+        - $ref: '#/components/parameters/operacaoDocumentoDestinatarioParam'
+        - $ref: '#/components/parameters/romaneioIdParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperacaoResource'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Operações"
+      summary: ""
+      description: "Delete em lote"
+      parameters:
+        - $ref:  "#/components/parameters/operacoesIdListParam"
+      responses:
+        '204':
+          description: Operações deletadas
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/operacoes/{operacaoId}:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Operações"
+      parameters:
+        - $ref: '#/components/parameters/operacaoIdPathParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperacaoView'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Operações"
+      parameters:
+
+        - $ref: '#/components/parameters/operacaoIdPathParam'
+      summary: ""
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperacaoCreate'
+      responses:
+        '204':
+          description: Operacao atualizada
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Operações"
+      parameters:
+
+        - $ref: '#/components/parameters/operacaoIdPathParam'
+      summary: ""
+      description: ""
+      responses:
+        '204':
+          description: Operacao deletada
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/operacoes/{operacaoId}/ocorrencias:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Operações"
+      parameters:
+
+        - $ref: '#/components/parameters/operacaoIdPathParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OcorrenciaPreview'
+
+  /v1/operacoes/suggestion:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Operações"
+      parameters:
+        - $ref: '#/components/parameters/operacaoCampoPesquisaParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperacaoSuggestion'
+              examples:
+                operacaoSuggestionExample:
+                  $ref: '#/components/examples/opercaoSuggestionExemplo'
+
+components:
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: token
+    tenantAuth:
+      type: apiKey
+      in: header
+      name: tenantID
+
+  parameters:
+    pageNumberParam:
+      in: query
+      name: pageNumber
+      description: Page of query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        example: 0
+
+    pageSizeParam:
+      in: query
+      name: pageSize
+      description: Size of query page
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+
+    maxPageSizeParam:
+      in: query
+      name: pageSize
+      description: Tamanho máximo da página para consultas no dynamo
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+
+    ambienteCampoPesquisaParam:
+      in: query
+      name: campoPesquisa
+      description: CNPJ, Nome, ID ou Token da empresa para consulta
+      required: false
+      schema:
+        type: string
+        example: "Transportadora"
+
+    entregadorStatusParam:
+      in: query
+      name: entregadorStatus
+      description: Status do entregador para consulta
+      required: false
+      schema:
+        type: string
+        enum: [LIVRE, COM_FALHA, SEM_ATUALIZACAO_LOCALIZACAO, EM_ATRASO]
+        example: "COM_FALHA"
+
+    romaneioStatusParam:
+      in: query
+      name: status
+      description: Status de romaneio para consulta
+      required: false
+      schema:
+        allOf:
+            - $ref: '#/components/schemas/StatusRomaneio'
+
+    entregadorNomeParam:
+      in: query
+      name: entregador
+      description: Nome do entregador para consulta
+      required: false
+      schema:
+        type: string
+        example: "João"
+
+    romaneioNumeroParam:
+      in: query
+      name: numero
+      description: Número do romaneio
+      required: false
+      schema:
+        type: string
+        example: 0212
+
+    romaneioIdPathParam:
+      in: path
+      name: romaneioId
+      description: Id do romaneio
+      required: true
+      schema:
+        type: string
+        example: "00a34581-03d8-4ef4-aa54-d45cd5353743"
+
+    romaneioIdParam:
+      in: query
+      name: romaneioId
+      description: Id do romaneio
+      required: false
+      schema:
+        type: string
+        example: "00a34581-03d8-4ef4-aa54-d45cd5353743"
+
+    entregadorIdPathParam:
+      in: path
+      name: entregadorId
+      description: Id do entregador
+      required: true
+      schema:
+        type: string
+        example: "45aeafc7-c7c0-4cea-9507-cc82ae00c1c7"
+
+    romaneioIdValorListParam:
+      in: query
+      name: idValorList
+      description: Lista de idValor1, idValor2 ou idValor3 para consulta de romaneio
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+        example: ["0212"]
+
+    romaneioIdListParam:
+      in: query
+      name: romaneioIdList
+      description: List de Romaneios ID
+      required: true
+      schema:
+        type: array
+        items:
+          type: string
+          maxLength: 36
+        example: ["9c015cc6-8471-4838-8391-e17fbc5a0a75","7d231cf5-5111-456b-93d0-df6401762adb"]
+
+    romaneioStatusListParam:
+      in: query
+      name: romaneioStatusList
+      description: Status de romaneio para consulta
+      required: false
+      schema:
+        type: array
+        items:
+          allOf:
+            - $ref: '#/components/schemas/StatusRomaneio'
+        example: ["AGUARDANDO_ACEITE", "EM_EXECUCAO"]
+
+    romaneioPeriodoInicioParam:
+      in: query
+      name: dataInicio
+      description: Data de inicio do periodo para consulta de romaneio
+      required: false
+      schema:
+        type: string
+        format: date
+        example: "2021-01-25"
+
+    romaneioPeriodoFimParam:
+      in: query
+      name: dataFim
+      description: Data de fim do periodo para consulta de romaneio
+      required: false
+      schema:
+        type: string
+        format: date
+        example: "2021-02-26"
+
+    romaneioDataParam:
+      in: query
+      name: romaneioData
+      description: Data de para consulta de romaneio
+      required: false
+      schema:
+        type: string
+        format: date
+        example: "2021-02-26"
+
+    romaneioTipoBuscaDataPrevisao:
+      in: query
+      name: tipoBuscaPeriodo
+      description: enum para seleção de como será a busca por data
+      required: false
+      schema:
+        allOf:
+            - $ref: '#/components/schemas/PeriodoDataBusca'
+
+    romaneioCampoPesquisaParam:
+      in: query
+      name: campoPesquisa
+      description: IdValor1, idValor2 ou idValor3 do romaneio para consulta
+      required: false
+      schema:
+        type: string
+        example: "45"
+
+    empresaIdHeaderParam:
+      in: header
+      name: empresaId
+      description: Id da empresa selecionada
+      required: true
+      schema:
+        type: string
+        example: "9c015cc6-8471-4838-8391-e17fbc5a0a75"
+
+    usuarioLogadoHeaderParam:
+      in: header
+      name: usuario
+      description: Usuário que está realizando a operação
+      required: true
+      schema:
+        type: string
+        example: "joao"
+
+    empresaTodosQueryParam:
+      in: query
+      name: todasEmpresas
+      description: Buscar em todas as empresas
+      required: false
+      schema:
+        type: boolean
+
+    empresaIdListParam:
+      in: query
+      name: empresaIdList
+      description: Lista de ids de empresas para consulta de romaneio
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+        example: ["9c015cc6-8471-4838-8391-e17fbc5a0a75","7d231cf5-5111-456b-93d0-df6401762adb"]
+
+    empresaNomeParam:
+      in: query
+      name: nome
+      description: Nome da empresa
+      required: false
+      schema:
+        type: string
+        example: "Transporta Tudo"
+        maxLength: 60
+
+    empresaNomeFantasiaParam:
+      in: query
+      name: nomeFantasia
+      description: Nome fantasia da empresa
+      required: false
+      schema:
+        type: string
+        example: "Transporta Tudo"
+        maxLength: 60
+
+    empresaCnpjParam:
+      in: query
+      name: cnpj
+      description: CNPJ da empresa
+      required: false
+      schema:
+        type: string
+        example: "12345678901234"
+        maxLength: 14
+
+    empresaIEParam:
+      in: query
+      name: ie
+      description: Inscrição estadual da empresa
+      required: false
+      schema:
+        type: string
+        example: "12345678901234"
+        maxLength: 14
+
+    empresaIdPathParam:
+      in: path
+      name: empresaId
+      description: Id da empresa
+      required: true
+      schema:
+        type: string
+        example: "00a34581-03d8-4ef4-aa54-d45cd5353743"
+
+    tenantIdPathParam:
+      in: path
+      name: tenantId
+      description: Id do ambiente
+      required: true
+      schema:
+        type: string
+        example: "00a34581-03d8-4ef4-aa54-d45cd5353743"
+
+    empresaCampoPesquisaParam:
+      in: query
+      name: campoPesquisa
+      description: CNPJ, Nome ou Nome Fantasia da empresa para consulta
+      required: false
+      schema:
+        type: string
+        example: "transportadora"
+
+
+    placaVeiculoListParam:
+      in: query
+      name: placaVeiculoList
+      description: Lista de placa de veiculo para consulta
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+        example: ["LVJ-9528", "FHA-5710"]
+
+    operacaoIdValueListParam:
+      in: query
+      name: operacaoIdValueList
+      description: Lista de idValue1, idValue2 ou idValue3 de operacao para consulta
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+        example: ["123", "23", "51080701212344000127550010000000981364117781"]
+
+    entregadorIdListParam:
+      in: query
+      name: entregadorIdList
+      description: Id do entregador para consulta
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+          maxLength: 36
+        example: ["d8bbb6dd-dbe4-4bd8-bcea-ca58a401e529", "8aae4eab-791b-4145-9ece-93ff614fcbd9"]
+
+    entregadorDeleteIdListParam:
+      in: query
+      name: entregadorIdList
+      description: Id do entregador para exclusão
+      required: true
+      schema:
+        type: array
+        items:
+          type: string
+          maxLength: 36
+        example: ["d8bbb6dd-dbe4-4bd8-bcea-ca58a401e529", "8aae4eab-791b-4145-9ece-93ff614fcbd9"]
+
+    entregadorLoginParam:
+      in: query
+      name: login
+      description: Login do entregador para consulta
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+        example: ["martingouse@mail.com", "joao"]
+
+    entregadorTelefoneParam:
+      in: query
+      name: telefone
+      description: Telefone do entregador para consulta
+      required: false
+      schema:
+        type: string
+        example: "999999999"
+
+    entregadorCampoPesquisaParam:
+      in: query
+      name: campoPesquisa
+      description: Nome, cpf ou placa do entregador para consulta
+      required: false
+      schema:
+        type: string
+        example: "João"
+
+    entregadorHistoricoPeriodoInicioParam:
+      in: query
+      name: periodoInicio
+      description: Data de inicio do periodo para consulta do histórico do entregador
+      required: false
+      schema:
+        type: string
+        format: date
+        example: "2021-01-25"
+
+    entregadorHistoricoPeriodoFimParam:
+      in: query
+      name: periodoFim
+      description: Data de fim do periodo para consulta do histórico do entregador
+      required: false
+      schema:
+        type: string
+        format: date
+        example: "2021-02-26"
+
+    entregadorHistoricoDataParam:
+      in: query
+      name: data
+      description: Data de para consulta do histórico do entregador
+      required: false
+      schema:
+        type: string
+        format: date
+        example: "2021-02-26"
+
+    entregadorHistoricoUltimasHorasParam:
+      in: query
+      name: ultimasHoras
+      description: Tempo em horas para consulta do histórico do entregador
+      required: false
+      schema:
+        type: integer
+        format: int32
+        example: 6
+
+    entregadorHistolastTimeRecordHorasParam:
+      in: query
+      name: lastTimeRecord
+      description: Key para consulta paginada
+      required: false
+      schema:
+        type: integer
+        format: int64
+        example: 1614196050
+
+    operacaoIdPathParam:
+      in: path
+      name: operacaoId
+      description: Id da operação
+      required: true
+      schema:
+        type: string
+        example: "00a34581-03d8-4ef4-aa54-d45cd5353743"
+
+    operacaoCampoPesquisaParam:
+      in: query
+      name: campoPesquisa
+      description: IdValor1, idValor2 ou idValor3
+      required: false
+      schema:
+        type: string
+        example: "45"
+
+    operacaoUFParam:
+      in: query
+      name: uf
+      description: Uf do local de entrega
+      required: false
+      schema:
+        type: string
+        example: "PE"
+
+    operacaoStatusParam:
+      in: query
+      name: status
+      required: false
+      schema:
+        $ref: '#/components/schemas/StatusOperacao'
+
+    operacaoTipoOperacaoParam:
+      in: query
+      name: tipo
+      required: false
+      schema:
+        $ref: '#/components/schemas/TipoOperacao'
+
+    operacaoTipoBuscaDataPrevisao:
+      in: query
+      name: tipoBuscaPeriodo
+      description: enum para seleção de como será a busca por data previsao
+      required: false
+      schema:
+        allOf:
+            - $ref: '#/components/schemas/PeriodoDataBusca'
+
+    operacaoInicioPeriodoPrevisaoParam:
+      in: query
+      name: inicioPeriodoPrevisao
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: "2021-03-08T12:27:12-0300"
+
+    operacaoFimPeriodoPrevisaoParam:
+      in: query
+      name: fimPeriodoPrevisao
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: "2021-03-08T12:27:12-0300"
+
+    operacaoTipoBuscaOcorrencia:
+      in: query
+      name: tipoBuscaOcorrencia
+      description: enum para seleção de como será a busca por data de ocorrencia
+      required: false
+      schema:
+        allOf:
+            - $ref: '#/components/schemas/PeriodoDataBusca'
+
+    operacaoInicioPeriodoOcorrenciaParam:
+      in: query
+      name: inicioPeriodoOcorrencia
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: "2021-03-08T12:27:12-0300"
+
+    operacaoFimPeriodoOcorrenciaParam:
+      in: query
+      name: fimPeriodoOcorrencia
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: "2021-03-08T12:27:12-0300"
+
+    operacaoNomeClienteParam:
+      in: query
+      name: nomeCliente
+      required: false
+      schema:
+        type: string
+        example: "James"
+
+    operacaoDocumentoClienteParam:
+      in: query
+      name: documentoCliente
+      required: false
+      schema:
+        type: string
+        example: "11111111111"
+
+    operacaoNomeRementeParam:
+      in: query
+      name: nomeRemente
+      required: false
+      schema:
+        type: string
+        example: "Lucas"
+
+    operacaoDocumentoRementeParam:
+      in: query
+      name: documentoRemente
+      required: false
+      schema:
+        type: string
+        example: "5643453"
+
+    operacaoNomeDestinatarioParam:
+      in: query
+      name: nomeDestinatraio
+      required: false
+      schema:
+        type: string
+        example: "Roberto Gustavo"
+
+    operacaoDocumentoDestinatarioParam:
+      in: query
+      name: documentoDestinatario
+      required: false
+      schema:
+        type: string
+        example: "46507056000138"
+
+    operacoesIdListParam:
+      in: query
+      name: operacaoIdList
+      description: List de Operação ID
+      required: true
+      schema:
+        type: array
+        items:
+          type: string
+          maxLength: 36
+        example: ["9c015cc6-8471-4838-8391-e17fbc5a0a75","7d231cf5-5111-456b-93d0-df6401762adb"]
+
+  responses:
+    CreateResponse:
+      description: "Recurso criado"
+      headers:
+        location:
+          description: "Link para o novo recurso criado"
+          required: true
+          schema:
+            type: string
+            format: uri
+
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    BadRequest:
+      description: Problemas na requisição
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ErrorItemResponse:
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2021-03-08T12:27:12-0300"
+        status:
+          type: number
+          format: int32
+          example: 404
+          description: "Http status"
+        error:
+          type: string
+          example: "Não Encontrado"
+          description: "Descrição resumida do erro"
+        validations:
+          type: array
+          items:
+            type: string
+          example: []
+        message:
+          type: string
+          description: "Descrição mais detalahda do erro"
+          example: "No handler found for GET /hivelog-ar/api/v1/romaneios/4c06c5dd-bc75-4fe8-a233-94531a58cee2/operacoes/preview2"
+        path:
+          type: string
+          example: "/hivelog-ar/api/v1/romaneios/4c06c5dd-bc75-4fe8-a233-94531a58cee2/operacoes/preview2"
+
+    ErrorResponse:
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorItemResponse'
+
+    PageMetadata:
+      properties:
+        size:
+          type: integer
+          format: int64
+          example: 15
+        number:
+          type: integer
+          format: int64
+          example: 1
+        totalElements:
+          type: integer
+          format: int64
+          example: 101
+        totalPages:
+          type: integer
+          format: int64
+          example: 7
+
+    PagedResource:
+      properties:
+        pageMetadata:
+          description: Page metadata
+          $ref: '#/components/schemas/PageMetadata'
+        nextLink:
+          type: string
+          format: uri
+          description: Link pointing to the next page (if set).
+          example: "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=10"
+        previousLink:
+          type: string
+          format: uri
+          description: Link pointing to the previous page (if set).
+          example: "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=2&pageSize=10"
+
+    MonitoramentoResource:
+      allOf:
+        - $ref: '#/components/schemas/PagedResource'
+        - type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntregadorMonitoramento'
+
+    EntregadorMonitoramento:
+      properties:
+        id:
+          type: string
+          description: Id do entregador
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        nome:
+          type: string
+          description: Nome do entregador
+          example: "Martin Gouse"
+        placaVeiculo:
+          type: string
+          example: "LVJ-9528"
+        tipoVeiculo:
+          oneOf:
+            - $ref: '#/components/schemas/TipoVeiculo'
+        ultimaPosicao:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Posicao'
+        ultimoRomaneio:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Id do romaneio
+              example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+            idNome1:
+              type: string
+              example: "Número"
+            idValor1:
+              type: string
+              example: "457"
+            idNome2:
+              type: string
+              example: "Placa"
+            idValor2:
+              type: string
+              example: "LVJ-9528"
+            idNome3:
+              type: string
+              example: "Entregas"
+            idValor3:
+              type: string
+              example: "353,354,360,361"
+            status:
+              oneOf:
+                - $ref: '#/components/schemas/StatusRomaneio'
+              description: Status do romaneio
+              example: "CONCLUIDO"
+            emAtraso:
+              type: boolean
+              example: false
+            dataFinalizacao:
+              type: integer
+              format: int64
+              description: Data de finalizacao do romaneio
+              example: "2021-01-25T12:23:35-0300"
+            operacoesPendentes:
+              type: integer
+              format: int32
+              description: Quantidade de operações pendentes do romaneio
+              example: 2
+            operacoesConcluidas:
+              type: integer
+              format: int32
+              description: Quantidade de operações concluidas do romaneio
+              example: 3
+            operacoesFalhas:
+              type: integer
+              format: int64
+              description: Quantidade de operações com falhas do romaneio
+              example: 1
+            quantidadeOperacoes:
+              type: integer
+              format: int64
+              description: Quantidade de operações do romaneio
+              example: 5
+            ultimaOcorrencia:
+              type: object
+              allOf:
+              - $ref: '#/components/schemas/OcorrenciaPreview'
+
+    MonitoramentoBriefing:
+      properties:
+        livre:
+          allOf:
+            - $ref: '#/components/schemas/MonitoramentoBriefingItem'
+        comFalha:
+          allOf:
+            - $ref: '#/components/schemas/MonitoramentoBriefingItem'
+        semAtualizacaoLocalizacao:
+          allOf:
+            - $ref: '#/components/schemas/MonitoramentoBriefingItem'
+        emAtraso:
+          allOf:
+            - $ref: '#/components/schemas/MonitoramentoBriefingItem'
+
+    MonitoramentoBriefingItem:
+      properties:
+        link:
+          type: string
+          example: "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=1&entregadorStatus=PENDENTE"
+        valor:
+          type: integer
+          format: int64
+          example: 13
+
+    Rastreamento:
+      properties:
+        id:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        nome:
+          type: string
+          example: "Martin Gouse"
+        placaVeiculo:
+          type: string
+          nullable: true
+          example: "LVJ-9528"
+        ultimaPosicao:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Posicao'
+        ultimoRomaneio:
+          type: object
+          properties:
+            id:
+              type: string
+              example: "37a1084a-1c04-4d4d-a6b6-5894665d5618"
+            idNome1:
+              type: string
+              example: "Número"
+            idValor1:
+              type: string
+              example: "0242"
+            empresa:
+              type: string
+              example: "Transportadora XPTO"
+            percentualCompleto:
+              type: integer
+              format: int32
+              example: 30
+
+
+    PosicaoHistorico:
+      properties:
+        latitude:
+          type: integer
+          format: int64
+          example: -8.24973754
+        longitude:
+          type: integer
+          format: int64
+          example: -35.01043439
+        data:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2021-01-25T12:23:35-0300"
+        endereco:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/EnderecoTracking'
+
+    EnderecoTracking:
+      properties:
+        cidade:
+          type: string
+          nullable: true
+          example: "recife"
+        pais:
+          type: string
+          nullable: true
+          example: "brasil"
+        cep:
+          type: string
+          nullable: true
+          example: "50030030"
+        estado:
+          type: string
+          nullable: true
+          example: "pernambuco"
+        rua:
+          type: string
+          nullable: true
+          example: "rua madre de deus"
+        bairro:
+          type: string
+          nullable: true
+          example: "bairro do recife"
+
+    Posicao:
+      properties:
+        latitude:
+          type: number
+          nullable: true
+          example: -8.24973754
+        longitude:
+          type: number
+          nullable: true
+          example: -35.01043439
+        data:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2021-01-25T12:23:35-0300"
+        tempoAtraso:
+          type: integer
+          format: int32
+          description: Tempo de atraso em minutos.
+          nullable: true
+          example: 11
+        emAtraso:
+          type: boolean
+          example: true
+          nullable: true
+        ultimaSincronia:
+          type: integer
+          format: int32
+          description: Tempo em minutos da uma sincronia com o servico da rastreamento
+          nullable: true
+          example: 11
+        semSincronia:
+          type: boolean
+          nullable: true
+          example: true
+        endereco:
+          type: object
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/EnderecoTracking'
+
+
+    OperacaoPreview:
+      properties:
+        id:
+          type: string
+          example: "40627ede-f7b2-43fc-9843-805679e2f895"
+        idNome1:
+          type: string
+          example: "Número"
+        idValor1:
+          type: string
+          example: "3445"
+        tipo:
+          type: string
+          example: "Coleta"
+        status:
+          allOf:
+            - $ref: '#/components/schemas/StatusOperacao'
+        destinatario:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Envolvido'
+        localDestino:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Localidade'
+        ultimaOcorrencia:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/OcorrenciaPreview'
+
+    OperacaoSummary:
+      properties:
+        id:
+          type: string
+          example: "40627ede-f7b2-43fc-9843-805679e2f895"
+        idNome1:
+          type: string
+          example: "Número"
+        idValor1:
+          type: string
+          example: "3445"
+        idNome2:
+          type: string
+          example: "Número"
+        idValor2:
+          type: string
+          example: "3445"
+        tipo:
+          type: string
+          example: "Coleta"
+        status:
+          allOf:
+              - $ref: '#/components/schemas/StatusOperacao'
+        dataPrevista:
+          type: string
+          format: date-time
+          example: "2021-03-08T12:27:12-0300"
+        finalizacaoOcorrencia:
+          type: string
+          format: date-time
+          example: "2021-03-08T12:27:12-0300"
+        localDestino:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Localidade'
+        destinatario:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Envolvido'
+        cliente:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Envolvido'
+        remetente:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Envolvido'
+        ultimaOcorrencia:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/OcorrenciaSummary'
+
+    OcorrenciaPreview:
+      properties:
+        id:
+          type: string
+          example: "6f0afe43-a8e5-4257-abe7-3c5366c80414"
+        codigo:
+          type: string
+          example: "100"
+        data:
+          type: string
+          format: date-time
+          example: "2021-01-21T17:32:28-0300"
+        descricao:
+          type: string
+          example: "Sucesso na coleta"
+        observacao:
+          type: string
+          nullable: true
+          example: "Coleta realizada com sucesso para Martin Gouse"
+        natureza:
+          oneOf:
+            - $ref: "#/components/schemas/NaturezaOcorrencia"
+        imagemList:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MultimediaResource'
+        audioList:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MultimediaResource'
+
+    OcorrenciaSummary:
+      properties:
+        id:
+          type: string
+          example: "6f0afe43-a8e5-4257-abe7-3c5366c80414"
+        codigo:
+          type: string
+          example: "100"
+        data:
+          type: string
+          format: date-time
+          example: "2021-01-21T17:32:28-0300"
+        descricao:
+          type: string
+          example: "Sucesso na coleta"
+        observacao:
+          type: string
+          nullable: true
+          example: "Coleta realizada com sucesso para Martin Gouse"
+        natureza:
+          oneOf:
+            - $ref: "#/components/schemas/NaturezaOcorrencia"
+
+    MultimediaResource:
+      properties:
+        id:
+          type: string
+          example: "652947d1-ae2b-4379-843b-07a08a1ce16d"
+        tipo:
+          type: string
+          enum: ["AUDIO", "IMAGE"]
+          example: "IMAGE"
+        url:
+          type: string
+          example: "https://s3.amazonaws.com/dev-drive.hivecloud.com.br/9d5888ef-9098-43fe-967e-01ec30f96cf0"
+
+    Romaneio:
+      properties:
+        id:
+          type: string
+          example: "4f7fe1bf-8cee-4309-8835-72edcd913add"
+        data:
+          type: string
+          format: date-time
+          example: "2021-01-25T12:23:35-0300"
+        idNome1:
+          type: string
+          example: "Número"
+        idValor1:
+          type: string
+          example: "456"
+        idNome2:
+          type: string
+          example: "Placa"
+        idValor2:
+          type: string
+          example: "ZZZ-9999"
+        empresa:
+          allOf:
+            - $ref: '#/components/schemas/EmpresaSummary'
+        status:
+          oneOf:
+            - $ref: '#/components/schemas/StatusRomaneio'
+        operacoesConcluidas:
+          type: number
+          format: int64
+        operacoesPendentes:
+          type: number
+          format: int64
+        entregador:
+          allOf:
+            - $ref: '#/components/schemas/EntregadorSummary'
+        observacao:
+          type: string
+          nullable: true
+
+    RomaneioSummary:
+      properties:
+        id:
+          type: string
+          example: "4f7fe1bf-8cee-4309-8835-72edcd913add"
+        dataRomaneio:
+          type: string
+          format: date-time
+          example: "2021-01-25T12:23:35-0300"
+        dataFinalizacao:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2021-01-25T12:23:35-0300"
+        idNome1:
+          type: string
+          example: "Número"
+        idValor1:
+          type: string
+          example: "456"
+        idNome2:
+          type: string
+          nullable: true
+          example: "Placa"
+        idValor2:
+          type: string
+          nullable: true
+          example: "ZZZ-9999"
+        idNome3:
+          type: string
+          nullable: true
+          example: "Entregas"
+        idValor3:
+          type: string
+          nullable: true
+          example: "454,455,456"
+        entregador:
+          allOf:
+            - $ref: '#/components/schemas/EntregadorSummary'
+        status:
+          oneOf:
+            - $ref: '#/components/schemas/StatusRomaneio'
+        operacoesConcluidas:
+          type: number
+          nullable: true
+          format: int64
+          example: 7
+        operacoesPendentes:
+          type: number
+          nullable: true
+          format: int64
+          example: 3
+        percentualCompleto:
+          type: number
+          nullable: true
+          format: int64
+          example: 70
+
+
+    RomaneioResource:
+      allOf:
+        - $ref: '#/components/schemas/PagedResource'
+        - type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Romaneio'
+
+    RomaneioCreate:
+      properties:
+        id:
+          type: string
+          example: "4f7fe1bf-8cee-4309-8835-72edcd913add"
+        data:
+          type: string
+          format: date-time
+          example: "2021-01-25T12:23:35-0300"
+        idNome1:
+          type: string
+          example: "Número"
+        idValor1:
+          type: string
+          example: "Número"
+        idNome2:
+          type: string
+          example: "Placa"
+        idValor2:
+          type: string
+          example: "ZZZ-9999"
+        idNome3:
+          type: string
+          example: "Entregas"
+        idValor3:
+          type: string
+          example: "941,942,943,944,945,046,947,948"
+        observacao:
+          type: string
+          example: "Texto da observação. Escrito aqui."
+        entregadorId:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        operacaoIdList:
+          type: array
+          items:
+            type: string
+          example: ["7194803e-754a-472a-b049-e0a9fa7d8ae5", "62187998-e9b9-403d-9e3a-5eece9ec2abd", "67f44d81-aa80-46ac-be39-a636c8d120fb", "14b84bbe-8eef-4b23-adbe-af5334033707", "6991d1f3-ba72-43bf-915d-5b86d31b0f04"]
+
+    RomaneioPreview:
+      properties:
+        id:
+          type: string
+          example: "490a3b6e-2f27-48c1-bcc4-11bb8520fb23"
+        idNome1:
+          type: string
+          example: "Número"
+        idValor1:
+          type: string
+          example: "457"
+        idNome2:
+          type: string
+          example: "Placa"
+        idValor2:
+          type: string
+          example: "LVJ-9528"
+        idNome3:
+          type: string
+          example: "Entregas"
+        idValor3:
+          type: string
+          example: "453,454,455,456"
+        status:
+          allOf:
+            - $ref: '#/components/schemas/StatusRomaneio'
+          description: Status do romaneio
+        percentualCompleto:
+          type: integer
+          format: int32
+          example: 75
+        operacoesPendentes:
+          type: integer
+          format: int32
+          example: 1
+        operacoesConcluidas:
+          type: integer
+          format: int32
+          example: 3
+        emAtraso:
+          type: boolean
+        observacao:
+          type: string
+          nullable: true
+
+    RomaneioSuggestion:
+      properties:
+        id:
+          type: string
+          example: "490a3b6e-2f27-48c1-bcc4-11bb8520fb23"
+        idNome1:
+          type: string
+          example: "Número"
+        idValor1:
+          type: string
+          example: "457"
+        idNome2:
+          type: string
+          example: "Placa"
+        idValor2:
+          type: string
+          example: "LVJ-9528"
+        idNome3:
+          type: string
+          example: "Entregas"
+        idValor3:
+          type: string
+          example: "453,454,455,456"
+
+
+    RomaneioView:
+      properties:
+        id:
+          type: string
+          example: "5bbcf512-2d99-45e6-b945-6d0349491893"
+        data:
+          type: string
+          format: date-time
+          example: "2021-01-25T12:23:35-0300"
+        idNome1:
+          type: string
+          example: "Numero"
+        idValor1:
+          type: string
+          example: "1312"
+        idNome2:
+          type: string
+          example: "Placa"
+        idValor2:
+          type: string
+          example: "KWT-1223"
+        idNome3:
+          type: string
+          example: "Entregas"
+        idValor3:
+          type: string
+          example: "453,454,455,456"
+        observacao:
+          type: string
+          example: ""
+        status:
+          allOf:
+            - $ref: '#/components/schemas/StatusRomaneio'
+        percentualCompleto:
+          type: number
+          format: int32
+          minimum: 0
+          maximum: 100
+          example: 37
+        quantidadeOperacoes:
+          type: number
+          format: int64
+          example: 100
+        operacoesConcluidas:
+          type: number
+          format: int64
+          example: 37
+        operacoesPendentes:
+          type: number
+          format: int64
+          example: 63
+        entregador:
+          allOf:
+            - $ref: '#/components/schemas/EntregadorSummary'
+
+    EntregadorResource:
+      allOf:
+        - $ref: '#/components/schemas/PagedResource'
+        - type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entregador'
+
+    EntregadorSummary:
+      properties:
+        id:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        nome:
+          type: string
+          example: "Martin Gouse"
+        placaVeiculo:
+          type: string
+          nullable: true
+          example: "LVJ-9528"
+        cpf:
+          type: string
+          nullable: true
+          example: "98987972070"
+        login:
+          type: string
+          nullable: true
+          example: "matingouse@email.com"
+
+    Entregador:
+      properties:
+        id:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        nome:
+          type: string
+          example: "Martin Gouse"
+        placaVeiculo:
+          type: string
+          example: "LVJ-9528"
+        cpf:
+          type: string
+          example: "98987972070"
+        login:
+          type: string
+          example: "matingouse@email.com"
+        telefone:
+          type: string
+          example: "81999999999"
+        tipoVeiculo:
+          oneOf:
+            - $ref: '#/components/schemas/TipoVeiculo'
+        tipoCarregamento:
+         oneOf:
+            - $ref: '#/components/schemas/TipoCarregamento'
+        observacao:
+          type: string
+          example: "Texto da observação. Escrito aqui."
+        ultimoRomaneio:
+          oneOf:
+            - $ref: '#/components/schemas/RomaneioSummary'
+
+    EntregadorPreview:
+      properties:
+        id:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        nome:
+          type: string
+          example: "Martin Gouse"
+        foto:
+          type: string
+          example: "http://hivecloud.com.br/foto.jpg"
+        cpf:
+          type: string
+          example: "33598634021"
+        placaVeiculo:
+          type: string
+          example: "LVJ-9528"
+        tipoVeiculo:
+          oneOf:
+            - $ref: '#/components/schemas/TipoVeiculo'
+        observacao:
+          type: string
+        ultimaPosicao:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Posicao'
+
+    EntregadorSuggestion:
+      properties:
+        id:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        nome:
+          type: string
+          example: "Martin Gouse"
+        cpf:
+          type: string
+          example: "33598634021"
+        placaVeiculo:
+          type: string
+          example: "LVJ-9528"
+
+    EntregadorCreate:
+      properties:
+        id:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        nome:
+          type: string
+          example: "Martin Gouse"
+        placaVeiculo:
+          type: string
+          example: "LVJ-9528"
+        cpf:
+          type: string
+          example: "98987972070"
+        login:
+          type: string
+          example: "matingouse@email.com"
+        telefone:
+          type: string
+          example: "81999999999"
+        tipoVeiculo:
+          allOf:
+            - $ref: '#/components/schemas/TipoVeiculo'
+        tipoCarregamento:
+          allOf:
+            - $ref: '#/components/schemas/TipoCarregamento'
+        observacao:
+          type: string
+          example: "Texto da observação. Escrito aqui."
+
+    EntregadorHistoricoPosicao:
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/PosicaoHistorico'
+        lastEvaluatedKey:
+          type: object
+          properties:
+            driverId:
+              type: string
+              example: "matingouse"
+            lastTimeRecord:
+              description: Key para consulta da próxima página
+              type: integer
+              format: int64
+              example: 1614196050
+
+    OperacaoResource:
+      allOf:
+        - $ref: '#/components/schemas/PagedResource'
+        - type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operacao'
+
+    OperacaoSuggestion:
+      properties:
+        id:
+          type: string
+          example: "490a3b6e-2f27-48c1-bcc4-11bb8520fb23"
+        idNome1:
+          type: string
+          example: "Número"
+        idValor1:
+          type: string
+          example: "457"
+        idNome2:
+          type: string
+          example: "Placa"
+        idValor2:
+          type: string
+          example: "LVJ-9528"
+        idNome3:
+          type: string
+          example: "Entregas"
+        idValor3:
+          type: string
+          example: "453,454,455,456"
+
+    Operacao:
+      properties:
+        id:
+          type: string
+          example: "40627ede-f7b2-43fc-9843-805679e2f895"
+        idNome1:
+          type: string
+          example: "Mercadoria"
+        idValor1:
+          type: string
+          example: "505626/6"
+        idNome2:
+          type: string
+          example: "Chave de Acesso"
+        idValor2:
+          type: string
+          example: "26210309722463000131550060005056261259860737"
+        idNome3:
+          type: string
+          example: "Número"
+        idValor3:
+          type: string
+          example: "3445"
+        tipo:
+          oneOf:
+            - $ref: '#/components/schemas/TipoOperacao'
+        romaneio:
+          allOf:
+            - $ref: '#/components/schemas/RomaneioSummary'
+        empresa:
+          allOf:
+            - $ref: '#/components/schemas/EmpresaSummary'
+        cliente:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Envolvido'
+        remetente:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Envolvido'
+        destinatario:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Envolvido'
+        localDestino:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Localidade'
+        status:
+          oneOf:
+              - $ref: '#/components/schemas/StatusOperacao'
+        dataPrevisao:
+          type: string
+          format: date-time
+          example: "2021-03-08T12:27:12-0300"
+        finalizacaoOcorrencia:
+          type: string
+          format: date-time
+          example: "2021-03-08T12:27:12-0300"
+        ultimaOcorrencia:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/OcorrenciaSummary'
+        observacao:
+          type: string
+          nullable: true
+
+    OperacaoCreate:
+      properties:
+        id:
+          type: string
+          example: "40627ede-f7b2-43fc-9843-805679e2f895"
+        idNome1:
+          type: string
+          example: "Mercadoria"
+        idValor1:
+          type: string
+          example: "505626/6"
+        idNome2:
+          type: string
+          example: "Chave de Acesso"
+        idValor2:
+          type: string
+          example: "26210309722463000131550060005056261259860737"
+        idNome3:
+          type: string
+          example: "Número"
+        idValor3:
+          type: string
+          example: "3445"
+        tipoOperacao:
+          allOf:
+            - $ref: '#/components/schemas/TipoOperacao'
+        dataPrevisao:
+          type: string
+          format: date-time
+          example: "2021-03-08T12:27:12-0300"
+        cliente:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Envolvido'
+        remetente:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Envolvido'
+        destinatario:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Envolvido'
+        localDestino:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+          example: "Texto da observação. Escrito aqui."
+
+    Envolvido:
+      properties:
+        doc:
+          type: string
+          example: "11111111111"
+        tipoDoc:
+          oneOf:
+            - $ref: "#/components/schemas/TipoDocumento"
+          example: "CPF"
+        nome:
+          type: string
+          example: "James Rodriguez"
+        telefone1:
+          type: string
+          example: "111111111"
+        telefone2:
+          type: string
+          example: "33333333"
+
+    Localidade:
+      properties:
+        logradouro:
+          type: string
+          example: "R. Alfândega"
+          nullable: false
+        bairro:
+          type: string
+          example: "Recife"
+          nullable: false
+        cep:
+          type: string
+          example: "50030-030"
+          nullable: false
+        numero:
+          type: string
+          example: "35"
+          nullable: false
+        complemento:
+          type: string
+          example: ""
+          nullable: true
+        nomeMunicipio:
+          type: string
+          example: "Recife"
+          nullable: false
+        uf:
+          type: string
+          example: "PE"
+          nullable: false
+        pais:
+          type: string
+          example: "Brasil"
+          nullable: false
+
+    OperacaoView:
+      properties:
+        id:
+          type: string
+          example: "40627ede-f7b2-43fc-9843-805679e2f895"
+        idNome1:
+          type: string
+          example: "Mercadoria"
+        idValor1:
+          type: string
+          example: "505626/6"
+        idNome2:
+          type: string
+          example: "Chave de Acesso"
+        idValor2:
+          type: string
+          example: "26210309722463000131550060005056261259860737"
+        idNome3:
+          type: string
+          example: "Número"
+        idValor3:
+          type: string
+          example: "3445"
+        dataPrevisao:
+          type: string
+          format: date-time
+          example: "2021-03-08T12:27:12-0300"
+        tipo:
+          allOf:
+            - $ref: '#/components/schemas/TipoOperacao'
+          example: "ENTREGA"
+        status:
+          allOf:
+            - $ref: '#/components/schemas/StatusOperacao'
+        empresa:
+          allOf:
+            - $ref: '#/components/schemas/EmpresaSummary'
+        cliente:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Envolvido'
+        remetente:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Envolvido'
+        destinatario:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Envolvido'
+        localDestino:
+          type: object
+          allOf:
+              - $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+          nullable: true
+
+    Ambiente:
+      properties:
+        id:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        nome:
+          type: string
+          example: "Transporta Tudo"
+        cnpj:
+          type: string
+          example: "12345678901234"
+        tokenIntegracao:
+          type: string
+          example: "066c90ea-9968-11eb-a8b3-0242ac130003"
+        dataCriacao:
+          type: string
+          example: "066c90ea-9968-11eb-a8b3-0242ac130003"
+        tipoAmbiente:
+          $ref: "#/components/schemas/TipoAmbiente"
+        ativo:
+          type: boolean
+          example: true
+
+    AmbienteCreate:
+      allOf:
+        - $ref: "#/components/schemas/EmpresaCreate"
+
+    AmbienteResource:
+      allOf:
+        - $ref: '#/components/schemas/PagedResource'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/Ambiente'
+
+    AcessoAmbienteResource:
+      allOf:
+        - $ref: '#/components/schemas/PagedResource'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/AcessoAmbiente'
+
+    AcessoAmbiente:
+      properties:
+        id:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        login:
+          type: string
+          example: "usuario"
+        tipoAcesso:
+          oneOf:
+            - $ref: "#/components/schemas/TipoAcesso"
+
+    AcessoAmbienteCreate:
+      properties:
+        login:
+          type: string
+          example: "usuario"
+        tipoAcesso:
+          allOf:
+            - $ref: "#/components/schemas/TipoAcesso"
+
+    Empresa:
+      properties:
+        id:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        nome:
+          type: string
+          example: "Transporta Tudo"
+          maxLength: 60
+          nullable: false
+        nomeFantasia:
+          type: string
+          maxLength: 60
+          nullable: false
+          example: "Transporta Tudo"
+        cnpj:
+          type: string
+          minLength: 11
+          maxLength: 14
+          nullable: false
+          example: "12345678901234"
+        ie:
+          type: string
+          maxLength: 14
+          nullable: false
+        rntrc:
+          type: string
+          maxLength: 8
+          nullable: true
+        telefone:
+          type: string
+          minLength: 7
+          maxLength: 13
+          nullable: false
+          example: "81999999999"
+        email:
+          type: string
+          maxLength: 60
+          nullable: true
+          example: "teste@teste.com.br"
+        endereco:
+          allOf:
+            - $ref: "#/components/schemas/Localidade"
+        observacao:
+          type: string
+          nullable: true
+
+    EmpresaCreate:
+      properties:
+        nome:
+          type: string
+          example: "Transporta Tudo"
+          maxLength: 60
+          nullable: false
+        nomeFantasia:
+          type: string
+          maxLength: 60
+          nullable: false
+          example: "Transporta Tudo"
+        cnpj:
+          type: string
+          minLength: 11
+          maxLength: 14
+          nullable: false
+          example: "12345678901234"
+        ie:
+          type: string
+          maxLength: 14
+          nullable: false
+          example: "123456"
+        rntrc:
+          type: string
+          maxLength: 8
+          nullable: true
+          example: "44444"
+        telefone:
+          type: string
+          minLength: 7
+          maxLength: 13
+          nullable: false
+          example: "81999999999"
+        email:
+          type: string
+          maxLength: 60
+          nullable: true
+          example: "teste@teste.com"
+        endereco:
+          allOf:
+            - $ref: "#/components/schemas/Localidade"
+        observacao:
+          type: string
+          example: "Texto da observação. Escrito aqui."
+
+    EmpresaView:
+      properties:
+        id:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        nome:
+          type: string
+          example: "Transporta Tudo"
+          maxLength: 60
+          nullable: false
+        nomeFantasia:
+          type: string
+          maxLength: 60
+          nullable: false
+          example: "Transporta Tudo"
+        cnpj:
+          type: string
+          minLength: 11
+          maxLength: 14
+          nullable: false
+          example: "12345678901234"
+        ie:
+          type: string
+          maxLength: 14
+          nullable: false
+          example: 123456
+        rntrc:
+          type: string
+          maxLength: 8
+          nullable: true
+          example: 4444
+        telefone:
+          type: string
+          minLength: 7
+          maxLength: 13
+          nullable: false
+          example: "81999999999"
+        email:
+          type: string
+          maxLength: 60
+          nullable: true
+          example: "teste@teste.com.br"
+        endereco:
+          allOf:
+            - $ref: "#/components/schemas/Localidade"
+        observacao:
+          type: string
+          nullable: true
+        logoUrl:
+          type: string
+          nullable: true
+          example: "https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg"
+
+    EmpresaSummary:
+      properties:
+        id:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        nome:
+          type: string
+          example: "Nova Geração Transporte"
+        municipio:
+          type: string
+          example: "Recife"
+        uf:
+          type: string
+          example: "PE"
+
+    EmpresaSuggestion:
+      properties:
+        id:
+          type: string
+          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+        nome:
+          type: string
+          example: "Nova Geração Transporte"
+        cnpj:
+          type: string
+          example: "33598634021"
+        municipio:
+          type: string
+          example: "Recife"
+        uf:
+          type: string
+          example: "PE"
+
+    EmpresaResource:
+      allOf:
+        - $ref: '#/components/schemas/PagedResource'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/Empresa'
+
+    StatusRomaneio:
+      type: string
+      enum:
+        - PENDENTE
+        - AGUARDANDO_ACEITE
+        - EM_EXECUCAO
+        - CONCLUIDO
+      example: "AGUARDANDO_ACEITE"
+
+    TipoVeiculo:
+      type: string
+      enum:
+        - UTILITARIO
+        - TRUCK
+        - TOCO
+        - LEVE_3_4
+        - CARRETA_TANQUE
+        - CARRETA_SILO
+        - CARRETA_SIDERS
+        - CARRETA_PLATAFORMAS
+        - CARRETA_GRADE_BAIXA
+        - CARRETA_FRIGORIFICO
+        - CARRETA_CEGONHEIRA
+        - CARRETA_CARROCERIA_ABERTA
+        - CARRETA_CACAMBA
+        - CARRETA_BAU
+      example: "UTILITARIO"
+
+    TipoCarregamento:
+      type: string
+      enum:
+      - PALETIAZADA
+      - ESTIVADA
+      - NAO_INFORMADA
+      example: "ESTIVADA"
+
+    StatusOperacao:
+      type: string
+      enum:
+      - PENDENTE
+      - CONCLUIDA
+      example: "CONCLUIDA"
+
+    TipoOperacao:
+      type: string
+      enum:
+      - "AMBOS"
+      - "COLETA"
+      - "ENTREGA"
+      example: "COLETA"
+
+    PeriodoDataBusca:
+      type: string
+      enum:
+        - PERIODO
+        - IGUAL
+        - MES_ANTERIOR
+        - ANO_ANTERIOR
+        - DIAS_7
+        - DIAS_15
+        - DIAS_30
+      example: "PERIODO"
+
+    TipoDocumento:
+      type: string
+      enum:
+      - "CPF"
+      - "CNPJ"
+      example: "CNPJ"
+
+    TipoAmbiente:
+      type: string
+      enum:
+      - "PRODUCAO"
+      - "TESTE"
+      example: "PRODUCAO"
+
+    TipoAcesso:
+      type: string
+      enum:
+      - "USUARIO"
+      - "ADMINISTRADOR"
+      example: "ADMINISTRADOR"
+
+    NaturezaOcorrencia:
+      type: string
+      enum:
+       - ENTREGA
+       - INFORMATIVA
+       - RECUSA
+       - RETORNO
+       - SINISTRO
+      example: "ENTREGA"
+
+  examples:
+    monitoramentoBriefingExemplo:
+      value:
+        {
+          "livre": {
+            "link": "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=10&entregadorStatus=PENDENTE",
+            "value": 8
+          },
+          "comFalha": {
+            "link": "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=10&entregadorStatus=COM_FALHA",
+            "value": 2
+          },
+          "semAtualizacaoLocalizacao": {
+            "link": "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=10&entregadorStatus=SEM_ATUALIZACAO_LOCALIZACAO",
+            "value": 21
+          },
+          "emAtraso": {
+            "link": "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=10&entregadorStatus=EM_ATRASO",
+            "value": 8
+          }
+        }
+
+    monitoramentoExemplo:
+      value:
+        {
+          "pageMetadata": {
+            "size": 10,
+            "number": 1,
+            "totalElements": 63,
+            "totalPages": 7
+          },
+          "nextLink": "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=10",
+          "previousLink": "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=2&pageSize=10",
+          "content": [
+            {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "nome": "Martin Gouse",
+              "tipoVeiculo": "Carreta Baú",
+              "placaVeiculo": "LVJ-9528",
+              "ultimoRomaneio": {
+                "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+                "idNome1": "Número",
+                "idNome2": "Placa",
+                "idNome3": "Entregas",
+                "idValor1": "457",
+                "idValor2": "LVJ-9528",
+                "idValor3": "353,354,360,361",
+                "status": "EM_EXECUCAO",
+                "emAtraso": true,
+                "dataFinalizacao": "2021-01-25T12:23:35-0300",
+                "entregasPendentes": 2,
+                "entregasCompletas": 3,
+                "entregasFalhas": 1,
+                "quantidadeEntregas":  5,
+                "ultimaOcorrencia": {
+                  "id": "bb4c6142-a8e9-473f-a7dc-5dc9ee1539c0",
+                  "codigo": "101",
+                  "descricao": "Sucesso na Entrega",
+                  "data": "2021-01-25T12:23:35-0300"
+                },
+                "ultimaPosicao": {
+                  "latitude": -8.06304853,
+                  "longitude": -34.87150937,
+                  "data": "2021-01-25T12:23:35-0300",
+                  "tempoAtraso": 14,
+                  "emAtraso": true,
+                  "ultimaSincronia": 14,
+                  "semSincronia": true
+
+                }
+              }
+            },
+            {
+              "id": "fe6befe9-d614-4984-bb46-feef39bf624e",
+              "nome": "Ryan Bator",
+              "veiculo": "Carreta Silo",
+              "placaVeiculo": "HPA-7665",
+              "ultimoRomaneio": {
+                "id": "a1383dbf-92a8-4f09-9b00-f4bb9df8ac35",
+                "idNome1": "Número",
+                "idNome2": "Placa",
+                "idNome3": "Entregas",
+                "idValor1": "457",
+                "idValor2": "HPA-7665",
+                "idValor3": "353,354,360,361",
+                "status": "EM_EXECUCAO",
+                "emAtraso": false,
+                "dataFinalizacao": "2021-01-25T12:23:35-0300",
+                "entregasPendentes": 1,
+                "entregasCompletas": 12,
+                "entregasFalhas": 4,
+                "quantidadeEntregas":  13,
+                "ultimaOcorrencia": {
+                  "id": "82b6defc-cfbb-4a79-8abb-126075a30cfd",
+                  "codigo": "101",
+                  "descricao": "Sucesso na Entrega",
+                  "data": "2021-01-25T12:23:35-0300"
+                },
+                "ultimaPosicao": {
+                  "latitude": -8.03497157,
+                  "longitude": -34.95540351,
+                  "data": "2021-01-25T12:23:35-0300",
+                  "tempoAtraso": 4,
+                  "emAtraso": false,
+                  "ultimaSincronia": 4,
+                  "semSincronia": false
+                }
+              }
+            },
+            {
+              "id": "97669af1-fe96-4575-bad6-a0a962e21454",
+              "nome": "Lincon Dias",
+              "veiculo": "Carreta Baú",
+              "placaVeiculo": "JUM-0860",
+              "ultimoRomaneio": {
+                "id": "53542646-4c3a-4bac-acc8-a00793ff7041",
+                "idNome1": "Número",
+                "idNome2": "Placa",
+                "idNome3": "Entregas",
+                "idValor1": "457",
+                "idValor2": "JUM-0860",
+                "idValor3": "353,354,360,361",
+                "status": "EM_EXECUCAO",
+                "emAtraso": false,
+                "dataFinalizacao": "2021-01-25T12:23:35-0300",
+                "entregasPendentes": 4,
+                "entregasCompletas": 7,
+                "entregasFalhas": 0,
+                "quantidadeEntregas": 11,
+                "ultimaOcorrencia": {
+                  "id": "cf4aa243-b647-40b3-a27c-f2bf5320d8cc",
+                  "codigo": "101",
+                  "descricao": "Sucesso na Entrega",
+                  "data": "2021-01-25T12:23:35-0300"
+                },
+                "ultimaPosicao": {
+                  "latitude": -8.01058457,
+                  "longitude": -34.85292166,
+                  "data": "2021-01-25T12:23:35-0300",
+                  "tempoAtraso": 4,
+                  "emAtraso": false,
+                  "ultimaSincronia": 4,
+                  "semSincronia": false
+                }
+              }
+            },
+            {
+              "id": "8327b3da-e7e9-4bb3-9bb3-53fbaa2caf7d",
+              "nome": "Zaire Kenter",
+              "veiculo": "Truck",
+              "placaVeiculo": "BYZ-3258",
+              "ultimoRomaneio": {
+                "id": "745f8c2c-2755-4810-adbb-1333098d8ba9",
+                "idNome1": "Número",
+                "idNome2": "Placa",
+                "idNome3": "Entregas",
+                "idValor1": "457",
+                "idValor2": "BYZ-3258",
+                "idValor3": "353,354,360,361",
+                "status": "EM_EXECUCAO",
+                "emAtraso": true,
+                "dataFinalizacao": "2021-01-25T12:23:35-0300",
+                "entregasPendentes": 40,
+                "entregasCompletas": 3,
+                "entregasFalhas": 0,
+                "quantidadeEntregas": 43,
+                "ultimaOcorrencia": {
+                  "id": "8d565fb4-5b3f-4b72-9ed9-060a63341163",
+                  "codigo": "101",
+                  "descricao": "Sucesso na Entrega",
+                  "data": "2021-01-25T12:23:35-0300"
+                },
+                "ultimaPosicao": {
+                  "latitude": -8.00884751,
+                  "longitude": -34.8571381,
+                  "data": "2021-01-25T12:23:35-0300",
+                  "tempoAtraso": 4,
+                  "emAtraso": false,
+                  "ultimaSincronia": 4,
+                  "semSincronia": false
+                }
+              }
+            },
+            {
+              "id": "583b5d7f-f6f6-466f-85cf-fcf27704423e",
+              "nome": "Kadin Kenter",
+              "veiculo": "Carreta Baú",
+              "placaVeiculo": "GYT-2189",
+              "ultimoRomaneio": {
+                "id": "9ede5342-6bc8-4ea7-b50c-7ce63832713c",
+                "idNome1": "Número",
+                "idNome2": "Placa",
+                "idNome3": "Entregas",
+                "idValor1": "457",
+                "idValor2": "GYT-2189",
+                "idValor3": "353,354,360,361",
+                "status": "EM_EXECUCAO",
+                "emAtraso": true,
+                "dataFinalizacao": "2021-01-25T12:23:35-0300",
+                "entregasPendentes": 2,
+                "entregasCompletas": 5,
+                "entregasFalhas": 0,
+                "quantidadeEntregas": 7,
+                "ultimaOcorrencia": {
+                  "id": "cca4c86e-6dde-4b2f-9f98-c633fd0f405d",
+                  "codigo": "101",
+                  "descricao": "Sucesso na Entrega",
+                  "data": "2021-01-25T12:23:35-0300"
+                },
+                "ultimaPosicao": {
+                  "latitude": -8.06150292,
+                  "longitude": -34.90307629,
+                  "data": "2021-01-25T12:23:35-0300",
+                  "tempoAtraso": 14,
+                  "emAtraso": true,
+                  "ultimaSincronia": 14,
+                  "semSincronia": true
+                }
+              }
+            },
+            {
+              "id": "7b6a3f85-0540-41c2-8461-28ef3410ac3f",
+              "nome": "Justin Carder",
+              "veiculo": "Toco",
+              "placaVeiculo": "HZX-0948",
+              "ultimoRomaneio": {
+                "id": "bb00f072-2701-4f63-b88c-b1b12093358c",
+                "idNome1": "Número",
+                "idNome2": "Placa",
+                "idNome3": "Entregas",
+                "idValor1": "457",
+                "idValor2": "HZX-0948",
+                "idValor3": "353,354,360,361",
+                "status": "EM_EXECUCAO",
+                "emAtraso": false,
+                "dataFinalizacao": "2021-01-25T12:23:35-0300",
+                "entregasPendentes": 1,
+                "entregasCompletas": 0,
+                "entregasFalhas": 0,
+                "quantidadeEntregas": 1,
+                "ultimaOcorrencia": {
+                  "id": "dbbea36d-b652-4439-bf5f-665123594c49",
+                  "codigo": "101",
+                  "descricao": "Sucesso na Entrega",
+                  "data": "2021-01-25T12:23:35-0300"
+                },
+                "ultimaPosicao": {
+                  "latitude": -8.27190691,
+                  "longitude": -34.94937122,
+                  "data": "2021-01-25T12:23:35-0300",
+                  "tempoAtraso": 10,
+                  "emAtraso": false,
+                  "ultimaSincronia": 10,
+                  "semSincronia": false
+                }
+              }
+            },
+            {
+              "id": "fe324a15-3266-4a2e-abd3-d3954008bead",
+              "nome": "Carter Passaquindici Arcand",
+              "veiculo": "Carreta Carroceria Aberta",
+              "placaVeiculo": "JUV-4021",
+              "ultimoRomaneio": {
+                "id": "c4ebc139-fc32-4aed-a89e-c506252c9d48",
+                "idNome1": "Número",
+                "idNome2": "Placa",
+                "idNome3": "Entregas",
+                "idValor1": "457",
+                "idValor2": "JUV-4021",
+                "idValor3": "353,354,360,361",
+                "status": "EM_EXECUCAO",
+                "emAtraso": true,
+                "dataFinalizacao": "2021-01-25T12:23:35-0300",
+                "entregasPendentes": 8,
+                "entregasCompletas": 13,
+                "entregasFalhas": 0,
+                "quantidadeEntregas": 21,
+                "ultimaOcorrencia": {
+                  "id": "9d3db44b-8a5c-4b98-b15e-f1a9cf610012",
+                  "codigo": "101",
+                  "descricao": "Sucesso na Entrega",
+                  "data": "2021-01-25T12:23:35-0300"
+                },
+                "ultimaPosicao": {
+                  "latitude": -8.24973754,
+                  "longitude": -35.01043439,
+                  "data": "2021-01-25T12:23:35-0300",
+                  "tempoAtraso": 10,
+                  "emAtraso": false,
+                  "ultimaSincronia": 10,
+                  "semSincronia": false
+                }
+              }
+            },
+            {
+              "id": "7de5e555-a91c-451c-9c85-4ad8d80c829a",
+              "nome": "Jakob George",
+              "veiculo": "Truck",
+              "placaVeiculo": "HRD-0286",
+              "ultimoRomaneio": {
+                "id": "7df538f2-70b2-4f1e-bae5-ec02b2328da3",
+                "idNome1": "Número",
+                "idNome2": "Placa",
+                "idNome3": "Entregas",
+                "idValor1": "457",
+                "idValor2": "HRD-0286",
+                "idValor3": "353,354,360,361",
+                "status": "EM_EXECUCAO",
+                "emAtraso": false,
+                "dataFinalizacao": "2021-01-25T12:23:35-0300",
+                "entregasPendentes": 34,
+                "entregasCompletas": 23,
+                "entregasFalhas": 0,
+                "quantidadeEntregas": 57,
+                "ultimaOcorrencia": {
+                  "id": "c76a5ecd-36da-4a33-ae16-ff7be32679a6",
+                  "codigo": "101",
+                  "descricao": "Sucesso na Entrega",
+                  "data": "2021-01-25T12:23:35-0300"
+                },
+                "ultimaPosicao": {
+                  "latitude": -7.81049374,
+                  "longitude": -34.92029607,
+                  "data": "2021-01-25T12:23:35-0300",
+                  "tempoAtraso": 11,
+                  "emAtraso": true,
+                  "ultimaSincronia": 11,
+                  "semSincronia": true
+                }
+              }
+            },
+            {
+              "id": "f743f60c-2415-4f74-9c17-f201dffa0803",
+              "nome": "Leo Culhane",
+              "veiculo": "Leve 3/4",
+              "placaVeiculo": "FHA-5710",
+              "ultimoRomaneio": {
+                "id": "68458ee0-dd20-4d2f-90ca-c9d33fd7c809",
+                "idNome1": "Número",
+                "idNome2": "Placa",
+                "idNome3": "Entregas",
+                "idValor1": "457",
+                "idValor2": "FHA-5710",
+                "idValor3": "353,354,360,361",
+                "status": "EM_EXECUCAO",
+                "emAtraso": true,
+                "dataFinalizacao": "2021-01-25T12:23:35-0300",
+                "entregasPendentes": 5,
+                "entregasCompletas": 7,
+                "entregasFalhas": 0,
+                "quantidadeEntregas": 12,
+                "ultimaOcorrencia": {
+                  "id": "1025804c-dc31-4651-9210-759250e35d0c",
+                  "codigo": "101",
+                  "descricao": "Sucesso na Entrega",
+                  "data": "2021-01-25T12:23:35-0300"
+                },
+                "ultimaPosicao": {
+                  "latitude": -7.16896163,
+                  "longitude": -34.89698768,
+                  "data": "2021-01-25T12:23:35-0300",
+                  "tempoAtraso": 11,
+                  "emAtraso": true,
+                  "ultimaSincronia": 11,
+                  "semSincronia": true
+                }
+              }
+            },
+            {
+              "id": "37740050-c099-4564-a4d6-f5d6627e48f1",
+              "nome": "Anika Gouse",
+              "veiculo": "Carreta Tanque",
+              "placaVeiculo": "HZC-0752",
+              "ultimoRomaneio": {
+                "id": "546db28c-5144-4ba6-9156-bbcbb9166f80",
+                "idNome1": "Número",
+                "idNome2": "Placa",
+                "idNome3": "Entregas",
+                "idValor1": "457",
+                "idValor2": "HZC-0752",
+                "idValor3": "353,354,360,361",
+                "status": "EM_EXECUCAO",
+                "emAtraso": true,
+                "dataFinalizacao": "2021-01-25T12:23:35-0300",
+                "entregasPendentes": 1,
+                "entregasCompletas": 0,
+                "entregasFalhas": 0,
+                "quantidadeEntregas": 1,
+                "ultimaOcorrencia": {
+                  "id": "0288ebe0-2c74-4b9b-af32-de482468810b",
+                  "codigo": "101",
+                  "descricao": "Sucesso na Entrega",
+                  "data": "2021-01-25T12:23:35-0300"
+                },
+                "ultimaPosicao": {
+                  "latitude": -8.13694971,
+                  "longitude": -35.29562294,
+                  "data": "2021-01-25T12:23:35-0300",
+                  "tempoAtraso": 4,
+                  "emAtraso": false,
+                  "ultimaSincronia": 4,
+                  "semSincronia": false
+                }
+              }
+            }
+          ]
+        }
+
+    rastreamentoExemplo:
+      value:
+        [
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "nome": "Martin Gouse",
+            "placaVeiculo": "LVJ-9528",
+            "ultimoRomaneio": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "empresa": "Transportadora XPTO",
+              "idNome1": "Número",
+              "idValor1": "12351",
+              "percentualCompleto": 60,
+              "ultimaPosicao": {
+                "latitude": -8.06304853,
+                "longitude": -34.87150937,
+              }
+            }
+
+          },
+          {
+            "id": "fe6befe9-d614-4984-bb46-feef39bf624e",
+            "entregador": "Ryan Bator",
+            "placaVeiculo": "HPA-7665",
+            "ultimoRomaneio": {
+              "id": "a1383dbf-92a8-4f09-9b00-f4bb9df8ac35",
+              "idNome1": "Número",
+              "idValor1": "12351",
+              "empresa": "Transportadora XPTO",
+              "percentualCompleto": 92,
+              "ultimaPosicao": {
+                "latitude": -8.03497157,
+                "longitude": -34.95540351
+              }
+            }
+          },
+          {
+            "id": "97669af1-fe96-4575-bad6-a0a962e21454",
+            "entregador": "Lincon Dias",
+            "placaVeiculo": "JUM-0860",
+            "ultimoRomaneio": {
+              "id": "53542646-4c3a-4bac-acc8-a00793ff7041",
+              "idNome1": "Número",
+              "idValor1": "12351",
+              "empresa": "Transportadora XPTO",
+              "percentualCompleto": 63,
+              "ultimaPosicao": {
+                "latitude": -8.01058457,
+                "longitude": -34.85292166
+              }
+            }
+          },
+          {
+            "id": "8327b3da-e7e9-4bb3-9bb3-53fbaa2caf7d",
+            "entregador": "Zaire Kenter",
+            "placaVeiculo": "BYZ-3258",
+            "ultimoRomaneio": {
+              "id": "745f8c2c-2755-4810-adbb-1333098d8ba9",
+              "idNome1": "Número",
+              "idValor1": "12351",
+              "empresa": "Transportadora XPTO",
+              "percentualCompleto": 07,
+              "ultimaPosicao": {
+                "latitude": -8.00884751,
+                "longitude": -34.8571381
+              }
+            }
+          },
+          {
+            "id": "583b5d7f-f6f6-466f-85cf-fcf27704423e",
+            "entregador": "Kadin Kenter",
+            "placaVeiculo": "GYT-2189",
+            "ultimoRomaneio": {
+              "id": "9ede5342-6bc8-4ea7-b50c-7ce63832713c",
+              "idNome1": "Número",
+              "idValor1": "12351",
+              "empresa": "Transportadora XPTO",
+              "percentualCompleto": 71,
+              "ultimaPosicao": {
+                "latitude": -8.06150292,
+                "longitude": -34.90307629
+              }
+            }
+          },
+          {
+            "id": "7b6a3f85-0540-41c2-8461-28ef3410ac3f",
+            "entregador": "Justin Carder",
+            "placaVeiculo": "HZX-0948",
+            "ultimoRomaneio": {
+              "id": "bb00f072-2701-4f63-b88c-b1b12093358c",
+              "idNome1": "Número",
+              "idValor1": "12351",
+              "empresa": "Transportadora XPTO",
+              "percentualCompleto": 0,
+              "ultimaPosicao": {
+                "latitude": -8.27190691,
+                "longitude": -34.94937122
+              }
+            }
+          },
+          {
+            "id": "fe324a15-3266-4a2e-abd3-d3954008bead",
+            "entregador": "Carter Passaquindici Arcand",
+            "placaVeiculo": "JUV-4021",
+            "ultimoRomaneio": {
+              "id": "c4ebc139-fc32-4aed-a89e-c506252c9d48",
+              "idNome1": "Número",
+              "idValor1": "12351",
+              "empresa": "Transportadora XPTO",
+              "percentualCompleto": 61,
+              "ultimaPosicao": {
+                "latitude": -8.24973754,
+                "longitude": -35.01043439
+              }
+            }
+          },
+          {
+            "id": "7de5e555-a91c-451c-9c85-4ad8d80c829a",
+            "entregador": "Jakob George",
+            "placaVeiculo": "HRD-0286",
+            "ultimoRomaneio": {
+              "id": "7df538f2-70b2-4f1e-bae5-ec02b2328da3",
+              "idNome1": "Número",
+              "idValor1": "12351",
+              "empresa": "Transportadora XPTO",
+              "percentualCompleto": 40,
+              "ultimaPosicao": {
+                "latitude": -7.81049374,
+                "longitude": -34.92029607
+              }
+            }
+          },
+          {
+            "id": "f743f60c-2415-4f74-9c17-f201dffa0803",
+            "entregador": "Leo Culhane",
+            "placaVeiculo": "FHA-5710",
+            "ultimoRomaneio": {
+              "id": "68458ee0-dd20-4d2f-90ca-c9d33fd7c809",
+              "idNome1": "Número",
+              "idValor1": "12351",
+              "empresa": "Transportadora XPTO",
+              "percentualCompleto": 58,
+              "ultimaPosicao": {
+                "latitude": -7.16896163,
+                "longitude": -34.89698768
+              }
+            }
+          },
+          {
+            "id": "37740050-c099-4564-a4d6-f5d6627e48f1",
+            "entregador": "Anika Gouse",
+            "placaVeiculo": "HZC-0752",
+            "ultimoRomaneio": {
+              "id": "546db28c-5144-4ba6-9156-bbcbb9166f80",
+              "idNome1": "Número",
+              "idValor1": "12351",
+              "empresa": "Transportadora XPTO",
+              "percentualCompleto": 0,
+              "ultimaPosicao": {
+                "latitude": -8.13694971,
+                "longitude": -35.29562294
+              }
+            }
+          }
+        ]
+
+    entregadorPreviewExemplo:
+      value:
+       {
+         "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+         "nome": "Martin Gouse",
+         "cpf": "840.093.240-40",
+         "placaVeiculo": "LVJ-9528",
+         "veiculo": "Carreta Baú",
+         "ultimaPosicao": {
+            "latitude": -8.06304853,
+            "longitude": -34.87150937,
+            "data": "2021-01-25T12:23:35-0300",
+            "tempoAtraso": 14,
+            "emAtraso": true,
+            "ultimaSincronia": 14,
+            "semSincronia": true
+         }
+       }
+
+    romaneioPreviewExemplo:
+      value:
+        {
+          "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+          "idNome1":"Número",
+          "idValor1": "457",
+          "idNome2": "Placa",
+          "idValor2": "LVJ-9528",
+          "idNome3": "Entregas",
+          "idValor3": "453,454,455,456",
+          "status": "EM_EXECUCAO",
+          "percentualCompleto": 75,
+          "entregasPendentes": 1,
+          "entregasConcluidas": 3,
+          "emAtraso": false
+        }
+
+    romaneioSuggestionExemplo:
+      value:
+        [
+          {
+            "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+            "idNome1":"Número",
+            "idValor1": "457",
+            "idNome2": "Placa",
+            "idValor2": "LVJ-9528",
+            "idNome3": "Entregas",
+            "idValor3": "453,454,455,456",
+          },
+          {
+            "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+            "idNome1":"Número",
+            "idValor1": "458",
+            "idNome2": "Placa",
+            "idValor2": "AAA-0000",
+            "idNome3": "Entregas",
+            "idValor3": "507,508,509,510",
+          },
+          {
+            "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+            "idNome1":"Número",
+            "idValor1": "459",
+            "idNome2": "Placa",
+            "idValor2": "ZZZ-9999",
+            "idNome3": "Entregas",
+            "idValor3": "735,742,751,752",
+          }
+        ]
+
+    romaneioExemplo:
+      value: {
+        "pageMetadata": {
+          "size": 10,
+          "number": 1,
+          "totalElements": 63,
+          "totalPages": 7
+        },
+        "nextLink": "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/romaneios?pageNumber=0&pageSize=10",
+        "previousLink": "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/romaneios?pageNumber=2&pageSize=10",
+        "content": [
+          {
+            "id": "4f7fe1bf-8cee-4309-8835-72edcd913add",
+            "data": "2021-01-25T12:23:35-0300",
+            "idNome1": "Número",
+            "idValor1": "456",
+            "idNome2": "Placa",
+            "idValor2": "ZZZ-9999",
+            "empresa": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "nome": "Hivecloud"
+            },
+            "status": "EM_EXECUCAO",
+            "operacoesConcluidas": 4,
+            "operacoesPendentes": 6,
+            "entregador": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "nome": "Martin Gouse",
+              "placaVeiculo": "LVJ-9528"
+            }
+          },
+          {
+            "id": "4f7fe1bf-8cee-4309-8835-72edcd913add",
+            "data": "2021-01-25T12:23:35-0300",
+            "idNome1": "Número",
+            "idValor1": "456",
+            "idNome2": "Placa",
+            "idValor2": "ZZZ-9999",
+            "empresa": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "nome": "Hivecloud"
+            },
+            "status": "EM_EXECUCAO",
+            "operacoesConcluidas": 4,
+            "operacoesPendentes": 6,
+            "entregador": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "nome": "Martin Gouse",
+              "placaVeiculo": "LVJ-9528"
+            }
+          },
+          {
+            "id": "4f7fe1bf-8cee-4309-8835-72edcd913add",
+            "data": "2021-01-25T12:23:35-0300",
+            "idNome1": "Número",
+            "idValor1": "456",
+            "idNome2": "Placa",
+            "idValor2": "ZZZ-9999",
+            "empresa": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "nome": "Hivecloud"
+            },
+            "status": "EM_EXECUCAO",
+            "operacoesConcluidas": 4,
+            "operacoesPendentes": 6,
+            "entregador": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "nome": "Martin Gouse",
+              "placaVeiculo": "LVJ-9528"
+            }
+          },
+          {
+            "id": "4f7fe1bf-8cee-4309-8835-72edcd913add",
+            "data": "2021-01-25T12:23:35-0300",
+            "idNome1": "Número",
+            "idValor1": "456",
+            "idNome2": "Placa",
+            "idValor2": "ZZZ-9999",
+            "empresa": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "nome": "Hivecloud"
+            },
+            "status": "EM_EXECUCAO",
+            "operacoesConcluidas": 4,
+            "operacoesPendentes": 6,
+            "entregador": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "nome": "Martin Gouse",
+              "placaVeiculo": "LVJ-9528"
+            }
+          },
+          {
+            "id": "4f7fe1bf-8cee-4309-8835-72edcd913add",
+            "data": "2021-01-25T12:23:35-0300",
+            "idNome1": "Número",
+            "idValor1": "456",
+            "idNome2": "Placa",
+            "idValor2": "ZZZ-9999",
+            "empresa": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "nome": "Hivecloud"
+            },
+            "status": "EM_EXECUCAO",
+            "operacoesConcluidas": 4,
+            "operacoesPendentes": 6,
+            "entregador": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "nome": "Martin Gouse",
+              "placaVeiculo": "LVJ-9528"
+            }
+          },
+          {
+            "id": "4f7fe1bf-8cee-4309-8835-72edcd913add",
+            "data": "2021-01-25T12:23:35-0300",
+            "idNome1": "Número",
+            "idValor1": "456",
+            "idNome2": "Placa",
+            "idValor2": "ZZZ-9999",
+            "empresa": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "nome": "Hivecloud"
+            },
+            "status": "EM_EXECUCAO",
+            "operacoesConcluidas": 4,
+            "operacoesPendentes": 6,
+            "entregador": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "nome": "Martin Gouse",
+              "placaVeiculo": "LVJ-9528"
+            }
+          },
+          {
+            "id": "4f7fe1bf-8cee-4309-8835-72edcd913add",
+            "data": "2021-01-25T12:23:35-0300",
+            "idNome1": "Número",
+            "idValor1": "456",
+            "idNome2": "Placa",
+            "idValor2": "ZZZ-9999",
+            "empresa": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "nome": "Hivecloud"
+            },
+            "status": "EM_EXECUCAO",
+            "operacoesConcluidas": 4,
+            "operacoesPendentes": 6,
+            "entregador": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "nome": "Martin Gouse",
+              "placaVeiculo": "LVJ-9528"
+            }
+          },
+          {
+            "id": "4f7fe1bf-8cee-4309-8835-72edcd913add",
+            "data": "2021-01-25T12:23:35-0300",
+            "empresa": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "nome": "Hivecloud"
+            },
+            "status": "EM_EXECUCAO",
+            "operacoesConcluidas": 4,
+            "operacoesPendentes": 6,
+            "entregador": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "nome": "Martin Gouse",
+              "placaVeiculo": "LVJ-9528"
+            }
+          },
+          {
+            "id": "4f7fe1bf-8cee-4309-8835-72edcd913add",
+            "data": "2021-01-25T12:23:35-0300",
+            "idNome1": "Número",
+            "idValor1": "456",
+            "idNome2": "Placa",
+            "idValor2": "ZZZ-9999",
+            "empresa": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "nome": "Hivecloud"
+            },
+            "status": "AGUARDANDO_ACEITE",
+            "operacoesConcluidas": 0,
+            "operacoesPendentes": 13,
+            "entregador": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "nome": "Martin Gouse",
+              "placaVeiculo": "LVJ-9528"
+            }
+          },
+          {
+            "id": "4f7fe1bf-8cee-4309-8835-72edcd913add",
+            "data": "2021-01-25T12:23:35-0300",
+            "idNome1": "Número",
+            "idValor1": "456",
+            "idNome2": "Placa",
+            "idValor2": "ZZZ-9999",
+            "empresa": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "nome": "Hivecloud"
+            },
+            "status": "PENDENTE",
+            "operacoesConcluidas": ,
+            "operacoesPendentes": 10
+
+          }
+        ]
+      }
+
+
+
+    entregadorExemplo:
+      value: {
+        "pageMetadata": {
+          "size": 10,
+          "number": 1,
+          "totalElements": 63,
+          "totalPages": 7
+        },
+        "nextLink": "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores?pageNumber=0&pageSize=10",
+        "previousLink": "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores?pageNumber=2&pageSize=10",
+        "content": [
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "nome": "Martin Gouse",
+            "placaVeiculo": "LVJ-9528",
+            "cpf": "98987972070",
+            "login": "matingouse@email.com",
+            "telefone": "81999999999",
+            "tipoVeiculo": "UTILITARIO",
+            "tipoCarregamento": "ESTIVADA",
+            "ultimoRomaneio": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "idNome1": "Número",
+              "idValor1": "457",
+              "idNome2": "Placa",
+              "idValor2": "LVJ-9528",
+              "idNome3": "Entregas",
+              "idValor3": "353,354,360,361"
+            }
+          },
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "nome": "Martin Gouse",
+            "placaVeiculo": "LVJ-9528",
+            "cpf": "98987972070",
+            "login": "matingouse@email.com",
+            "telefone": "81999999999",
+            "tipoVeiculo": "UTILITARIO",
+            "tipoCarregamento": "ESTIVADA",
+            "ultimoRomaneio": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "idNome1": "Número",
+              "idValor1": "457",
+              "idNome2": "Placa",
+              "idValor2": "LVJ-9528",
+              "idNome3": "Entregas",
+              "idValor3": "353,354,360,361"
+            }
+          },
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "nome": "Martin Gouse",
+            "placaVeiculo": "LVJ-9528",
+            "cpf": "98987972070",
+            "login": "matingouse@email.com",
+            "telefone": "81999999999",
+            "tipoVeiculo": "UTILITARIO",
+            "tipoCarregamento": "ESTIVADA",
+            "ultimoRomaneio": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "idNome1": "Número",
+              "idValor1": "457",
+              "idNome2": "Placa",
+              "idValor2": "LVJ-9528",
+              "idNome3": "Entregas",
+              "idValor3": "353,354,360,361"
+            }
+          },
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "nome": "Martin Gouse",
+            "placaVeiculo": "LVJ-9528",
+            "cpf": "98987972070",
+            "login": "matingouse@email.com",
+            "telefone": "81999999999",
+            "ultimoRomaneio": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "idNome1": "Número",
+              "idValor1": "457",
+              "idNome2": "Placa",
+              "idValor2": "LVJ-9528",
+              "idNome3": "Entregas",
+              "idValor3": "353,354,360,361"
+            }
+          },
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "nome": "Martin Gouse",
+            "placaVeiculo": "LVJ-9528",
+            "cpf": "98987972070",
+            "login": "matingouse@email.com",
+            "telefone": "81999999999",
+            "ultimoRomaneio": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "idNome1": "Número",
+              "idValor1": "457",
+              "idNome2": "Placa",
+              "idValor2": "LVJ-9528",
+              "idNome3": "Entregas",
+              "idValor3": "353,354,360,361"
+            }
+          },
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "nome": "Martin Gouse",
+            "placaVeiculo": "LVJ-9528",
+            "cpf": "98987972070",
+            "login": "matingouse@email.com",
+            "telefone": "81999999999",
+            "ultimoRomaneio": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "idNome1": "Número",
+              "idValor1": "457",
+              "idNome2": "Placa",
+              "idValor2": "LVJ-9528",
+              "idNome3": "Entregas",
+              "idValor3": "353,354,360,361"
+            }
+          },
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "nome": "Martin Gouse",
+            "placaVeiculo": "LVJ-9528",
+            "cpf": "98987972070",
+            "login": "matingouse@email.com",
+            "telefone": "81999999999",
+            "ultimoRomaneio": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "idNome1": "Número",
+              "idValor1": "457",
+              "idNome2": "Placa",
+              "idValor2": "LVJ-9528",
+              "idNome3": "Entregas",
+              "idValor3": "353,354,360,361"
+            }
+          },
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "login": "matingouse@email.com",
+          },
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "nome": "Martin Gouse",
+            "cpf": "98987972070",
+            "login": "matingouse@email.com",
+            "telefone": "81999999999",
+            "ultimoRomaneio": {
+              "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+              "idNome1": "Número",
+              "idValor1": "457",
+              "idNome2": "Placa",
+              "idValor2": "LVJ-9528",
+              "idNome3": "Entregas",
+              "idValor3": "353,354,360,361"
+            }
+          },
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "nome": "Martin Gouse",
+            "cpf": "98987972070",
+            "login": "matingouse@email.com",
+            "telefone": "81999999999",
+          }
+        ]
+      }
+
+    entregadorViewExemplo:
+      value:
+        {
+          "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+          "nome": "Martin Gouse",
+          "placaVeiculo": "LVJ-9528",
+          "cpf": "98987972070",
+          "login": "matingouse@email.com",
+          "telefone": "81999999999",
+          "tipoVeiculo": "UTILITARIO",
+          "tipoCarregamento": "ESTIVADA",
+          "ultimoRomaneio": {
+            "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+            "idNome1": "Número",
+            "idValor1": "457",
+            "idNome2": "Placa",
+            "idValor2": "LVJ-9528",
+            "idNome3": "Entregas",
+            "idValor3": "353,354,360,361"
+          }
+        }
+
+    entregadorSuggestionExemplo:
+      value:
+        [
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "nome": "Martin Gouse",
+            "cpf": "33598634021",
+            "placaVeiculo": "LVJ-9528"
+          },
+          {
+            "id": "7f2b13b9-d427-476f-be03-49a379098f6e",
+            "nome": "Martinho da Vila",
+            "cpf": "33598634021",
+            "placaVeiculo": "LVJ-9528"
+          },
+          {
+            "id": "10f3d300-f673-4fab-9b80-d758bd0437a1",
+            "nome": "Marvin Araujo",
+            "cpf": "33598634021",
+            "placaVeiculo": "LVJ-9528"
+          }
+        ]
+
+    entregadorHistoricoExemplo:
+      value:
+        {
+          "lastEvaluatedKey": {
+            "driverId": "matingouse@email.com",
+            "timeRecord": 1614196050
+          },
+          "content": [
+            {
+              "latitude": -8.06482784,
+              "longitude": -34.8740682,
+              "data": "2021-01-25T12:23:35-0300"
+            },
+            {
+              "latitude": -8.06774908,
+              "longitude": -34.87444371,
+              "data": "2021-01-25T12:22:30-0300"
+            },
+            {
+              "latitude": -8.07193439,
+              "longitude": -34.87858236,
+              "data": "2021-01-25T12:21:40-0300"
+            },
+            {
+              "latitude": -8.07767583,
+              "longitude": -34.89331573,
+              "data": "2021-01-25T12:20:36-0300"
+            },
+            {
+              "latitude": -8.07350652,
+              "longitude": -34.89381462,
+              "data": "2021-01-25T12:19:29-0300"
+            },
+            {
+              "latitude": -8.06999046,
+              "longitude": -34.89554733,
+              "data": "2021-01-25T12:18:31-0300"
+            },
+            {
+              "latitude": -8.0686467,
+              "longitude": -34.89824027,
+              "data": "2021-01-25T12:17:33-0300"
+            },
+            {
+              "latitude": -8.06631502,
+              "longitude": -34.90105659,
+              "data": "2021-01-25T12:16:41-0300"
+            },
+            {
+              "latitude": -8.06259175,
+              "longitude": -34.90138382,
+              "data": "2021-01-25T12:15:34-0300"
+            },
+            {
+              "latitude": -8.0612161,
+              "longitude": -34.90175396,
+              "data": "2021-01-25T12:14:34-0300"
+            },
+            {
+              "latitude": -8.06127984,
+              "longitude": -34.90323454,
+              "data": "2021-01-25T12:13:29-0300"
+            }
+          ]
+        }
+
+    opercaoSuggestionExemplo:
+      value:
+        [
+          {
+            "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+            "idNome1":"Mercadoria",
+            "idValor1": "505626/6",
+            "idNome2": "Chave de Acesso",
+            "idValor2": "26210309722463000131550060005056261259860737",
+            "idNome3": "Número",
+            "idValor3": "453",
+          },
+          {
+            "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+            "idNome1":"Mercadoria",
+            "idValor1": "505626/6",
+            "idNome2": "Chave de Acesso",
+            "idValor2": "26210309722463000131550060005056241414610340",
+            "idNome3": "Número",
+            "idValor3": "453",
+          },
+          {
+            "id": "490a3b6e-2f27-48c1-bcc4-11bb8520fb23",
+            "idNome1":"Mercadoria",
+            "idValor1": "505626/6",
+            "idNome2": "Chave de Acesso",
+            "idValor2": "26210309722463000131550060005056231623309130",
+          }
+        ]
+
+    operacaoExemplo:
+      value: {
+        "pageMetadata": {
+          "size": 10,
+          "number": 1,
+          "totalElements": 63,
+          "totalPages": 7
+        },
+        "nextLink": "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/operacoes?pageNumber=0&pageSize=10",
+        "previousLink": "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/operacoes?pageNumber=2&pageSize=10",
+        "content": [
+          {
+            "id": "40627ede-f7b2-43fc-9843-805679e2f895",
+            "idNome1": "Mercadoria",
+            "idValor1": "505626/6",
+            "idNome2": "Chave de Acesso",
+            "idValor2": "26210309722463000131550060005056261259860737",
+            "idNome3": "Número",
+            "idValor3": "3445",
+            "tipo": "COLETA",
+            "romaneio": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "idNome1": "Número",
+              "idValor1": "3445",
+              "idNome2": "Placa",
+              "idValor2": "ZZZ-9999"
+            },
+            "empresa": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "nome": "Hivecloud"
+            },
+            "cliente": {
+              "nome": "Hivecloud"
+            },
+            "remetente": {
+              "nome": "Hivecloud"
+            },
+            "destinatario": {
+              "nome": "Hivecloud"
+            },
+            "localEntrega": {
+              "nomeMunicipio": "Recife",
+              "uf": "PE"
+            },
+            "status": "CONFIRMADA",
+            "dataPrevisaoEntrega": "2021-03-08T12:27:12-0300",
+            "finalizacaoOcorrencia": "2021-03-08T12:27:12-0300",
+            "ultimaOcorrencia": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "codigo": "101",
+              "descricao": "Sucesso na Entrega",
+              "data": "2021-01-25T12:23:35-0300"
+            }
+          },
+          {
+            "id": "40627ede-f7b2-43fc-9843-805679e2f895",
+            "idNome1": "Mercadoria",
+            "idValor1": "505626/6",
+            "idNome2": "Chave de Acesso",
+            "idValor2": "26210309722463000131550060005056261259860737",
+            "idNome3": "Número",
+            "idValor3": "3445",
+            "tipo": "ENTREGA",
+            "romaneio": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "idNome1": "Número",
+              "idValor1": "3445",
+              "idNome2": "Placa",
+              "idValor2": "ZZZ-9999"
+            },
+            "empresa": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "nome": "Hivecloud"
+            },
+            "cliente": {
+              "nome": "Hivecloud"
+            },
+            "remetente": {
+              "nome": "Hivecloud"
+            },
+            "destinatario": {
+              "nome": "Hivecloud"
+            },
+            "localEntrega": {
+              "nomeMunicipio": "Recife",
+              "uf": "PE"
+            },
+            "status": "CONFIRMADA",
+            "dataPrevisaoEntrega": "2021-03-08T12:27:12-0300",
+            "finalizacaoOcorrencia": "2021-03-08T12:27:12-0300",
+            "ultimaOcorrencia": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "codigo": "101",
+              "descricao": "Sucesso na Entrega",
+              "data": "2021-01-25T12:23:35-0300"
+            }
+          },
+          {
+            "id": "40627ede-f7b2-43fc-9843-805679e2f895",
+            "idNome1": "Mercadoria",
+            "idValor1": "505626/6",
+            "idNome2": "Chave de Acesso",
+            "idValor2": "26210309722463000131550060005056261259860737",
+            "tipo": "ENTREGA",
+            "empresa": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "nome": "Hivecloud"
+            },
+            "cliente": {
+              "nome": "Hivecloud"
+            },
+            "remetente": {
+              "nome": "Hivecloud"
+            },
+            "destinatario": {
+              "nome": "Hivecloud"
+            },
+            "localEntrega": {
+              "nomeMunicipio": "Recife",
+              "uf": "PE"
+            },
+            "status": "PENDENTE",
+            "dataPrevisaoEntrega": "2021-03-08T12:27:12-0300"
+          },
+          {
+            "id": "40627ede-f7b2-43fc-9843-805679e2f895",
+            "idNome1": "Mercadoria",
+            "idValor1": "505626/6",
+            "idNome2": "Chave de Acesso",
+            "idValor2": "26210309722463000131550060005056261259860737",
+            "tipo": "ENTREGA",
+            "empresa": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "nome": "Hivecloud"
+            },
+            "cliente": {
+              "nome": "Hivecloud"
+            },
+            "remetente": {
+              "nome": "Hivecloud"
+            },
+            "destinatario": {
+              "nome": "Hivecloud"
+            },
+            "localEntrega": {
+              "nomeMunicipio": "Recife",
+              "uf": "PE"
+            },
+            "status": "PENDENTE",
+            "dataPrevisaoEntrega": "2021-03-08T12:27:12-0300"
+          },
+          {
+            "id": "40627ede-f7b2-43fc-9843-805679e2f895",
+            "idNome1": "Mercadoria",
+            "idValor1": "505626/6",
+            "idNome2": "Chave de Acesso",
+            "idValor2": "26210309722463000131550060005056261259860737",
+            "idNome3": "Número",
+            "idValor3": "3445",
+            "tipo": "COLETA",
+            "empresa": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "nome": "Hivecloud"
+            },
+            "cliente": {
+              "nome": "Hivecloud"
+            },
+            "remetente": {
+              "nome": "Hivecloud"
+            },
+            "destinatario": {
+              "nome": "Hivecloud"
+            },
+            "localEntrega": {
+              "nomeMunicipio": "Recife",
+              "uf": "PE"
+            },
+            "status": "PENDENTE",
+            "dataPrevisaoEntrega": "2021-03-08T12:27:12-0300"
+          },
+          {
+            "id": "40627ede-f7b2-43fc-9843-805679e2f895",
+            "idNome1": "Mercadoria",
+            "idValor1": "505626/6",
+            "idNome2": "Chave de Acesso",
+            "idValor2": "26210309722463000131550060005056261259860737",
+            "idNome3": "Número",
+            "idValor3": "3445",
+            "tipo": "COLETA",
+            "romaneio": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "idNome1": "Número",
+              "idValor1": "3445",
+              "idNome2": "Placa",
+              "idValor2": "ZZZ-9999"
+            },
+            "empresa": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "nome": "Hivecloud"
+            },
+            "cliente": {
+              "nome": "Hivecloud"
+            },
+            "remetente": {
+              "nome": "Hivecloud"
+            },
+            "destinatario": {
+              "nome": "Hivecloud"
+            },
+            "localEntrega": {
+              "nomeMunicipio": "Recife",
+              "uf": "PE"
+            },
+            "status": "PENDENTE",
+            "dataPrevisaoEntrega": "2021-03-08T12:27:12-0300"
+          },
+          {
+            "id": "40627ede-f7b2-43fc-9843-805679e2f895",
+            "idNome1": "Mercadoria",
+            "idValor1": "505626/6",
+            "idNome2": "Chave de Acesso",
+            "idValor2": "26210309722463000131550060005056261259860737",
+            "idNome3": "Número",
+            "idValor3": "3445",
+            "tipo": "COLETA",
+            "romaneio": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "idNome1": "Número",
+              "idValor1": "3445",
+              "idNome2": "Placa",
+              "idValor2": "ZZZ-9999"
+            },
+            "empresa": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "nome": "Hivecloud"
+            },
+            "cliente": {
+              "nome": "Hivecloud"
+            },
+            "remetente": {
+              "nome": "Hivecloud"
+            },
+            "destinatario": {
+              "nome": "Hivecloud"
+            },
+            "localEntrega": {
+              "nomeMunicipio": "Recife",
+              "uf": "PE"
+            },
+            "status": "CONFIRMADA",
+            "dataPrevisaoEntrega": "2021-03-08T12:27:12-0300",
+            "finalizacaoOcorrencia": "2021-03-08T12:27:12-0300",
+            "ultimaOcorrencia": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "codigo": "101",
+              "descricao": "Sucesso na Entrega",
+              "data": "2021-01-25T12:23:35-0300"
+            }
+          },
+          {
+            "id": "40627ede-f7b2-43fc-9843-805679e2f895",
+            "idNome1": "Mercadoria",
+            "idValor1": "505626/6",
+            "idNome2": "Chave de Acesso",
+            "idValor2": "26210309722463000131550060005056261259860737",
+            "idNome3": "Número",
+            "idValor3": "3445",
+            "tipo": "COLETA",
+            "romaneio": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "idNome1": "Número",
+              "idValor1": "3445",
+              "idNome2": "Placa",
+              "idValor2": "ZZZ-9999"
+            },
+            "empresa": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "nome": "Hivecloud"
+            },
+            "cliente": {
+              "nome": "Hivecloud"
+            },
+            "remetente": {
+              "nome": "Hivecloud"
+            },
+            "destinatario": {
+              "nome": "Hivecloud"
+            },
+            "localEntrega": {
+              "nomeMunicipio": "Recife",
+              "uf": "PE"
+            },
+            "status": "CONFIRMADA",
+            "dataPrevisaoEntrega": "2021-03-08T12:27:12-0300",
+            "finalizacaoOcorrencia": "2021-03-08T12:27:12-0300",
+            "ultimaOcorrencia": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "codigo": "101",
+              "descricao": "Sucesso na Entrega",
+              "data": "2021-01-25T12:23:35-0300"
+            }
+          },
+          {
+            "id": "40627ede-f7b2-43fc-9843-805679e2f895",
+            "idNome1": "Mercadoria",
+            "idValor1": "505626/6",
+            "idNome2": "Chave de Acesso",
+            "idValor2": "26210309722463000131550060005056261259860737",
+            "idNome3": "Número",
+            "idValor3": "3445",
+            "tipo": "COLETA",
+            "romaneio": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "idNome1": "Número",
+              "idValor1": "3445",
+              "idNome2": "Placa",
+              "idValor2": "ZZZ-9999"
+            },
+            "empresa": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "nome": "Hivecloud"
+            },
+            "cliente": {
+              "nome": "Hivecloud"
+            },
+            "remetente": {
+              "nome": "Hivecloud"
+            },
+            "destinatario": {
+              "nome": "Hivecloud"
+            },
+            "localEntrega": {
+              "nomeMunicipio": "Recife",
+              "uf": "PE"
+            },
+            "status": "CONFIRMADA",
+            "dataPrevisaoEntrega": "2021-03-08T12:27:12-0300",
+            "finalizacaoOcorrencia": "2021-03-08T12:27:12-0300",
+            "ultimaOcorrencia": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "codigo": "101",
+              "descricao": "Sucesso na Entrega",
+              "data": "2021-01-25T12:23:35-0300"
+            }
+          },
+          {
+            "id": "40627ede-f7b2-43fc-9843-805679e2f895",
+            "idNome1": "Mercadoria",
+            "idValor1": "505626/6",
+            "tipo": "ENTREGA",
+            "romaneio": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "idNome1": "Número",
+              "idValor1": "3445",
+              "idNome2": "Placa",
+              "idValor2": "ZZZ-9999"
+            },
+            "empresa": {
+              "id": "9c015cc6-8471-4838-8391-e17fbc5a0a75",
+              "nome": "Hivecloud"
+            },
+            "cliente": {
+              "nome": "Hivecloud"
+            },
+            "remetente": {
+              "nome": "Hivecloud"
+            },
+            "destinatario": {
+              "nome": "Hivecloud"
+            },
+            "localEntrega": {
+              "nomeMunicipio": "Recife",
+              "uf": "PE"
+            },
+            "status": "CONFIRMADA",
+            "dataPrevisaoEntrega": "2021-03-08T12:27:12-0300",
+            "finalizacaoOcorrencia": "2021-03-08T12:27:12-0300",
+            "ultimaOcorrencia": {
+              "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+              "codigo": "101",
+              "descricao": "Sucesso na Entrega",
+              "data": "2021-01-25T12:23:35-0300"
+            }
+          }
+        ]
+      }
+
+    empresaSuggestionExemplo:
+      value:
+        [
+          {
+            "id": "99e39200-3bfb-465f-886f-85ee28e8cfda",
+            "nome": "Nova Geração Transportes",
+            "cnpj": "05761010000163",
+            "municipio": "Recife",
+            "uf": "PE"
+          },
+          {
+            "id": "7f2b13b9-d427-476f-be03-49a379098f6e",
+            "nome": "Hivecloud",
+            "cnpj": "25491189000193",
+            "municipio": "Riberão Preto",
+            "uf": "SP"
+          },
+          {
+            "id": "10f3d300-f673-4fab-9b80-d758bd0437a1",
+            "nome": "Empresa de Transportes",
+            "cnpj": "24292965000163",
+            "municipio": "Rio de Janeiro",
+            "uf": "RJ"
+          }
+        ]

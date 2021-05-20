@@ -1,0 +1,238 @@
+---
+swagger: "2.0"
+
+info:
+  version: 1.0.2
+  title: "tracking-api"
+
+host: do7tnn8lg9.execute-api.us-east-1.amazonaws.com
+basePath: /vrf
+
+
+securityDefinitions:
+  ApiKeyAuth:
+    type: "apiKey"
+    in: "header"
+    name: "X-API-Key"
+    
+    
+tags:
+  - name: Driver Location
+    description: Rastreio de localização
+  - name: Locations
+    description: Acesso a informações de localização
+
+schemes:
+- "https"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+
+paths:
+
+  '/driver-locations':
+    post:
+      tags:
+        - Driver Location
+      summary: Registra a localização de um motorista
+      parameters:
+        - in: body
+          name: driverLocation
+          description: Localização de um motorista
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/DriverLocation'
+      responses:
+        200:
+          description: Registro efetuado com sucesso
+        400:
+          description: Requisição inválida
+        500:
+          description: Erro interno no servidor
+      security:
+      - ApiKeyAuth: []
+  
+  '/trackings':
+    post:
+      tags:
+        - Tracking
+      summary: Registra um rastreamento
+      parameters:
+        - in: body
+          name: tracking
+          description: Informações do rastreamento
+          required: true
+          schema:
+            $ref: '#/definitions/Tracking'
+      responses:
+        200:
+          description: Registro efetuado com sucesso
+        400:
+          description: Requisição inválida
+        500:
+          description: Erro interno no servidor
+      security:
+      - ApiKeyAuth: []
+
+  '/trackings/batch':
+    post:
+      tags:
+        - Tracking
+      summary: Registra rastreamentos em lote
+      parameters:
+        - in: body
+          name: Tracking Batch
+          description: Lote de rastreamentos
+          required: true
+          schema:
+              $ref: '#/definitions/TrackingBatch'
+      responses:
+        200:
+          description: Registro efetuado com sucesso
+        400:
+          description: Requisição inválida
+        500:
+          description: Erro interno no servidor
+      security:
+      - ApiKeyAuth: []     
+
+  '/trackings/{id}/final-date':
+    patch:
+      tags:
+        - Tracking
+      summary: Atualiza a data final do rastreamento
+      parameters:
+        - name: id
+          in: path
+          description: ID do rastreamento
+          type: string
+          required: true
+
+        - in: body
+          name: tracking-patch
+          description: Data final do rasreamento
+          required: true
+          schema: 
+            properties:
+              finalDate:
+                type: integer
+                format: int64
+                example: 19689854765
+      responses:
+        200:
+          description: Atualização efetuada com sucesso
+        400:
+          description: Requisição inválida
+        500:
+          description: Erro interno no servidor
+      security:
+      - ApiKeyAuth: []
+  
+  '/trackings/{id}/driver-locations':
+    get:
+      tags:
+        - Tracking
+      summary: Retorna uma lista de coordenadas
+      parameters:
+        - name: id
+          in: path
+          description: ID do rastreamento
+          type: string
+          required: true
+          
+      responses:
+        200:
+          description: Ok
+        400:
+          description: Requisição inválida
+        500:
+          description: Erro interno no servidor
+      security:
+      - ApiKeyAuth: []
+      
+  
+  '/trackings/last-drivers-locations':
+    post:
+      tags:
+        - Tracking
+      summary: Retorna uma lista de coordenadas
+      parameters:
+        - in: body
+          name: trackingIds
+          description: Localização de um motorista
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        200:
+          description: Ok
+        400:
+          description: Requisição inválida
+        500:
+          description: Erro interno no servidor
+      security:
+      - ApiKeyAuth: []
+  
+definitions:
+
+  DriverLocation:
+    properties:
+      driverId:
+        type: string
+        example: '387a6e9c-562b-4f22-a775-86fa8c653c842'
+      timeRecord:
+        type: integer
+        format: int64
+        example: 19689854765
+      latitude:
+        type: number
+        example: -8.0648439
+      longitude:
+        type: number
+        example: -34.8738337
+    required: 
+      - driverId
+      - timeRecord
+      - latitude
+      - longitude
+  
+  Tracking:
+    properties:
+      driverId:
+        type: string
+        example: '387a6e9c-562b-4f22-a775-86fa8c653c842'
+      initialDate:
+        type: integer
+        format: int64
+        example: 19689854765
+      finalDate:
+        type: integer
+        format: int64
+        example: 19689854765
+    required:
+      - driverId
+      - initialDate
+      - finalDate
+
+  TrackingBatch:
+    properties:
+      driverId:
+        type: string
+        example: '387a6e9c-562b-4f22-a775-86fa8c653c842'
+      initialDate:
+        type: integer
+        format: int64
+        example: 19689854765
+      quantity:
+        type: integer
+        format: int64
+        example: 2
+    required:
+      - driverId
+      - initialDate
+      - quantity
