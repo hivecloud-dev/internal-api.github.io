@@ -4,26 +4,17 @@ info:
   description: Initial AR frontend integration
   version: 1.0.0-oas3
 
-servers:
-  # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3
-  - url: http://api.example.com/v1
-    description: Optional server description, e.g. Main (production) server
-  - url: http://staging-api.example.com
-    description: Optional server description, e.g. Internal staging server for testing
-
 paths:
   /v1/ambientes:
     parameters:
-        - $ref: '#/components/parameters/usuarioLogadoHeaderParam'
+      - $ref: '#/components/parameters/usuarioLogadoHeaderParam'
     post:
       security:
         - tokenAuth: []
       tags:
-        - "Ambientes"
-      summary: ""
-      description: ""
+        - 'Ambientes'
+      summary: 'Criação de um novo ambiente'
+      description: ''
       requestBody:
         required: true
         content:
@@ -32,21 +23,21 @@ paths:
               $ref: '#/components/schemas/AmbienteCreate'
       responses:
         '201':
-            $ref: '#/components/responses/CreateResponse'
+          $ref: '#/components/responses/CreateResponse'
     get:
       security:
         - tokenAuth: []
       tags:
-        - "Ambientes"
+        - 'Ambientes'
       parameters:
         - $ref: '#/components/parameters/pageNumberParam'
         - $ref: '#/components/parameters/pageSizeParam'
         - $ref: '#/components/parameters/ambienteCampoPesquisaParam'
-      summary: ""
-      description: ""
+      summary: 'Listagem dos ambientes'
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -60,9 +51,9 @@ paths:
       security:
         - tokenAuth: []
       tags:
-        - "Acessos Ambientes"
-      summary: ""
-      description: ""
+        - 'Acessos Ambientes'
+      summary: ''
+      description: ''
       requestBody:
         required: true
         content:
@@ -71,20 +62,20 @@ paths:
               $ref: '#/components/schemas/AcessoAmbienteCreate'
       responses:
         '201':
-            $ref: '#/components/responses/CreateResponse'
+          $ref: '#/components/responses/CreateResponse'
     get:
       security:
         - tokenAuth: []
       tags:
-        - "Acessos Ambientes"
+        - 'Acessos Ambientes'
       parameters:
         - $ref: '#/components/parameters/pageNumberParam'
         - $ref: '#/components/parameters/pageSizeParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -93,19 +84,73 @@ paths:
       security:
         - tokenAuth: []
       tags:
-        - "Acessos Ambientes"
-      summary: ""
-      description: ""
+        - 'Acessos Ambientes'
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
-               type: array
-               items:
+                type: array
+                items:
                   type: string
-               example: ["9c015cc6-8471-4838-8391-e17fbc5a0a75","7d231cf5-5111-456b-93d0-df6401762adb"]
+                example:
+                  [
+                    '9c015cc6-8471-4838-8391-e17fbc5a0a75',
+                    '7d231cf5-5111-456b-93d0-df6401762adb',
+                  ]
+
+  /v1/ambientes/licenca:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Licença'
+      summary: 'Recuperar os dados de Licença'
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DadosLicenca'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/ambientes/{tenantId}/habilitar-homologacao:
+    parameters:
+      - $ref: '#/components/parameters/tenantIdPathParam'
+      - $ref: '#/components/parameters/usuarioLogadoHeaderParam'
+    post:
+      security:
+        - tokenAuth: []
+      tags:
+        - 'Ambientes'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                acao:
+                  type: string
+                  enum:
+                    - ATIVAR
+                    - DESATIVAR
+                  nullable: false
+              required:
+                - acao
+
+      summary: 'Ação para ativar o ambiente de homologação'
+      description: ''
+      responses:
+        '204':
+          description: Ambiente de homologação ativado
 
   /v1/empresas:
     post:
@@ -113,9 +158,9 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Empresas"
-      summary: ""
-      description: ""
+        - 'Empresas'
+      summary: ''
+      description: ''
       requestBody:
         required: true
         content:
@@ -124,13 +169,13 @@ paths:
               $ref: '#/components/schemas/EmpresaCreate'
       responses:
         '201':
-            $ref: '#/components/responses/CreateResponse'
+          $ref: '#/components/responses/CreateResponse'
     get:
       security:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Empresas"
+        - 'Empresas'
       parameters:
         - $ref: '#/components/parameters/pageNumberParam'
         - $ref: '#/components/parameters/pageSizeParam'
@@ -139,30 +184,47 @@ paths:
         - $ref: '#/components/parameters/empresaNomeParam'
         - $ref: '#/components/parameters/empresaNomeFantasiaParam'
         - $ref: '#/components/parameters/empresaCampoPesquisaParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmpresaResource'
-
-  /v1/empresas/{empresaId}:
-    parameters:
-        - $ref: '#/components/parameters/empresaIdPathParam'
-    get:
+    delete:
       security:
         - tokenAuth: []
         - tenantAuth: []
       tags:
         - "Empresas"
       summary: ""
-      description: ""
+      description: "Delete em lote"
+      parameters:
+        - $ref: "#/components/parameters/empresasDeleteIdListParam"
+      responses:
+        '204':
+          description: Empresas deletadas
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  
+  /v1/empresas/{empresaId}:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdPathParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Empresas'
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: "Ok"
+          description: 'Ok'
           content:
             application/json:
               schema:
@@ -172,9 +234,9 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Empresas"
-      summary: ""
-      description: ""
+        - 'Empresas'
+      summary: ''
+      description: ''
       requestBody:
         required: true
         content:
@@ -193,9 +255,9 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Empresas"
-      summary: ""
-      description: ""
+        - 'Empresas'
+      summary: ''
+      description: ''
       responses:
         '204':
           description: Empresa deletada
@@ -210,23 +272,22 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Empresas"
+        - 'Empresas'
       parameters:
         - $ref: '#/components/parameters/empresaIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       requestBody:
         required: true
         content:
-            application/octet-stream:
-              schema:
-                # a binary file of any type
-                type: string
-                format: binary
+          application/octet-stream:
+            schema:
+              # a binary file of any type
+              type: string
+              format: binary
       responses:
         '204':
           description: Empresa atualizada
-
 
   /v1/empresas/suggestion:
     get:
@@ -241,7 +302,7 @@ paths:
         - $ref: '#/components/parameters/empresaCampoPesquisaParam'
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -283,7 +344,7 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Monitoramento e Rastreamento"
+        - 'Monitoramento e Rastreamento'
       parameters:
 
         - $ref: '#/components/parameters/entregadorNomeParam'
@@ -307,17 +368,17 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Monitoramento e Rastreamento"
+        - 'Monitoramento e Rastreamento'
       parameters:
 
         - $ref: '#/components/parameters/entregadorNomeParam'
         - $ref: '#/components/parameters/romaneioNumeroParam'
         - $ref: '#/components/parameters/romaneioStatusParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -331,14 +392,14 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Entregadores"
+        - 'Entregadores'
       parameters:
         - $ref: '#/components/parameters/entregadorIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -350,14 +411,14 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Romaneios"
+        - 'Romaneios'
       parameters:
         - $ref: '#/components/parameters/romaneioIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -376,15 +437,15 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Romaneios"
+        - 'Romaneios'
       parameters:
         - $ref: '#/components/parameters/romaneioCampoPesquisaParam'
         - $ref: '#/components/parameters/pageSizeParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -401,14 +462,14 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Romaneios"
+        - 'Romaneios'
       parameters:
         - $ref: '#/components/parameters/romaneioIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -422,15 +483,15 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Romaneios"
+        - 'Romaneios'
       parameters:
 
         - $ref: '#/components/parameters/romaneioIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -444,11 +505,11 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Romaneios"
-      summary: ""
-      description: ""
+        - 'Romaneios'
+      summary: ''
+      description: ''
       parameters:
-      - $ref: '#/components/parameters/empresaIdHeaderParam'
+        - $ref: '#/components/parameters/empresaIdHeaderParam'
       requestBody:
         required: true
         content:
@@ -463,7 +524,7 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Romaneios"
+        - 'Romaneios'
       parameters:
         - $ref: '#/components/parameters/empresaIdHeaderParam'
 
@@ -480,11 +541,11 @@ paths:
         - $ref: '#/components/parameters/placaVeiculoListParam'
         - $ref: '#/components/parameters/operacaoIdValueListParam'
         - $ref: '#/components/parameters/entregadorIdListParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -494,11 +555,11 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Romaneios"
-      summary: ""
-      description: "Delete em lote"
+        - 'Romaneios'
+      summary: ''
+      description: 'Delete em lote'
       parameters:
-        - $ref: "#/components/parameters/romaneioIdListParam"
+        - $ref: '#/components/parameters/romaneioIdListParam'
       responses:
         '204':
           description: Romaneios deletados
@@ -514,14 +575,14 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Romaneios"
+        - 'Romaneios'
       parameters:
         - $ref: '#/components/parameters/romaneioIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -531,12 +592,12 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Romaneios"
+        - 'Romaneios'
       parameters:
 
         - $ref: '#/components/parameters/romaneioIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       requestBody:
         required: true
         content:
@@ -555,11 +616,11 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Romaneios"
+        - 'Romaneios'
       parameters:
         - $ref: '#/components/parameters/romaneioIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '204':
           description: Romaneio deletado
@@ -568,16 +629,15 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-
   /v1/romaneios/confirmar-atribuicao:
     post:
       security:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Romaneios"
-      summary: ""
-      description: ""
+        - 'Romaneios'
+      summary: ''
+      description: ''
       requestBody:
         required: true
         content:
@@ -586,7 +646,11 @@ paths:
               type: array
               items:
                 type: string
-              example: ["9c015cc6-8471-4838-8391-e17fbc5a0a75","7d231cf5-5111-456b-93d0-df6401762adb"]
+              example:
+                [
+                  '9c015cc6-8471-4838-8391-e17fbc5a0a75',
+                  '7d231cf5-5111-456b-93d0-df6401762adb',
+                ]
       responses:
         '204':
           description: Romaneio atribuido
@@ -601,9 +665,9 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Romaneios"
-      summary: ""
-      description: ""
+        - 'Romaneios'
+      summary: ''
+      description: ''
       requestBody:
         required: true
         content:
@@ -612,7 +676,11 @@ paths:
               type: array
               items:
                 type: string
-              example: ["9c015cc6-8471-4838-8391-e17fbc5a0a75","7d231cf5-5111-456b-93d0-df6401762adb"]
+              example:
+                [
+                  '9c015cc6-8471-4838-8391-e17fbc5a0a75',
+                  '7d231cf5-5111-456b-93d0-df6401762adb',
+                ]
       responses:
         '204':
           description: Atribuição de romaneio revogado
@@ -627,9 +695,9 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Entregadores"
-      summary: ""
-      description: ""
+        - 'Entregadores'
+      summary: ''
+      description: ''
       requestBody:
         required: true
         content:
@@ -638,24 +706,24 @@ paths:
               $ref: '#/components/schemas/EntregadorCreate'
       responses:
         '201':
-            $ref: '#/components/responses/CreateResponse'
+          $ref: '#/components/responses/CreateResponse'
     get:
       security:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Entregadores"
+        - 'Entregadores'
       parameters:
         - $ref: '#/components/parameters/pageNumberParam'
         - $ref: '#/components/parameters/pageSizeParam'
         - $ref: '#/components/parameters/entregadorLoginParam'
         - $ref: '#/components/parameters/entregadorTelefoneParam'
         - $ref: '#/components/parameters/entregadorCampoPesquisaParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -665,11 +733,11 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Entregadores"
-      summary: ""
-      description: "Delete em lote"
+        - 'Entregadores'
+      summary: ''
+      description: 'Delete em lote'
       parameters:
-        - $ref: "#/components/parameters/entregadorDeleteIdListParam"
+        - $ref: '#/components/parameters/entregadorDeleteIdListParam'
       responses:
         '204':
           description: Entregadores deletados
@@ -684,16 +752,15 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Entregadores"
+        - 'Entregadores'
       parameters:
-
         - $ref: '#/components/parameters/entregadorCampoPesquisaParam'
         - $ref: '#/components/parameters/pageSizeParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -710,15 +777,14 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Entregadores"
+        - 'Entregadores'
       parameters:
-
         - $ref: '#/components/parameters/entregadorIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: "Ok"
+          description: 'Ok'
           content:
             application/json:
               schema:
@@ -731,12 +797,11 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Entregadores"
+        - 'Entregadores'
       parameters:
-
         - $ref: '#/components/parameters/entregadorIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       requestBody:
         required: true
         content:
@@ -755,11 +820,11 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Entregadores"
+        - 'Entregadores'
       parameters:
         - $ref: '#/components/parameters/entregadorIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '204':
           description: Entregador deletado
@@ -774,9 +839,8 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Entregadores"
+        - 'Entregadores'
       parameters:
-
         - $ref: '#/components/parameters/entregadorIdPathParam'
         - $ref: '#/components/parameters/maxPageSizeParam'
         - $ref: '#/components/parameters/entregadorHistoricoPeriodoInicioParam'
@@ -784,10 +848,10 @@ paths:
         - $ref: '#/components/parameters/entregadorHistoricoDataParam'
         - $ref: '#/components/parameters/entregadorHistoricoUltimasHorasParam'
         - $ref: '#/components/parameters/entregadorHistolastTimeRecordHorasParam'
-      description: "Consulta histórico de posição do entregador"
+      description: 'Consulta histórico de posição do entregador'
       responses:
         '200':
-          description: "Ok"
+          description: 'Ok'
           content:
             application/json:
               schema:
@@ -801,9 +865,9 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Operações"
-      summary: ""
-      description: ""
+        - 'Operações'
+      summary: ''
+      description: ''
       parameters:
         - $ref: '#/components/parameters/empresaIdHeaderParam'
       requestBody:
@@ -814,13 +878,13 @@ paths:
               $ref: '#/components/schemas/OperacaoCreate'
       responses:
         '201':
-            $ref: '#/components/responses/CreateResponse'
+          $ref: '#/components/responses/CreateResponse'
     get:
       security:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Operações"
+        - 'Operações'
       parameters:
         - $ref: '#/components/parameters/empresaIdHeaderParam'
         - $ref: '#/components/parameters/pageNumberParam'
@@ -844,11 +908,11 @@ paths:
         - $ref: '#/components/parameters/operacaoNomeDestinatarioParam'
         - $ref: '#/components/parameters/operacaoDocumentoDestinatarioParam'
         - $ref: '#/components/parameters/romaneioIdParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -858,11 +922,11 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Operações"
-      summary: ""
-      description: "Delete em lote"
+        - 'Operações'
+      summary: ''
+      description: 'Delete em lote'
       parameters:
-        - $ref:  "#/components/parameters/operacoesIdListParam"
+        - $ref: '#/components/parameters/operacoesIdListParam'
       responses:
         '204':
           description: Operações deletadas
@@ -877,14 +941,14 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Operações"
+        - 'Operações'
       parameters:
         - $ref: '#/components/parameters/operacaoIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -896,12 +960,11 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Operações"
+        - 'Operações'
       parameters:
-
         - $ref: '#/components/parameters/operacaoIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       requestBody:
         required: true
         content:
@@ -920,12 +983,11 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Operações"
+        - 'Operações'
       parameters:
-
         - $ref: '#/components/parameters/operacaoIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '204':
           description: Operacao deletada
@@ -940,15 +1002,14 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Operações"
+        - 'Operações'
       parameters:
-
         - $ref: '#/components/parameters/operacaoIdPathParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -964,15 +1025,15 @@ paths:
         - tokenAuth: []
         - tenantAuth: []
       tags:
-        - "Operações"
+        - 'Operações'
       parameters:
         - $ref: '#/components/parameters/operacaoCampoPesquisaParam'
         - $ref: '#/components/parameters/pageSizeParam'
-      summary: ""
-      description: ""
+      summary: ''
+      description: ''
       responses:
         '200':
-          description: ""
+          description: ''
           content:
             application/json:
               schema:
@@ -982,6 +1043,410 @@ paths:
               examples:
                 operacaoSuggestionExample:
                   $ref: '#/components/examples/opercaoSuggestionExemplo'
+
+  /v1/tipos-ocorrencias:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Tipos de Ocorrências'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TipoOcorrenciaCreate'
+      responses:
+        '201':
+          $ref: '#/components/responses/CreateResponse'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Tipos de Ocorrências'
+      parameters:
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/tipoOcorrenciaAtivosQueryParam'
+
+      summary: ''
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TipoOcorrenciaResource'
+
+  /v1/tipos-ocorrencias/{tipoOcorrenciaId}:
+    parameters:
+      - $ref: '#/components/parameters/tipoOcorrenciaIdPathParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Tipos de Ocorrências'
+      summary: ''
+      description: ''
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TipoOcorrenciaView'
+    put:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Tipos de Ocorrências'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TipoOcorrenciaCreate'
+      responses:
+        '204':
+          description: 'Tipo de Ocorrência atualizada'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/tipos-ocorrencias/{tipoOcorrenciaId}/habilitar-tipo-ocorrencia:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Tipos de Ocorrências'
+      parameters:
+        - $ref: '#/components/parameters/tipoOcorrenciaIdPathParam'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                acao:
+                  type: string
+                  enum:
+                    - ATIVAR
+                    - DESATIVAR
+                  nullable: false
+              required:
+                - acao
+      responses:
+        '204':
+          description: 'Tipos de Ocorrências atualizadas'
+
+  /v1/tipos-ocorrencia/{tipoOcorrenciaId}/padrao:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Tipos de Ocorrências'
+      parameters:
+        - $ref: '#/components/parameters/tipoOcorrenciaIdPathParam'
+      summary: ''
+      description: ''
+      responses:
+        '204':
+          description: 'Tipo de Ocorrência se tornou padrão'
+
+  /v1/configuracoes:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Configurações'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfiguracoesCreate'
+      responses:
+        '204':
+          description: 'Operação realizada com sucesso'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Configurações'
+      summary: ''
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuracoes'
+
+  /v1/integracoes:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações'
+      summary: 'Situação atual das integrações'
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  globus:
+                    $ref: '#/components/schemas/SituacaoIntegracao'
+                  t3pl:
+                    $ref: '#/components/schemas/SituacaoIntegracao'
+
+  /v1/integracoes/globus:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações Globus'
+      summary: 'Cadastra ou atualiza as configurações atuais do globus'
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntegracaoGlobus'
+      responses:
+        '204':
+          description: 'Cadastro realizado com sucesso'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações Globus'
+      summary: 'Configurações atuais do globus'
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegracaoGlobus'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações Globus'
+      summary: 'Desativação da integração'
+      description: ''
+      responses:
+        '204':
+          description: 'Operação realizada com sucesso'
+
+  /v1/integracoes/globus/atualizar-tipos-ocorrencias:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações Globus'
+      summary: 'Atualizar os tipos de ocorrência a partir do sistema Globus'
+      description: ''
+      responses:
+        '204':
+          description: 'Operação realizada com sucesso'
+
+  /v1/integracoes/globus/reenviar-ocorrencias:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações Globus'
+      summary: 'Reenvias as ocorrências para o sistema Globus'
+      description: ''
+      responses:
+        '204':
+          description: 'Operação realizada com sucesso'
+
+  /v1/integracoes/t3pl:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações T3PL'
+      summary: 'Cadastra ou atualiza as configurações atuais do T3PL'
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntegracaoT3PL'
+      responses:
+        '204':
+          description: 'Cadastro realizado com sucesso'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações T3PL'
+      summary: 'Configurações atuais do T3PL'
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegracaoT3PL'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações T3PL'
+      summary: 'Desativação da integração'
+      description: ''
+      responses:
+        '204':
+          description: 'Operação realizada com sucesso'
+
+  /v1/integracoes/t3pl/reenviar-ocorrencias:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações T3PL'
+      summary: 'Reenviar as ocorrências para o sistema T3PL'
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataInicial:
+                  type: string
+                  format: date-time
+                  example: '2021-05-05T00:00:00'
+                dataFinal:
+                  type: string
+                  format: date-time
+                  example: '2021-05-05T23:59:59'
+              required:
+                - dataInicial
+                - dataFinal
+      responses:
+        '204':
+          description: 'Operação de reenvio iniciada'
+
+  /v1/integracoes/t3pl/atualizar-tipos-ocorrencias:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações T3PL'
+      summary: 'Atualizar os tipos de ocorrência a partir do sistema T3PL'
+      description: ''
+      responses:
+        '204':
+          description: 'Operação de reenvio iniciada'
+
+  /v1/integracoes/t3pl/listar-ordens-servicos:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações T3PL'
+      summary: 'Buscar as ordens de serviço para serem importadas no T3PL'
+      description: ''
+      parameters:
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/OrdemServicoT3PLCampoPesquisaParam'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdemServicoT3PLResource'
+
+  /v1/integracoes/t3pl/importar-ordens-servicos:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdHeaderParam'
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integrações T3PL'
+      summary: 'Atualizar os tipos de ocorrência a partir do sistema T3PL'
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                example: '9c015cc6-8471-4838-8391-e17fbc5a0a75'
+
+      responses:
+        '204':
+          description: 'Importação realizada com sucesso'
 
 components:
   securitySchemes:
@@ -1032,7 +1497,7 @@ components:
       required: false
       schema:
         type: string
-        example: "Transportadora"
+        example: 'Transportadora'
 
     entregadorStatusParam:
       in: query
@@ -1042,7 +1507,7 @@ components:
       schema:
         type: string
         enum: [LIVRE, COM_FALHA, SEM_ATUALIZACAO_LOCALIZACAO, EM_ATRASO]
-        example: "COM_FALHA"
+        example: 'COM_FALHA'
 
     romaneioStatusParam:
       in: query
@@ -1051,7 +1516,7 @@ components:
       required: false
       schema:
         allOf:
-            - $ref: '#/components/schemas/StatusRomaneio'
+          - $ref: '#/components/schemas/StatusRomaneio'
 
     entregadorNomeParam:
       in: query
@@ -1060,7 +1525,7 @@ components:
       required: false
       schema:
         type: string
-        example: "João"
+        example: 'João'
 
     romaneioNumeroParam:
       in: query
@@ -1078,7 +1543,7 @@ components:
       required: true
       schema:
         type: string
-        example: "00a34581-03d8-4ef4-aa54-d45cd5353743"
+        example: '00a34581-03d8-4ef4-aa54-d45cd5353743'
 
     romaneioIdParam:
       in: query
@@ -1087,7 +1552,7 @@ components:
       required: false
       schema:
         type: string
-        example: "00a34581-03d8-4ef4-aa54-d45cd5353743"
+        example: '00a34581-03d8-4ef4-aa54-d45cd5353743'
 
     entregadorIdPathParam:
       in: path
@@ -1096,7 +1561,7 @@ components:
       required: true
       schema:
         type: string
-        example: "45aeafc7-c7c0-4cea-9507-cc82ae00c1c7"
+        example: '45aeafc7-c7c0-4cea-9507-cc82ae00c1c7'
 
     romaneioIdValorListParam:
       in: query
@@ -1107,7 +1572,7 @@ components:
         type: array
         items:
           type: string
-        example: ["0212"]
+        example: ['0212']
 
     romaneioIdListParam:
       in: query
@@ -1119,7 +1584,11 @@ components:
         items:
           type: string
           maxLength: 36
-        example: ["9c015cc6-8471-4838-8391-e17fbc5a0a75","7d231cf5-5111-456b-93d0-df6401762adb"]
+        example:
+          [
+            '9c015cc6-8471-4838-8391-e17fbc5a0a75',
+            '7d231cf5-5111-456b-93d0-df6401762adb',
+          ]
 
     romaneioStatusListParam:
       in: query
@@ -1131,7 +1600,7 @@ components:
         items:
           allOf:
             - $ref: '#/components/schemas/StatusRomaneio'
-        example: ["AGUARDANDO_ACEITE", "EM_EXECUCAO"]
+        example: ['AGUARDANDO_ACEITE', 'EM_EXECUCAO']
 
     romaneioPeriodoInicioParam:
       in: query
@@ -1141,7 +1610,7 @@ components:
       schema:
         type: string
         format: date
-        example: "2021-01-25"
+        example: '2021-01-25'
 
     romaneioPeriodoFimParam:
       in: query
@@ -1151,7 +1620,7 @@ components:
       schema:
         type: string
         format: date
-        example: "2021-02-26"
+        example: '2021-02-26'
 
     romaneioDataParam:
       in: query
@@ -1161,7 +1630,7 @@ components:
       schema:
         type: string
         format: date
-        example: "2021-02-26"
+        example: '2021-02-26'
 
     romaneioTipoBuscaDataPrevisao:
       in: query
@@ -1170,7 +1639,7 @@ components:
       required: false
       schema:
         allOf:
-            - $ref: '#/components/schemas/PeriodoDataBusca'
+          - $ref: '#/components/schemas/PeriodoDataBusca'
 
     romaneioCampoPesquisaParam:
       in: query
@@ -1179,7 +1648,7 @@ components:
       required: false
       schema:
         type: string
-        example: "45"
+        example: '45'
 
     empresaIdHeaderParam:
       in: header
@@ -1188,7 +1657,7 @@ components:
       required: true
       schema:
         type: string
-        example: "9c015cc6-8471-4838-8391-e17fbc5a0a75"
+        example: '9c015cc6-8471-4838-8391-e17fbc5a0a75'
 
     usuarioLogadoHeaderParam:
       in: header
@@ -1216,7 +1685,11 @@ components:
         type: array
         items:
           type: string
-        example: ["9c015cc6-8471-4838-8391-e17fbc5a0a75","7d231cf5-5111-456b-93d0-df6401762adb"]
+        example:
+          [
+            '9c015cc6-8471-4838-8391-e17fbc5a0a75',
+            '7d231cf5-5111-456b-93d0-df6401762adb',
+          ]
 
     empresaNomeParam:
       in: query
@@ -1225,7 +1698,7 @@ components:
       required: false
       schema:
         type: string
-        example: "Transporta Tudo"
+        example: 'Transporta Tudo'
         maxLength: 60
 
     empresaNomeFantasiaParam:
@@ -1235,7 +1708,7 @@ components:
       required: false
       schema:
         type: string
-        example: "Transporta Tudo"
+        example: 'Transporta Tudo'
         maxLength: 60
 
     empresaCnpjParam:
@@ -1245,7 +1718,7 @@ components:
       required: false
       schema:
         type: string
-        example: "12345678901234"
+        example: '12345678901234'
         maxLength: 14
 
     empresaIEParam:
@@ -1255,7 +1728,7 @@ components:
       required: false
       schema:
         type: string
-        example: "12345678901234"
+        example: '12345678901234'
         maxLength: 14
 
     empresaIdPathParam:
@@ -1266,6 +1739,35 @@ components:
       schema:
         type: string
         example: "00a34581-03d8-4ef4-aa54-d45cd5353743"
+    
+    empresasDeleteIdListParam:
+      in: query
+      name: empresaIdList
+      description: Id da empresa para exclusão
+      required: true
+      schema:
+        type: array
+        items: 
+          type: string
+          maxLength: 36
+        example: ["d8bbb6dd-dbe4-4bd8-bcea-ca58a401e529", "8aae4eab-791b-4145-9ece-93ff614fcbd9"]
+
+    tipoOcorrenciaIdPathParam:
+      in: path
+      name: tipoOcorrenciaId
+      description: Id do Tipo Ocorrência
+      required: true
+      schema:
+        type: string
+        example: '00a34581-03d8-4ef4-aa54-d45cd5353743'
+
+    tipoOcorrenciaAtivosQueryParam:
+      in: query
+      name: ocorrenciasAtivas
+      description: Filtro pro ativação. TRUE, para apenas ativas e FALSE, para apenas desativas
+      required: false
+      schema:
+        type: boolean
 
     tenantIdPathParam:
       in: path
@@ -1274,7 +1776,7 @@ components:
       required: true
       schema:
         type: string
-        example: "00a34581-03d8-4ef4-aa54-d45cd5353743"
+        example: '00a34581-03d8-4ef4-aa54-d45cd5353743'
 
     empresaCampoPesquisaParam:
       in: query
@@ -1283,8 +1785,7 @@ components:
       required: false
       schema:
         type: string
-        example: "transportadora"
-
+        example: 'transportadora'
 
     placaVeiculoListParam:
       in: query
@@ -1295,7 +1796,7 @@ components:
         type: array
         items:
           type: string
-        example: ["LVJ-9528", "FHA-5710"]
+        example: ['LVJ-9528', 'FHA-5710']
 
     operacaoIdValueListParam:
       in: query
@@ -1306,7 +1807,7 @@ components:
         type: array
         items:
           type: string
-        example: ["123", "23", "51080701212344000127550010000000981364117781"]
+        example: ['123', '23', '51080701212344000127550010000000981364117781']
 
     entregadorIdListParam:
       in: query
@@ -1318,7 +1819,11 @@ components:
         items:
           type: string
           maxLength: 36
-        example: ["d8bbb6dd-dbe4-4bd8-bcea-ca58a401e529", "8aae4eab-791b-4145-9ece-93ff614fcbd9"]
+        example:
+          [
+            'd8bbb6dd-dbe4-4bd8-bcea-ca58a401e529',
+            '8aae4eab-791b-4145-9ece-93ff614fcbd9',
+          ]
 
     entregadorDeleteIdListParam:
       in: query
@@ -1330,7 +1835,11 @@ components:
         items:
           type: string
           maxLength: 36
-        example: ["d8bbb6dd-dbe4-4bd8-bcea-ca58a401e529", "8aae4eab-791b-4145-9ece-93ff614fcbd9"]
+        example:
+          [
+            'd8bbb6dd-dbe4-4bd8-bcea-ca58a401e529',
+            '8aae4eab-791b-4145-9ece-93ff614fcbd9',
+          ]
 
     entregadorLoginParam:
       in: query
@@ -1341,7 +1850,7 @@ components:
         type: array
         items:
           type: string
-        example: ["martingouse@mail.com", "joao"]
+        example: ['martingouse@mail.com', 'joao']
 
     entregadorTelefoneParam:
       in: query
@@ -1350,7 +1859,7 @@ components:
       required: false
       schema:
         type: string
-        example: "999999999"
+        example: '999999999'
 
     entregadorCampoPesquisaParam:
       in: query
@@ -1359,7 +1868,7 @@ components:
       required: false
       schema:
         type: string
-        example: "João"
+        example: 'João'
 
     entregadorHistoricoPeriodoInicioParam:
       in: query
@@ -1369,7 +1878,7 @@ components:
       schema:
         type: string
         format: date
-        example: "2021-01-25"
+        example: '2021-01-25'
 
     entregadorHistoricoPeriodoFimParam:
       in: query
@@ -1379,7 +1888,7 @@ components:
       schema:
         type: string
         format: date
-        example: "2021-02-26"
+        example: '2021-02-26'
 
     entregadorHistoricoDataParam:
       in: query
@@ -1389,7 +1898,7 @@ components:
       schema:
         type: string
         format: date
-        example: "2021-02-26"
+        example: '2021-02-26'
 
     entregadorHistoricoUltimasHorasParam:
       in: query
@@ -1418,7 +1927,7 @@ components:
       required: true
       schema:
         type: string
-        example: "00a34581-03d8-4ef4-aa54-d45cd5353743"
+        example: '00a34581-03d8-4ef4-aa54-d45cd5353743'
 
     operacaoCampoPesquisaParam:
       in: query
@@ -1427,7 +1936,7 @@ components:
       required: false
       schema:
         type: string
-        example: "45"
+        example: '45'
 
     operacaoUFParam:
       in: query
@@ -1436,7 +1945,7 @@ components:
       required: false
       schema:
         type: string
-        example: "PE"
+        example: 'PE'
 
     operacaoStatusParam:
       in: query
@@ -1459,7 +1968,7 @@ components:
       required: false
       schema:
         allOf:
-            - $ref: '#/components/schemas/PeriodoDataBusca'
+          - $ref: '#/components/schemas/PeriodoDataBusca'
 
     operacaoInicioPeriodoPrevisaoParam:
       in: query
@@ -1468,7 +1977,7 @@ components:
       schema:
         type: string
         format: date-time
-        example: "2021-03-08T12:27:12-0300"
+        example: '2021-03-08T12:27:12-0300'
 
     operacaoFimPeriodoPrevisaoParam:
       in: query
@@ -1486,7 +1995,7 @@ components:
       required: false
       schema:
         allOf:
-            - $ref: '#/components/schemas/PeriodoDataBusca'
+          - $ref: '#/components/schemas/PeriodoDataBusca'
 
     operacaoInicioPeriodoOcorrenciaParam:
       in: query
@@ -1495,7 +2004,7 @@ components:
       schema:
         type: string
         format: date-time
-        example: "2021-03-08T12:27:12-0300"
+        example: '2021-03-08T12:27:12-0300'
 
     operacaoFimPeriodoOcorrenciaParam:
       in: query
@@ -1504,7 +2013,7 @@ components:
       schema:
         type: string
         format: date-time
-        example: "2021-03-08T12:27:12-0300"
+        example: '2021-03-08T12:27:12-0300'
 
     operacaoNomeClienteParam:
       in: query
@@ -1512,7 +2021,7 @@ components:
       required: false
       schema:
         type: string
-        example: "James"
+        example: 'James'
 
     operacaoDocumentoClienteParam:
       in: query
@@ -1520,7 +2029,7 @@ components:
       required: false
       schema:
         type: string
-        example: "11111111111"
+        example: '11111111111'
 
     operacaoNomeRementeParam:
       in: query
@@ -1528,7 +2037,7 @@ components:
       required: false
       schema:
         type: string
-        example: "Lucas"
+        example: 'Lucas'
 
     operacaoDocumentoRementeParam:
       in: query
@@ -1536,7 +2045,7 @@ components:
       required: false
       schema:
         type: string
-        example: "5643453"
+        example: '5643453'
 
     operacaoNomeDestinatarioParam:
       in: query
@@ -1544,7 +2053,7 @@ components:
       required: false
       schema:
         type: string
-        example: "Roberto Gustavo"
+        example: 'Roberto Gustavo'
 
     operacaoDocumentoDestinatarioParam:
       in: query
@@ -1552,7 +2061,7 @@ components:
       required: false
       schema:
         type: string
-        example: "46507056000138"
+        example: '46507056000138'
 
     operacoesIdListParam:
       in: query
@@ -1564,14 +2073,26 @@ components:
         items:
           type: string
           maxLength: 36
-        example: ["9c015cc6-8471-4838-8391-e17fbc5a0a75","7d231cf5-5111-456b-93d0-df6401762adb"]
+        example:
+          [
+            '9c015cc6-8471-4838-8391-e17fbc5a0a75',
+            '7d231cf5-5111-456b-93d0-df6401762adb',
+          ]
+    OrdemServicoT3PLCampoPesquisaParam:
+      in: query
+      name: campoPesquisa
+      description: Busca as ordens de serviço pelo número
+      required: false
+      schema:
+        type: string
+        example: '123'
 
   responses:
     CreateResponse:
-      description: "Recurso criado"
+      description: 'Recurso criado'
       headers:
         location:
-          description: "Link para o novo recurso criado"
+          description: 'Link para o novo recurso criado'
           required: true
           schema:
             type: string
@@ -1597,16 +2118,16 @@ components:
         timestamp:
           type: string
           format: date-time
-          example: "2021-03-08T12:27:12-0300"
+          example: '2021-03-08T12:27:12-0300'
         status:
           type: number
           format: int32
           example: 404
-          description: "Http status"
+          description: 'Http status'
         error:
           type: string
-          example: "Não Encontrado"
-          description: "Descrição resumida do erro"
+          example: 'Não Encontrado'
+          description: 'Descrição resumida do erro'
         validations:
           type: array
           items:
@@ -1614,11 +2135,11 @@ components:
           example: []
         message:
           type: string
-          description: "Descrição mais detalahda do erro"
-          example: "No handler found for GET /hivelog-ar/api/v1/romaneios/4c06c5dd-bc75-4fe8-a233-94531a58cee2/operacoes/preview2"
+          description: 'Descrição mais detalahda do erro'
+          example: 'No handler found for GET /hivelog-ar/api/v1/romaneios/4c06c5dd-bc75-4fe8-a233-94531a58cee2/operacoes/preview2'
         path:
           type: string
-          example: "/hivelog-ar/api/v1/romaneios/4c06c5dd-bc75-4fe8-a233-94531a58cee2/operacoes/preview2"
+          example: '/hivelog-ar/api/v1/romaneios/4c06c5dd-bc75-4fe8-a233-94531a58cee2/operacoes/preview2'
 
     ErrorResponse:
       properties:
@@ -1655,12 +2176,12 @@ components:
           type: string
           format: uri
           description: Link pointing to the next page (if set).
-          example: "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=10"
+          example: 'https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=10'
         previousLink:
           type: string
           format: uri
           description: Link pointing to the previous page (if set).
-          example: "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=2&pageSize=10"
+          example: 'https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=2&pageSize=10'
 
     MonitoramentoResource:
       allOf:
@@ -1677,14 +2198,14 @@ components:
         id:
           type: string
           description: Id do entregador
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
           description: Nome do entregador
-          example: "Martin Gouse"
+          example: 'Martin Gouse'
         placaVeiculo:
           type: string
-          example: "LVJ-9528"
+          example: 'LVJ-9528'
         tipoVeiculo:
           oneOf:
             - $ref: '#/components/schemas/TipoVeiculo'
@@ -1698,30 +2219,30 @@ components:
             id:
               type: string
               description: Id do romaneio
-              example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+              example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
             idNome1:
               type: string
-              example: "Número"
+              example: 'Número'
             idValor1:
               type: string
-              example: "457"
+              example: '457'
             idNome2:
               type: string
-              example: "Placa"
+              example: 'Placa'
             idValor2:
               type: string
-              example: "LVJ-9528"
+              example: 'LVJ-9528'
             idNome3:
               type: string
-              example: "Entregas"
+              example: 'Entregas'
             idValor3:
               type: string
-              example: "353,354,360,361"
+              example: '353,354,360,361'
             status:
               oneOf:
                 - $ref: '#/components/schemas/StatusRomaneio'
               description: Status do romaneio
-              example: "CONCLUIDO"
+              example: 'CONCLUIDO'
             emAtraso:
               type: boolean
               example: false
@@ -1729,7 +2250,7 @@ components:
               type: integer
               format: int64
               description: Data de finalizacao do romaneio
-              example: "2021-01-25T12:23:35-0300"
+              example: '2021-01-25T12:23:35-0300'
             operacoesPendentes:
               type: integer
               format: int32
@@ -1774,7 +2295,7 @@ components:
       properties:
         link:
           type: string
-          example: "https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=1&entregadorStatus=PENDENTE"
+          example: 'https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=1&entregadorStatus=PENDENTE'
         valor:
           type: integer
           format: int64
@@ -1784,16 +2305,17 @@ components:
       properties:
         id:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
-          example: "Martin Gouse"
+          example: 'Martin Gouse'
         placaVeiculo:
           type: string
           nullable: true
-          example: "LVJ-9528"
+          example: 'LVJ-9528'
         ultimaPosicao:
           type: object
+          nullable: true
           allOf:
             - $ref: '#/components/schemas/Posicao'
         ultimoRomaneio:
@@ -1801,21 +2323,20 @@ components:
           properties:
             id:
               type: string
-              example: "37a1084a-1c04-4d4d-a6b6-5894665d5618"
+              example: '37a1084a-1c04-4d4d-a6b6-5894665d5618'
             idNome1:
               type: string
               example: "Número"
             idValor1:
               type: string
-              example: "0242"
+              example: '0242'
             empresa:
               type: string
-              example: "Transportadora XPTO"
+              example: 'Transportadora XPTO'
             percentualCompleto:
               type: integer
               format: int32
               example: 30
-
 
     PosicaoHistorico:
       properties:
@@ -1831,7 +2352,7 @@ components:
           type: string
           format: date-time
           nullable: true
-          example: "2021-01-25T12:23:35-0300"
+          example: '2021-01-25T12:23:35-0300'
         endereco:
           type: object
           allOf:
@@ -1842,27 +2363,27 @@ components:
         cidade:
           type: string
           nullable: true
-          example: "recife"
+          example: 'recife'
         pais:
           type: string
           nullable: true
-          example: "brasil"
+          example: 'brasil'
         cep:
           type: string
           nullable: true
-          example: "50030030"
+          example: '50030030'
         estado:
           type: string
           nullable: true
-          example: "pernambuco"
+          example: 'pernambuco'
         rua:
           type: string
           nullable: true
-          example: "rua madre de deus"
+          example: 'rua madre de deus'
         bairro:
           type: string
           nullable: true
-          example: "bairro do recife"
+          example: 'bairro do recife'
 
     Posicao:
       properties:
@@ -1878,7 +2399,7 @@ components:
           type: string
           format: date-time
           nullable: true
-          example: "2021-01-25T12:23:35-0300"
+          example: '2021-01-25T12:23:35-0300'
         tempoAtraso:
           type: integer
           format: int32
@@ -1905,21 +2426,20 @@ components:
           allOf:
             - $ref: '#/components/schemas/EnderecoTracking'
 
-
     OperacaoPreview:
       properties:
         id:
           type: string
-          example: "40627ede-f7b2-43fc-9843-805679e2f895"
+          example: '40627ede-f7b2-43fc-9843-805679e2f895'
         idNome1:
           type: string
-          example: "Número"
+          example: 'Número'
         idValor1:
           type: string
-          example: "3445"
+          example: '3445'
         tipo:
           type: string
-          example: "Coleta"
+          example: 'Coleta'
         status:
           allOf:
             - $ref: '#/components/schemas/StatusOperacao'
@@ -1940,10 +2460,10 @@ components:
       properties:
         id:
           type: string
-          example: "40627ede-f7b2-43fc-9843-805679e2f895"
+          example: '40627ede-f7b2-43fc-9843-805679e2f895'
         idNome1:
           type: string
-          example: "Número"
+          example: 'Número'
         idValor1:
           type: string
           example: "3445"
@@ -1955,7 +2475,7 @@ components:
           example: "3445"
         tipo:
           type: string
-          example: "Coleta"
+          example: 'Coleta'
         status:
           allOf:
               - $ref: '#/components/schemas/StatusOperacao'
@@ -1992,21 +2512,21 @@ components:
       properties:
         id:
           type: string
-          example: "6f0afe43-a8e5-4257-abe7-3c5366c80414"
+          example: '6f0afe43-a8e5-4257-abe7-3c5366c80414'
         codigo:
           type: string
-          example: "100"
+          example: '100'
         data:
           type: string
           format: date-time
-          example: "2021-01-21T17:32:28-0300"
+          example: '2021-01-21T17:32:28-0300'
         descricao:
           type: string
-          example: "Sucesso na coleta"
+          example: 'Sucesso na coleta'
         observacao:
           type: string
           nullable: true
-          example: "Coleta realizada com sucesso para Martin Gouse"
+          example: 'Coleta realizada com sucesso para Martin Gouse'
         natureza:
           oneOf:
             - $ref: "#/components/schemas/NaturezaOcorrencia"
@@ -2025,21 +2545,21 @@ components:
       properties:
         id:
           type: string
-          example: "6f0afe43-a8e5-4257-abe7-3c5366c80414"
+          example: '6f0afe43-a8e5-4257-abe7-3c5366c80414'
         codigo:
           type: string
-          example: "100"
+          example: '100'
         data:
           type: string
           format: date-time
-          example: "2021-01-21T17:32:28-0300"
+          example: '2021-01-21T17:32:28-0300'
         descricao:
           type: string
-          example: "Sucesso na coleta"
+          example: 'Sucesso na coleta'
         observacao:
           type: string
           nullable: true
-          example: "Coleta realizada com sucesso para Martin Gouse"
+          example: 'Coleta realizada com sucesso para Martin Gouse'
         natureza:
           oneOf:
             - $ref: "#/components/schemas/NaturezaOcorrencia"
@@ -2051,33 +2571,33 @@ components:
           example: "652947d1-ae2b-4379-843b-07a08a1ce16d"
         tipo:
           type: string
-          enum: ["AUDIO", "IMAGE"]
-          example: "IMAGE"
+          enum: ['AUDIO', 'IMAGE']
+          example: 'IMAGE'
         url:
           type: string
-          example: "https://s3.amazonaws.com/dev-drive.hivecloud.com.br/9d5888ef-9098-43fe-967e-01ec30f96cf0"
+          example: 'https://s3.amazonaws.com/dev-drive.hivecloud.com.br/9d5888ef-9098-43fe-967e-01ec30f96cf0'
 
     Romaneio:
       properties:
         id:
           type: string
-          example: "4f7fe1bf-8cee-4309-8835-72edcd913add"
+          example: '4f7fe1bf-8cee-4309-8835-72edcd913add'
         data:
           type: string
           format: date-time
-          example: "2021-01-25T12:23:35-0300"
+          example: '2021-01-25T12:23:35-0300'
         idNome1:
           type: string
-          example: "Número"
+          example: 'Número'
         idValor1:
           type: string
-          example: "456"
+          example: '456'
         idNome2:
           type: string
-          example: "Placa"
+          example: 'Placa'
         idValor2:
           type: string
-          example: "ZZZ-9999"
+          example: 'ZZZ-9999'
         empresa:
           allOf:
             - $ref: '#/components/schemas/EmpresaSummary'
@@ -2101,38 +2621,38 @@ components:
       properties:
         id:
           type: string
-          example: "4f7fe1bf-8cee-4309-8835-72edcd913add"
+          example: '4f7fe1bf-8cee-4309-8835-72edcd913add'
         dataRomaneio:
           type: string
           format: date-time
-          example: "2021-01-25T12:23:35-0300"
+          example: '2021-01-25T12:23:35-0300'
         dataFinalizacao:
           type: string
           format: date-time
           nullable: true
-          example: "2021-01-25T12:23:35-0300"
+          example: '2021-01-25T12:23:35-0300'
         idNome1:
           type: string
-          example: "Número"
+          example: 'Número'
         idValor1:
           type: string
-          example: "456"
+          example: '456'
         idNome2:
           type: string
           nullable: true
-          example: "Placa"
+          example: 'Placa'
         idValor2:
           type: string
           nullable: true
-          example: "ZZZ-9999"
+          example: 'ZZZ-9999'
         idNome3:
           type: string
           nullable: true
-          example: "Entregas"
+          example: 'Entregas'
         idValor3:
           type: string
           nullable: true
-          example: "454,455,456"
+          example: '454,455,456'
         entregador:
           allOf:
             - $ref: '#/components/schemas/EntregadorSummary'
@@ -2155,7 +2675,6 @@ components:
           format: int64
           example: 70
 
-
     RomaneioResource:
       allOf:
         - $ref: '#/components/schemas/PagedResource'
@@ -2170,64 +2689,71 @@ components:
       properties:
         id:
           type: string
-          example: "4f7fe1bf-8cee-4309-8835-72edcd913add"
+          example: '4f7fe1bf-8cee-4309-8835-72edcd913add'
         data:
           type: string
           format: date-time
-          example: "2021-01-25T12:23:35-0300"
+          example: '2021-01-25T12:23:35-0300'
         idNome1:
           type: string
-          example: "Número"
+          example: 'Número'
         idValor1:
           type: string
-          example: "Número"
+          example: 'Número'
         idNome2:
           type: string
-          example: "Placa"
+          example: 'Placa'
         idValor2:
           type: string
-          example: "ZZZ-9999"
+          example: 'ZZZ-9999'
         idNome3:
           type: string
-          example: "Entregas"
+          example: 'Entregas'
         idValor3:
           type: string
-          example: "941,942,943,944,945,046,947,948"
+          example: '941,942,943,944,945,046,947,948'
         observacao:
           type: string
-          example: "Texto da observação. Escrito aqui."
+          example: 'Texto da observação. Escrito aqui.'
         entregadorId:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         operacaoIdList:
           type: array
           items:
             type: string
-          example: ["7194803e-754a-472a-b049-e0a9fa7d8ae5", "62187998-e9b9-403d-9e3a-5eece9ec2abd", "67f44d81-aa80-46ac-be39-a636c8d120fb", "14b84bbe-8eef-4b23-adbe-af5334033707", "6991d1f3-ba72-43bf-915d-5b86d31b0f04"]
+          example:
+            [
+              '7194803e-754a-472a-b049-e0a9fa7d8ae5',
+              '62187998-e9b9-403d-9e3a-5eece9ec2abd',
+              '67f44d81-aa80-46ac-be39-a636c8d120fb',
+              '14b84bbe-8eef-4b23-adbe-af5334033707',
+              '6991d1f3-ba72-43bf-915d-5b86d31b0f04',
+            ]
 
     RomaneioPreview:
       properties:
         id:
           type: string
-          example: "490a3b6e-2f27-48c1-bcc4-11bb8520fb23"
+          example: '490a3b6e-2f27-48c1-bcc4-11bb8520fb23'
         idNome1:
           type: string
-          example: "Número"
+          example: 'Número'
         idValor1:
           type: string
-          example: "457"
+          example: '457'
         idNome2:
           type: string
-          example: "Placa"
+          example: 'Placa'
         idValor2:
           type: string
-          example: "LVJ-9528"
+          example: 'LVJ-9528'
         idNome3:
           type: string
-          example: "Entregas"
+          example: 'Entregas'
         idValor3:
           type: string
-          example: "453,454,455,456"
+          example: '453,454,455,456'
         status:
           allOf:
             - $ref: '#/components/schemas/StatusRomaneio'
@@ -2254,57 +2780,56 @@ components:
       properties:
         id:
           type: string
-          example: "490a3b6e-2f27-48c1-bcc4-11bb8520fb23"
+          example: '490a3b6e-2f27-48c1-bcc4-11bb8520fb23'
         idNome1:
           type: string
-          example: "Número"
+          example: 'Número'
         idValor1:
           type: string
-          example: "457"
+          example: '457'
         idNome2:
           type: string
-          example: "Placa"
+          example: 'Placa'
         idValor2:
           type: string
-          example: "LVJ-9528"
+          example: 'LVJ-9528'
         idNome3:
           type: string
-          example: "Entregas"
+          example: 'Entregas'
         idValor3:
           type: string
-          example: "453,454,455,456"
-
+          example: '453,454,455,456'
 
     RomaneioView:
       properties:
         id:
           type: string
-          example: "5bbcf512-2d99-45e6-b945-6d0349491893"
+          example: '5bbcf512-2d99-45e6-b945-6d0349491893'
         data:
           type: string
           format: date-time
-          example: "2021-01-25T12:23:35-0300"
+          example: '2021-01-25T12:23:35-0300'
         idNome1:
           type: string
-          example: "Numero"
+          example: 'Numero'
         idValor1:
           type: string
-          example: "1312"
+          example: '1312'
         idNome2:
           type: string
-          example: "Placa"
+          example: 'Placa'
         idValor2:
           type: string
-          example: "KWT-1223"
+          example: 'KWT-1223'
         idNome3:
           type: string
-          example: "Entregas"
+          example: 'Entregas'
         idValor3:
           type: string
-          example: "453,454,455,456"
+          example: '453,454,455,456'
         observacao:
           type: string
-          example: ""
+          example: ''
         status:
           allOf:
             - $ref: '#/components/schemas/StatusRomaneio'
@@ -2344,43 +2869,43 @@ components:
       properties:
         id:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
-          example: "Martin Gouse"
+          example: 'Martin Gouse'
         placaVeiculo:
           type: string
           nullable: true
-          example: "LVJ-9528"
+          example: 'LVJ-9528'
         cpf:
           type: string
           nullable: true
-          example: "98987972070"
+          example: '98987972070'
         login:
           type: string
           nullable: true
-          example: "matingouse@email.com"
+          example: 'matingouse@email.com'
 
     Entregador:
       properties:
         id:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
-          example: "Martin Gouse"
+          example: 'Martin Gouse'
         placaVeiculo:
           type: string
-          example: "LVJ-9528"
+          example: 'LVJ-9528'
         cpf:
           type: string
-          example: "98987972070"
+          example: '98987972070'
         login:
           type: string
-          example: "matingouse@email.com"
+          example: 'matingouse@email.com'
         telefone:
           type: string
-          example: "81999999999"
+          example: '81999999999'
         tipoVeiculo:
           oneOf:
             - $ref: '#/components/schemas/TipoVeiculo'
@@ -2389,7 +2914,7 @@ components:
             - $ref: '#/components/schemas/TipoCarregamento'
         observacao:
           type: string
-          example: "Texto da observação. Escrito aqui."
+          example: 'Texto da observação. Escrito aqui.'
         ultimoRomaneio:
           oneOf:
             - $ref: '#/components/schemas/RomaneioSummary'
@@ -2398,19 +2923,19 @@ components:
       properties:
         id:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
-          example: "Martin Gouse"
+          example: 'Martin Gouse'
         foto:
           type: string
           example: "http://hivecloud.com.br/foto.jpg"
         cpf:
           type: string
-          example: "33598634021"
+          example: '33598634021'
         placaVeiculo:
           type: string
-          example: "LVJ-9528"
+          example: 'LVJ-9528'
         tipoVeiculo:
           oneOf:
             - $ref: '#/components/schemas/TipoVeiculo'
@@ -2425,37 +2950,37 @@ components:
       properties:
         id:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
-          example: "Martin Gouse"
+          example: 'Martin Gouse'
         cpf:
           type: string
-          example: "33598634021"
+          example: '33598634021'
         placaVeiculo:
           type: string
-          example: "LVJ-9528"
+          example: 'LVJ-9528'
 
     EntregadorCreate:
       properties:
         id:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
-          example: "Martin Gouse"
+          example: 'Martin Gouse'
         placaVeiculo:
           type: string
-          example: "LVJ-9528"
+          example: 'LVJ-9528'
         cpf:
           type: string
-          example: "98987972070"
+          example: '98987972070'
         login:
           type: string
-          example: "matingouse@email.com"
+          example: 'matingouse@email.com'
         telefone:
           type: string
-          example: "81999999999"
+          example: '81999999999'
         tipoVeiculo:
           allOf:
             - $ref: '#/components/schemas/TipoVeiculo'
@@ -2464,7 +2989,7 @@ components:
             - $ref: '#/components/schemas/TipoCarregamento'
         observacao:
           type: string
-          example: "Texto da observação. Escrito aqui."
+          example: 'Texto da observação. Escrito aqui.'
 
     EntregadorHistoricoPosicao:
       properties:
@@ -2477,7 +3002,7 @@ components:
           properties:
             driverId:
               type: string
-              example: "matingouse"
+              example: 'matingouse'
             lastTimeRecord:
               description: Key para consulta da próxima página
               type: integer
@@ -2498,49 +3023,49 @@ components:
       properties:
         id:
           type: string
-          example: "490a3b6e-2f27-48c1-bcc4-11bb8520fb23"
+          example: '490a3b6e-2f27-48c1-bcc4-11bb8520fb23'
         idNome1:
           type: string
-          example: "Número"
+          example: 'Número'
         idValor1:
           type: string
-          example: "457"
+          example: '457'
         idNome2:
           type: string
-          example: "Placa"
+          example: 'Placa'
         idValor2:
           type: string
-          example: "LVJ-9528"
+          example: 'LVJ-9528'
         idNome3:
           type: string
-          example: "Entregas"
+          example: 'Entregas'
         idValor3:
           type: string
-          example: "453,454,455,456"
+          example: '453,454,455,456'
 
     Operacao:
       properties:
         id:
           type: string
-          example: "40627ede-f7b2-43fc-9843-805679e2f895"
+          example: '40627ede-f7b2-43fc-9843-805679e2f895'
         idNome1:
           type: string
-          example: "Mercadoria"
+          example: 'Mercadoria'
         idValor1:
           type: string
-          example: "505626/6"
+          example: '505626/6'
         idNome2:
           type: string
-          example: "Chave de Acesso"
+          example: 'Chave de Acesso'
         idValor2:
           type: string
-          example: "26210309722463000131550060005056261259860737"
+          example: '26210309722463000131550060005056261259860737'
         idNome3:
           type: string
-          example: "Número"
+          example: 'Número'
         idValor3:
           type: string
-          example: "3445"
+          example: '3445'
         tipo:
           oneOf:
             - $ref: '#/components/schemas/TipoOperacao'
@@ -2553,11 +3078,11 @@ components:
         cliente:
           type: object
           allOf:
-              - $ref: '#/components/schemas/Envolvido'
+            - $ref: '#/components/schemas/Envolvido'
         remetente:
           type: object
           allOf:
-              - $ref: '#/components/schemas/Envolvido'
+            - $ref: '#/components/schemas/Envolvido'
         destinatario:
           type: object
           allOf:
@@ -2565,22 +3090,22 @@ components:
         localDestino:
           type: object
           allOf:
-              - $ref: '#/components/schemas/Localidade'
+            - $ref: '#/components/schemas/Localidade'
         status:
           oneOf:
               - $ref: '#/components/schemas/StatusOperacao'
         dataPrevisao:
           type: string
           format: date-time
-          example: "2021-03-08T12:27:12-0300"
+          example: '2021-03-08T12:27:12-0300'
         finalizacaoOcorrencia:
           type: string
           format: date-time
-          example: "2021-03-08T12:27:12-0300"
+          example: '2021-03-08T12:27:12-0300'
         ultimaOcorrencia:
           type: object
           allOf:
-              - $ref: '#/components/schemas/OcorrenciaSummary'
+            - $ref: '#/components/schemas/OcorrenciaSummary'
         observacao:
           type: string
           nullable: true
@@ -2589,40 +3114,40 @@ components:
       properties:
         id:
           type: string
-          example: "40627ede-f7b2-43fc-9843-805679e2f895"
+          example: '40627ede-f7b2-43fc-9843-805679e2f895'
         idNome1:
           type: string
-          example: "Mercadoria"
+          example: 'Mercadoria'
         idValor1:
           type: string
-          example: "505626/6"
+          example: '505626/6'
         idNome2:
           type: string
-          example: "Chave de Acesso"
+          example: 'Chave de Acesso'
         idValor2:
           type: string
-          example: "26210309722463000131550060005056261259860737"
+          example: '26210309722463000131550060005056261259860737'
         idNome3:
           type: string
-          example: "Número"
+          example: 'Número'
         idValor3:
           type: string
-          example: "3445"
+          example: '3445'
         tipoOperacao:
           allOf:
             - $ref: '#/components/schemas/TipoOperacao'
         dataPrevisao:
           type: string
           format: date-time
-          example: "2021-03-08T12:27:12-0300"
+          example: '2021-03-08T12:27:12-0300'
         cliente:
           type: object
           allOf:
-              - $ref: '#/components/schemas/Envolvido'
+            - $ref: '#/components/schemas/Envolvido'
         remetente:
           type: object
           allOf:
-              - $ref: '#/components/schemas/Envolvido'
+            - $ref: '#/components/schemas/Envolvido'
         destinatario:
           type: object
           allOf:
@@ -2630,26 +3155,26 @@ components:
         localDestino:
           type: object
           allOf:
-              - $ref: '#/components/schemas/Localidade'
+            - $ref: '#/components/schemas/Localidade'
         observacao:
           type: string
-          example: "Texto da observação. Escrito aqui."
+          example: 'Texto da observação. Escrito aqui.'
 
     Envolvido:
       properties:
         doc:
           type: string
-          example: "11111111111"
+          example: '11111111111'
         tipoDoc:
           oneOf:
             - $ref: "#/components/schemas/TipoDocumento"
           example: "CPF"
         nome:
           type: string
-          example: "James Rodriguez"
+          example: 'James Rodriguez'
         telefone1:
           type: string
-          example: "111111111"
+          example: '111111111'
         telefone2:
           type: string
           example: "33333333"
@@ -2658,68 +3183,68 @@ components:
       properties:
         logradouro:
           type: string
-          example: "R. Alfândega"
+          example: 'R. Alfândega'
           nullable: false
         bairro:
           type: string
-          example: "Recife"
+          example: 'Recife'
           nullable: false
         cep:
           type: string
-          example: "50030-030"
+          example: '50030-030'
           nullable: false
         numero:
           type: string
-          example: "35"
+          example: '35'
           nullable: false
         complemento:
           type: string
-          example: ""
+          example: ''
           nullable: true
         nomeMunicipio:
           type: string
-          example: "Recife"
+          example: 'Recife'
           nullable: false
         uf:
           type: string
-          example: "PE"
+          example: 'PE'
           nullable: false
         pais:
           type: string
-          example: "Brasil"
+          example: 'Brasil'
           nullable: false
 
     OperacaoView:
       properties:
         id:
           type: string
-          example: "40627ede-f7b2-43fc-9843-805679e2f895"
+          example: '40627ede-f7b2-43fc-9843-805679e2f895'
         idNome1:
           type: string
-          example: "Mercadoria"
+          example: 'Mercadoria'
         idValor1:
           type: string
-          example: "505626/6"
+          example: '505626/6'
         idNome2:
           type: string
-          example: "Chave de Acesso"
+          example: 'Chave de Acesso'
         idValor2:
           type: string
-          example: "26210309722463000131550060005056261259860737"
+          example: '26210309722463000131550060005056261259860737'
         idNome3:
           type: string
-          example: "Número"
+          example: 'Número'
         idValor3:
           type: string
-          example: "3445"
+          example: '3445'
         dataPrevisao:
           type: string
           format: date-time
-          example: "2021-03-08T12:27:12-0300"
+          example: '2021-03-08T12:27:12-0300'
         tipo:
           allOf:
             - $ref: '#/components/schemas/TipoOperacao'
-          example: "ENTREGA"
+          example: 'ENTREGA'
         status:
           allOf:
             - $ref: '#/components/schemas/StatusOperacao'
@@ -2729,11 +3254,11 @@ components:
         cliente:
           type: object
           allOf:
-              - $ref: '#/components/schemas/Envolvido'
+            - $ref: '#/components/schemas/Envolvido'
         remetente:
           type: object
           allOf:
-              - $ref: '#/components/schemas/Envolvido'
+            - $ref: '#/components/schemas/Envolvido'
         destinatario:
           type: object
           allOf:
@@ -2741,7 +3266,7 @@ components:
         localDestino:
           type: object
           allOf:
-              - $ref: '#/components/schemas/Localidade'
+            - $ref: '#/components/schemas/Localidade'
         observacao:
           type: string
           nullable: true
@@ -2750,16 +3275,16 @@ components:
       properties:
         id:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
-          example: "Transporta Tudo"
+          example: 'Transporta Tudo'
         cnpj:
           type: string
-          example: "12345678901234"
+          example: '12345678901234'
         tokenIntegracao:
           type: string
-          example: "066c90ea-9968-11eb-a8b3-0242ac130003"
+          example: '066c90ea-9968-11eb-a8b3-0242ac130003'
         dataCriacao:
           type: string
           example: "066c90ea-9968-11eb-a8b3-0242ac130003"
@@ -2797,7 +3322,7 @@ components:
       properties:
         id:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         login:
           type: string
           example: "usuario"
@@ -2812,29 +3337,29 @@ components:
           example: "usuario"
         tipoAcesso:
           allOf:
-            - $ref: "#/components/schemas/TipoAcesso"
+            - $ref: '#/components/schemas/TipoAcesso'
 
     Empresa:
       properties:
         id:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
-          example: "Transporta Tudo"
+          example: 'Transporta Tudo'
           maxLength: 60
           nullable: false
         nomeFantasia:
           type: string
           maxLength: 60
           nullable: false
-          example: "Transporta Tudo"
+          example: 'Transporta Tudo'
         cnpj:
           type: string
           minLength: 11
           maxLength: 14
           nullable: false
-          example: "12345678901234"
+          example: '12345678901234'
         ie:
           type: string
           maxLength: 14
@@ -2848,15 +3373,15 @@ components:
           minLength: 7
           maxLength: 13
           nullable: false
-          example: "81999999999"
+          example: '81999999999'
         email:
           type: string
           maxLength: 60
           nullable: true
-          example: "teste@teste.com.br"
+          example: 'teste@teste.com.br'
         endereco:
           allOf:
-            - $ref: "#/components/schemas/Localidade"
+            - $ref: '#/components/schemas/Localidade'
         observacao:
           type: string
           nullable: true
@@ -2865,69 +3390,69 @@ components:
       properties:
         nome:
           type: string
-          example: "Transporta Tudo"
+          example: 'Transporta Tudo'
           maxLength: 60
           nullable: false
         nomeFantasia:
           type: string
           maxLength: 60
           nullable: false
-          example: "Transporta Tudo"
+          example: 'Transporta Tudo'
         cnpj:
           type: string
           minLength: 11
           maxLength: 14
           nullable: false
-          example: "12345678901234"
+          example: '12345678901234'
         ie:
           type: string
           maxLength: 14
           nullable: false
-          example: "123456"
+          example: '123456'
         rntrc:
           type: string
           maxLength: 8
           nullable: true
-          example: "44444"
+          example: '44444'
         telefone:
           type: string
           minLength: 7
           maxLength: 13
           nullable: false
-          example: "81999999999"
+          example: '81999999999'
         email:
           type: string
           maxLength: 60
           nullable: true
-          example: "teste@teste.com"
+          example: 'teste@teste.com'
         endereco:
           allOf:
-            - $ref: "#/components/schemas/Localidade"
+            - $ref: '#/components/schemas/Localidade'
         observacao:
           type: string
-          example: "Texto da observação. Escrito aqui."
+          example: 'Texto da observação. Escrito aqui.'
 
     EmpresaView:
       properties:
         id:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
-          example: "Transporta Tudo"
+          example: 'Transporta Tudo'
           maxLength: 60
           nullable: false
         nomeFantasia:
           type: string
           maxLength: 60
           nullable: false
-          example: "Transporta Tudo"
+          example: 'Transporta Tudo'
         cnpj:
           type: string
           minLength: 11
           maxLength: 14
           nullable: false
-          example: "12345678901234"
+          example: '12345678901234'
         ie:
           type: string
           maxLength: 14
@@ -2943,57 +3468,225 @@ components:
           minLength: 7
           maxLength: 13
           nullable: false
-          example: "81999999999"
+          example: '81999999999'
         email:
           type: string
           maxLength: 60
           nullable: true
-          example: "teste@teste.com.br"
+          example: 'teste@teste.com.br'
         endereco:
           allOf:
-            - $ref: "#/components/schemas/Localidade"
+            - $ref: '#/components/schemas/Localidade'
         observacao:
           type: string
           nullable: true
         logoUrl:
           type: string
           nullable: true
-          example: "https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg"
+          example: 'https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg'
 
     EmpresaSummary:
       properties:
         id:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
-          example: "Nova Geração Transporte"
+          example: 'Nova Geração Transporte'
         municipio:
           type: string
-          example: "Recife"
+          example: 'Recife'
         uf:
           type: string
-          example: "PE"
+          example: 'PE'
 
     EmpresaSuggestion:
       properties:
         id:
           type: string
-          example: "99e39200-3bfb-465f-886f-85ee28e8cfda"
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
-          example: "Nova Geração Transporte"
+          example: 'Nova Geração Transporte'
         cnpj:
           type: string
-          example: "33598634021"
+          example: '33598634021'
         municipio:
           type: string
-          example: "Recife"
+          example: 'Recife'
         uf:
           type: string
-          example: "PE"
+          example: 'PE'
+
+    DadosLicenca:
+      properties:
+        plano:
+          type: object
+          properties:
+            gratuito:
+              type: boolean
+              example: false
+              nullable: false
+            nome:
+              type: string
+              example: 'AR Micro 30'
+              nullable: true
+        uso:
+          type: object
+          properties:
+            ilimitado:
+              type: boolean
+              example: false
+              nullable: false
+            quantidade:
+              type: integer
+              example: 30
+              nullable: true
+        armazenamento:
+          type: object
+          properties:
+            ilimitado:
+              type: boolean
+              example: true
+              nullable: false
+            quantidade:
+              type: integer
+              example: 0
+              nullable: true
+
+        contaId:
+          type: string
+          example: '123456789'
+          nullable: false
+        pagamentosUrl:
+          type: string
+          example: 'https://accounts.hivecloud.com.br/faturamento/45'
 
     EmpresaResource:
+      allOf:
+        - $ref: '#/components/schemas/PagedResource'
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Empresa'
+
+    TipoOcorrenciaView:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+        codigo:
+          type: string
+          example: '01'
+          maxLength: 5
+          nullable: false
+        descricao:
+          type: string
+          example: 'Entrega com sucesso'
+          maxLength: 60
+          nullable: false
+        natureza:
+          allOf:
+            - $ref: '#/components/schemas/NaturezaOcorrencia'
+          nullable: false
+        favorito:
+          type: boolean
+          example: false
+          nullable: false
+        padrao:
+          type: boolean
+          example: false
+          nullable: false
+        desativado:
+          type: boolean
+          example: false
+          nullable: false
+        tipoOperacao:
+          allOf:
+            - $ref: '#/components/schemas/TipoOperacao'
+          nullable: false
+
+    TipoOcorrenciaCreate:
+      properties:
+        codigo:
+          type: string
+          example: '01'
+          maxLength: 5
+          nullable: false
+        descricao:
+          type: string
+          example: 'Entrega com sucesso'
+          maxLength: 60
+          nullable: false
+        natureza:
+          $ref: '#/components/schemas/NaturezaOcorrencia'
+        favorito:
+          type: boolean
+          example: false
+          nullable: false
+        tipoOperacao:
+          $ref: '#/components/schemas/TipoOperacao'
+      required:
+        - codigo
+        - descricao
+        - natureza
+        - favorito
+        - tipoOperacao
+
+    TipoOcorrenciaSummary:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+        codigo:
+          type: string
+          example: '01'
+          maxLength: 5
+          nullable: false
+        descricao:
+          type: string
+          example: 'Entrega com sucesso'
+          maxLength: 60
+          nullable: false
+        natureza:
+          $ref: '#/components/schemas/NaturezaOcorrencia'
+        tipoOperacao:
+          $ref: '#/components/schemas/TipoOperacao'
+
+    TipoOcorrencia:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+        codigo:
+          type: string
+          example: '01'
+          maxLength: 5
+          nullable: false
+        descricao:
+          type: string
+          example: 'Entrega com sucesso'
+          maxLength: 60
+          nullable: false
+        natureza:
+          $ref: '#/components/schemas/NaturezaOcorrencia'
+        favorito:
+          type: boolean
+          example: false
+          nullable: false
+        padrao:
+          type: boolean
+          example: false
+          nullable: false
+        desativado:
+          type: boolean
+          example: false
+          nullable: false
+        tipoOperacao:
+          $ref: '#/components/schemas/TipoOperacao'
+
+    TipoOcorrenciaResource:
       allOf:
         - $ref: '#/components/schemas/PagedResource'
         - type: object
@@ -3001,7 +3694,120 @@ components:
             content:
               type: array
               items:
-                $ref: '#/components/schemas/Empresa'
+                $ref: '#/components/schemas/TipoOcorrencia'
+
+    ConfiguracoesCreate:
+      properties:
+        fotoObrigatoria:
+          type: boolean
+          example: true
+          nullable: false
+        tempoTransmissao:
+          type: object
+          properties:
+            tipoAtraso:
+              $ref: '#/components/schemas/TipoAtrasoLocalizacao'
+            tempoAtraso:
+              type: integer
+              example: 20
+              nullable: false
+          required:
+            - 'tipoAtraso'
+            - 'tempoAtraso'
+      required:
+        - 'fotoObrigatoria'
+        - 'tempoTransmissao'
+
+    Configuracoes:
+      properties:
+        fotoObrigatoria:
+          type: boolean
+          example: true
+          nullable: false
+        tempoTransmissao:
+          type: object
+          properties:
+            tipoAtraso:
+              $ref: '#/components/schemas/TipoAtrasoLocalizacao'
+            tempoAtraso:
+              type: integer
+              example: 20
+              nullable: true
+        homologacaoAtiva:
+          type: boolean
+          example: false
+          nullable: false
+
+    IntegracaoGlobus:
+      properties:
+        url:
+          type: string
+          example: 'http://globus.com.br'
+          nullable: false
+        token:
+          type: string
+          example: 'abc123456'
+          nullable: false
+        shortCode:
+          type: string
+          example: '1033'
+          nullable: false
+        dataInicio:
+          type: string
+          format: date
+          example: '2021-01-25'
+          nullable: false
+        informarRecebedor:
+          type: boolean
+          example: true
+          nullable: false
+
+    IntegracaoT3PL:
+      properties:
+        tenantToken:
+          type: string
+          example: 'abc-def-ghi'
+          nullable: false
+        userToken:
+          type: string
+          example: 'jkl-mno-pqr'
+          nullable: false
+
+    OrdemServicoT3PLResource:
+      allOf:
+        - $ref: '#/components/schemas/PagedResource'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrdemServicoT3PL'
+
+    OrdemServicoT3PL:
+      properties:
+        id:
+          type: string
+          nullable: false
+        numero:
+          type: string
+          example: 1234
+          nullable: false
+        solicitante:
+          type: string
+          example: João da Silva
+          nullable: false
+        expedidor:
+          type: string
+          example: Maria de Jesus
+          nullable: false
+        pesoTotal:
+          type: number
+          example: 55.32
+          nullable: false
+        valor:
+          type: number
+          example: 321.98
+          nullable: false
 
     StatusRomaneio:
       type: string
@@ -3010,7 +3816,7 @@ components:
         - AGUARDANDO_ACEITE
         - EM_EXECUCAO
         - CONCLUIDO
-      example: "AGUARDANDO_ACEITE"
+      example: 'AGUARDANDO_ACEITE'
 
     TipoVeiculo:
       type: string
@@ -3029,7 +3835,7 @@ components:
         - CARRETA_CARROCERIA_ABERTA
         - CARRETA_CACAMBA
         - CARRETA_BAU
-      example: "UTILITARIO"
+      example: 'UTILITARIO'
 
     TipoCarregamento:
       type: string
@@ -3064,7 +3870,7 @@ components:
         - DIAS_7
         - DIAS_15
         - DIAS_30
-      example: "PERIODO"
+      example: 'PERIODO'
 
     TipoDocumento:
       type: string
@@ -3085,17 +3891,33 @@ components:
       enum:
       - "USUARIO"
       - "ADMINISTRADOR"
+      - "ENTREGADOR"
       example: "ADMINISTRADOR"
 
     NaturezaOcorrencia:
       type: string
       enum:
-       - ENTREGA
-       - INFORMATIVA
-       - RECUSA
-       - RETORNO
-       - SINISTRO
-      example: "ENTREGA"
+        - ENTREGA
+        - INFORMATIVA
+        - RECUSA
+        - RETORNO
+        - SINISTRO
+      example: 'ENTREGA'
+
+    TipoAtrasoLocalizacao:
+      type: string
+      enum:
+        - DIA
+        - HORA
+        - MINUTO
+      example: 'MINUTO'
+
+    SituacaoIntegracao:
+      type: string
+      enum:
+        - ATIVADA
+        - DESATIVADA
+      example: 'ATIVADA'
 
   examples:
     monitoramentoBriefingExemplo:
