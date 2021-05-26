@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
   title: AR API
-  description: Initial AR frontend integration
-  version: 1.0.0-oas3
+  description: AR frontend integration
+  version: 1.0.0
 
 paths:
   /v1/ambientes:
@@ -201,8 +201,11 @@ paths:
         - "Empresas"
       summary: ""
       description: "Delete em lote"
-      parameters:
-        - $ref: "#/components/parameters/empresasDeleteIdListParam"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteItens'
       responses:
         '204':
           description: Empresas deletadas
@@ -558,8 +561,11 @@ paths:
         - 'Romaneios'
       summary: ''
       description: 'Delete em lote'
-      parameters:
-        - $ref: '#/components/parameters/romaneioIdListParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteItens'
       responses:
         '204':
           description: Romaneios deletados
@@ -736,8 +742,11 @@ paths:
         - 'Entregadores'
       summary: ''
       description: 'Delete em lote'
-      parameters:
-        - $ref: '#/components/parameters/entregadorDeleteIdListParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteItens'
       responses:
         '204':
           description: Entregadores deletados
@@ -925,8 +934,11 @@ paths:
         - 'Operações'
       summary: ''
       description: 'Delete em lote'
-      parameters:
-        - $ref: '#/components/parameters/operacoesIdListParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteItens'
       responses:
         '204':
           description: Operações deletadas
@@ -2142,11 +2154,7 @@ components:
           example: '/hivelog-ar/api/v1/romaneios/4c06c5dd-bc75-4fe8-a233-94531a58cee2/operacoes/preview2'
 
     ErrorResponse:
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorItemResponse'
+      $ref: '#/components/schemas/ErrorItemResponse'
 
     PageMetadata:
       properties:
@@ -3338,6 +3346,16 @@ components:
         tipoAcesso:
           allOf:
             - $ref: '#/components/schemas/TipoAcesso'
+
+    DeleteItens:
+        type: array
+        items:
+          type: string
+        example:
+          [
+            '9c015cc6-8471-4838-8391-e17fbc5a0a75',
+            '7d231cf5-5111-456b-93d0-df6401762adb',
+          ]
 
     Empresa:
       properties:
