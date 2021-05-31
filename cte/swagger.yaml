@@ -1,0 +1,667 @@
+openapi: 3.0.0
+info:
+  title: CTE API
+  description: CTE frontend integration
+  version: 1.0.0
+
+paths:
+  /v1/empresas:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Empresas'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaCreate'
+      responses:
+        '201':
+          $ref: '#/components/responses/CreateResponse'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Empresas'
+      parameters:
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/empresaCnpjParam'
+        - $ref: '#/components/parameters/empresaIEParam'
+        - $ref: '#/components/parameters/empresaNomeParam'
+        - $ref: '#/components/parameters/empresaNomeFantasiaParam'
+        - $ref: '#/components/parameters/empresaCampoPesquisaParam'
+      summary: ''
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpresaResource'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Empresas"
+      summary: ""
+      description: "Delete em lote"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteItens'
+      responses:
+        '204':
+          description: Empresas deletadas
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  
+  /v1/empresas/{empresaId}:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdPathParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Empresas'
+      summary: ''
+      description: ''
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpresaView'
+    put:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Empresas'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaCreate'
+      responses:
+        '204':
+          description: Empresa atualizada
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Empresas'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaCreate'
+      responses:
+        '204':
+          description: Empresa atualizada
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Empresas'
+      summary: ''
+      description: ''
+      responses:
+        '204':
+          description: Empresa deletada
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/empresas/suggestion:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Empresas"
+      summary: ""
+      description: ""
+      parameters:
+        - $ref: '#/components/parameters/empresaCampoPesquisaParam'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmpresaSuggestion'
+
+  /v1/empresas/{empresaId}/exportar-certificado:
+    parameters:
+      - $ref: '#/components/parameters/empresaIdPathParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Empresas'
+      summary: ''
+      description: ''
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/EmpresaView'
+
+components:
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: token
+    tenantAuth:
+      type: apiKey
+      in: header
+      name: tenantID
+
+  parameters:
+    pageNumberParam:
+      in: query
+      name: pageNumber
+      description: Page of query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        example: 0
+
+    pageSizeParam:
+      in: query
+      name: pageSize
+      description: Size of query page
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+
+    maxPageSizeParam:
+      in: query
+      name: pageSize
+      description: Tamanho máximo da página para consultas no dynamo
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+
+    empresaIdHeaderParam:
+      in: header
+      name: empresaId
+      description: Id da empresa selecionada
+      required: true
+      schema:
+        type: string
+        example: '9c015cc6-8471-4838-8391-e17fbc5a0a75'
+
+
+    empresaTodosQueryParam:
+      in: query
+      name: todasEmpresas
+      description: Buscar em todas as empresas
+      required: false
+      schema:
+        type: boolean
+
+    empresaIdListParam:
+      in: query
+      name: empresaIdList
+      description: Lista de ids de empresas para consulta de romaneio
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+        example:
+          [
+            '9c015cc6-8471-4838-8391-e17fbc5a0a75',
+            '7d231cf5-5111-456b-93d0-df6401762adb',
+          ]
+
+    empresaNomeParam:
+      in: query
+      name: nome
+      description: Nome da empresa
+      required: false
+      schema:
+        type: string
+        example: 'Transporta Tudo'
+        maxLength: 60
+
+    empresaNomeFantasiaParam:
+      in: query
+      name: nomeFantasia
+      description: Nome fantasia da empresa
+      required: false
+      schema:
+        type: string
+        example: 'Transporta Tudo'
+        maxLength: 60
+
+    empresaCnpjParam:
+      in: query
+      name: cnpj
+      description: CNPJ da empresa
+      required: false
+      schema:
+        type: string
+        example: '12345678901234'
+        maxLength: 14
+
+    empresaIEParam:
+      in: query
+      name: ie
+      description: Inscrição estadual da empresa
+      required: false
+      schema:
+        type: string
+        example: '12345678901234'
+        maxLength: 14
+
+    empresaIdPathParam:
+      in: path
+      name: empresaId
+      description: Id da empresa
+      required: true
+      schema:
+        type: string
+        example: "00a34581-03d8-4ef4-aa54-d45cd5353743"
+    
+    empresasDeleteIdListParam:
+      in: query
+      name: empresaIdList
+      description: Id da empresa para exclusão
+      required: true
+      schema:
+        type: array
+        items: 
+          type: string
+          maxLength: 36
+        example: ["d8bbb6dd-dbe4-4bd8-bcea-ca58a401e529", "8aae4eab-791b-4145-9ece-93ff614fcbd9"]
+
+
+    tenantIdPathParam:
+      in: path
+      name: tenantId
+      description: Id do ambiente
+      required: true
+      schema:
+        type: string
+        example: '00a34581-03d8-4ef4-aa54-d45cd5353743'
+
+    empresaCampoPesquisaParam:
+      in: query
+      name: campoPesquisa
+      description: CNPJ, Nome ou Nome Fantasia da empresa para consulta
+      required: false
+      schema:
+        type: string
+        example: 'transportadora'
+
+
+  responses:
+    CreateResponse:
+      description: 'Recurso criado'
+      headers:
+        location:
+          description: 'Link para o novo recurso criado'
+          required: true
+          schema:
+            type: string
+            format: uri
+
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    BadRequest:
+      description: Problemas na requisição
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ErrorItemResponse:
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: '2021-03-08T12:27:12-0300'
+        status:
+          type: number
+          format: int32
+          example: 404
+          description: 'Http status'
+        error:
+          type: string
+          example: 'Não Encontrado'
+          description: 'Descrição resumida do erro'
+        validations:
+          type: array
+          items:
+            type: string
+          example: []
+        message:
+          type: string
+          description: 'Descrição mais detalahda do erro'
+          example: 'No handler found for GET /hivelog-ar/api/v1/romaneios/4c06c5dd-bc75-4fe8-a233-94531a58cee2/operacoes/preview2'
+        path:
+          type: string
+          example: '/hivelog-ar/api/v1/romaneios/4c06c5dd-bc75-4fe8-a233-94531a58cee2/operacoes/preview2'
+
+    ErrorResponse:
+      $ref: '#/components/schemas/ErrorItemResponse'
+
+    PageMetadata:
+      properties:
+        size:
+          type: integer
+          format: int64
+          example: 15
+        number:
+          type: integer
+          format: int64
+          example: 1
+        totalElements:
+          type: integer
+          format: int64
+          example: 101
+        totalPages:
+          type: integer
+          format: int64
+          example: 7
+
+    PagedResource:
+      properties:
+        pageMetadata:
+          description: Page metadata
+          $ref: '#/components/schemas/PageMetadata'
+        nextLink:
+          type: string
+          format: uri
+          description: Link pointing to the next page (if set).
+          example: 'https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=10'
+        previousLink:
+          type: string
+          format: uri
+          description: Link pointing to the previous page (if set).
+          example: 'https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=2&pageSize=10'
+
+    Empresa:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+        nome:
+          type: string
+          example: 'Transporta Tudo'
+          maxLength: 60
+          nullable: false
+        nomeFantasia:
+          type: string
+          maxLength: 60
+          nullable: false
+          example: 'Transporta Tudo'
+        cnpj:
+          type: string
+          minLength: 11
+          maxLength: 14
+          nullable: false
+          example: '12345678901234'
+        ie:
+          type: string
+          maxLength: 14
+          nullable: false
+          example: '123456'
+        emailsAlternativos:
+          type: string
+          maxLength: 8
+          nullable: true
+          example: 'teste@teste.com,teste@teste.com'
+        telefone:
+          type: string
+          minLength: 7
+          maxLength: 13
+          nullable: false
+          example: '81999999999'
+        email:
+          type: string
+          maxLength: 60
+          nullable: true
+          example: 'teste@teste.com'
+        endereco:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+          example: 'Texto da observação. Escrito aqui.'
+
+    EmpresaCreate:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+        nome:
+          type: string
+          example: 'Transporta Tudo'
+          maxLength: 60
+          nullable: false
+        nomeFantasia:
+          type: string
+          maxLength: 60
+          nullable: false
+          example: 'Transporta Tudo'
+        cnpj:
+          type: string
+          minLength: 11
+          maxLength: 14
+          nullable: false
+          example: '12345678901234'
+        ie:
+          type: string
+          maxLength: 14
+          nullable: false
+          example: '123456'
+        emailsAlternativos:
+          type: string
+          maxLength: 8
+          nullable: true
+          example: 'teste@teste.com,teste@teste.com'
+        telefone:
+          type: string
+          minLength: 7
+          maxLength: 13
+          nullable: false
+          example: '81999999999'
+        email:
+          type: string
+          maxLength: 60
+          nullable: true
+          example: 'teste@teste.com'
+        endereco:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+          example: 'Texto da observação. Escrito aqui.'
+
+    EmpresaView:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+        nome:
+          type: string
+          example: 'Transporta Tudo'
+          maxLength: 60
+          nullable: false
+        nomeFantasia:
+          type: string
+          maxLength: 60
+          nullable: false
+          example: 'Transporta Tudo'
+        cnpj:
+          type: string
+          minLength: 11
+          maxLength: 14
+          nullable: false
+          example: '12345678901234'
+        ie:
+          type: string
+          maxLength: 14
+          nullable: false
+          example: '123456'
+        emailsAlternativos:
+          type: string
+          maxLength: 8
+          nullable: true
+          example: 'teste@teste.com,teste@teste.com'
+        telefone:
+          type: string
+          minLength: 7
+          maxLength: 13
+          nullable: false
+          example: '81999999999'
+        email:
+          type: string
+          maxLength: 60
+          nullable: true
+          example: 'teste@teste.com'
+        endereco:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+          example: 'Texto da observação. Escrito aqui.'
+        logoUrl:
+          type: string
+          nullable: true
+          example: 'https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg'
+
+    EmpresaSummary:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+        nome:
+          type: string
+          example: 'Nova Geração Transporte'
+        municipio:
+          type: string
+          example: 'Recife'
+        uf:
+          type: string
+          example: 'PE'
+
+    EmpresaSuggestion:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+        nome:
+          type: string
+          example: 'Nova Geração Transporte'
+        cnpj:
+          type: string
+          example: '33598634021'
+
+    EmpresaResource:
+      allOf:
+        - $ref: '#/components/schemas/PagedResource'
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Empresa'
+
+    DeleteItens:
+        type: array
+        items:
+          type: string
+        example:
+          [
+            '9c015cc6-8471-4838-8391-e17fbc5a0a75',
+            '7d231cf5-5111-456b-93d0-df6401762adb',
+          ]
+
+    Localidade:
+      properties:
+        logradouro:
+          type: string
+          example: 'R. AlfÃ¢ndega'
+          nullable: false
+        bairro:
+          type: string
+          example: 'Recife'
+          nullable: false
+        cep:
+          type: string
+          example: '50030-030'
+          nullable: false
+        numero:
+          type: string
+          example: '35'
+          nullable: false
+        complemento:
+          type: string
+          example: ''
+          nullable: true
+        nomeMunicipio:
+          type: string
+          example: 'Recife'
+          nullable: false
+        uf:
+          type: string
+          example: 'PE'
+          nullable: false
+        pais:
+          type: string
+          example: 'Brasil'
+          nullable: false
