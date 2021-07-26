@@ -36,6 +36,8 @@ paths:
         - $ref: '#/components/parameters/empresaIEParam'
         - $ref: '#/components/parameters/empresaNomeParam'
         - $ref: '#/components/parameters/empresaNomeFantasiaParam'
+        - $ref: '#/components/parameters/empresaIdListParam'
+        - $ref: '#/components/parameters/empresaCnpjListParam'
         - $ref: '#/components/parameters/empresaCampoPesquisaParam'
       summary: ''
       description: ''
@@ -62,12 +64,14 @@ paths:
       responses:
         '204':
           description: Empresas deletadas
+        '207':
+          $ref: '#/components/responses/MultiStatus'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
   
-  /v1/empresas/{empresaId}:
+  /v1/empresas/{id}:
     parameters:
       - $ref: '#/components/parameters/empresaIdPathParam'
     get:
@@ -142,6 +146,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
 
   /v1/empresas/suggestion:
     get:
@@ -163,8 +169,52 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/EmpresaSuggestion'
+                  
+  /v1/envolvidos/suggestion:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Envolvidos"
+      summary: ""
+      description: ""
+      parameters:
+        - $ref: '#/components/parameters/empresaCampoPesquisaParam'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmpresaSuggestion'
 
-  /v1/empresas/{empresaId}/exportar-certificado:
+  /v1/empresas/{id}/logo:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Empresas'
+      parameters:
+        - $ref: '#/components/parameters/empresaIdPathParam'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              # a binary file of any type
+              type: string
+              format: binary
+      responses:
+        '204':
+          description: Empresa atualizada
+
+  /v1/empresas/{id}/exportar-certificado:
     parameters:
       - $ref: '#/components/parameters/empresaIdPathParam'
     get:
@@ -174,14 +224,171 @@ paths:
       tags:
         - 'Empresas'
       summary: ''
+      description: 'Download do certificado'
+      responses:
+        '200':
+          description: 'Ok'
+          headers:
+            Content-Disposition:
+              schema:
+                description: Used only with `application/octet-stream` responses
+                example: attachment; filename="certificado.pfx"
+              
+  /v1/configuracoes/link/aplicativo-a3:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Configurações'
+      summary: ''
+      description: 'Download do Applicativo A3'
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "http://hivecloud.com.br/aplicativo.jnlp"
+
+  /v1/envolvidos:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvolvidoCreate'
+      responses:
+        '201':
+          $ref: '#/components/responses/CreateResponse'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      parameters:
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/envolvidoCnpjParam'
+        - $ref: '#/components/parameters/envolvidoIEParam'
+        - $ref: '#/components/parameters/envolvidoNomeParam'
+        - $ref: '#/components/parameters/envolvidoNomeFantasiaParam'
+        - $ref: '#/components/parameters/envolvidoCampoPesquisaParam'
+      summary: ''
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvolvidoResource'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - "Envolvidos"
+      summary: ""
+      description: "Delete em lote"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteItens'
+      responses:
+        '204':
+          description: Envolvidos deletados
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/envolvidos/{id}:
+    parameters:
+      - $ref: '#/components/parameters/envolvidoIdPathParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      summary: ''
       description: ''
       responses:
         '200':
           description: 'Ok'
           content:
-            application/octet-stream:
+            application/json:
               schema:
-                $ref: '#/components/schemas/EmpresaView'
+                $ref: '#/components/schemas/EnvolvidoView'
+    put:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvolvidoCreate'
+      responses:
+        '204':
+          description: Envolvido atualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvolvidoCreate'
+      responses:
+        '204':
+          description: Envolvido atualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      summary: ''
+      description: ''
+      responses:
+        '204':
+          description: Envolvido deletado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
 components:
   securitySchemes:
@@ -234,7 +441,6 @@ components:
         type: string
         example: '9c015cc6-8471-4838-8391-e17fbc5a0a75'
 
-
     empresaTodosQueryParam:
       in: query
       name: todasEmpresas
@@ -246,7 +452,7 @@ components:
     empresaIdListParam:
       in: query
       name: empresaIdList
-      description: Lista de ids de empresas para consulta de romaneio
+      description: Lista de ids de empresas
       required: false
       schema:
         type: array
@@ -256,6 +462,21 @@ components:
           [
             '9c015cc6-8471-4838-8391-e17fbc5a0a75',
             '7d231cf5-5111-456b-93d0-df6401762adb',
+          ]
+
+    empresaCnpjListParam:
+      in: query
+      name: cnpjList
+      description: Lista de cnpj de empresas
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+        example:
+          [
+            '01234567891234',
+            '43219876543210',
           ]
 
     empresaNomeParam:
@@ -300,7 +521,7 @@ components:
 
     empresaIdPathParam:
       in: path
-      name: empresaId
+      name: id
       description: Id da empresa
       required: true
       schema:
@@ -319,7 +540,6 @@ components:
           maxLength: 36
         example: ["d8bbb6dd-dbe4-4bd8-bcea-ca58a401e529", "8aae4eab-791b-4145-9ece-93ff614fcbd9"]
 
-
     tenantIdPathParam:
       in: path
       name: tenantId
@@ -333,6 +553,64 @@ components:
       in: query
       name: campoPesquisa
       description: CNPJ, Nome ou Nome Fantasia da empresa para consulta
+      required: false
+      schema:
+        type: string
+        example: 'transportadora'
+
+    envolvidoNomeParam:
+      in: query
+      name: nome
+      description: Nome da envolvido
+      required: false
+      schema:
+        type: string
+        example: 'Transporta Tudo'
+        maxLength: 60
+
+    envolvidoNomeFantasiaParam:
+      in: query
+      name: nomeFantasia
+      description: Nome fantasia da envolvido
+      required: false
+      schema:
+        type: string
+        example: 'Transporta Tudo'
+        maxLength: 60
+
+    envolvidoCnpjParam:
+      in: query
+      name: cnpj
+      description: CNPJ da envolvido
+      required: false
+      schema:
+        type: string
+        example: '12345678901234'
+        maxLength: 14
+
+    envolvidoIEParam:
+      in: query
+      name: ie
+      description: Inscrição estadual da envolvido
+      required: false
+      schema:
+        type: string
+        example: '12345678901234'
+        maxLength: 14
+
+    envolvidoIdPathParam:
+      in: path
+      name: id
+      description: Id do envolvido
+      required: true
+      schema:
+        type: string
+        example: "00a34581-03d8-4ef4-aa54-d45cd5353743"
+
+    envolvidoCampoPesquisaParam:  
+      in: query
+      name: campoPesquisa
+      description: CNPJ, Nome ou Nome Fantasia da envolvido para consulta
       required: false
       schema:
         type: string
@@ -356,9 +634,23 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+    
+    Conflict:
+      description: Não é possível excluir
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
 
     BadRequest:
       description: Problemas na requisição
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    MultiStatus:
+      description: Problemas na operação
       content:
         application/json:
           schema:
@@ -380,11 +672,16 @@ components:
           type: string
           example: 'Não Encontrado'
           description: 'Descrição resumida do erro'
-        validations:
+        errors:
           type: array
           items:
             type: string
           example: []
+        validations:
+          type: array
+          items:
+            type: string
+          example: []  
         message:
           type: string
           description: 'Descrição mais detalahda do erro'
@@ -483,9 +780,6 @@ components:
 
     EmpresaCreate:
       properties:
-        id:
-          type: string
-          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         nome:
           type: string
           example: 'Transporta Tudo'
@@ -620,6 +914,193 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Empresa'
+
+    Envolvido:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+        nome:
+          type: string
+          example: 'Transporta Tudo'
+          maxLength: 60
+          nullable: false
+        nomeFantasia:
+          type: string
+          maxLength: 60
+          nullable: false
+          example: 'Transporta Tudo'
+        cnpj:
+          type: string
+          minLength: 11
+          maxLength: 14
+          nullable: false
+          example: '12345678901234'
+        ie:
+          type: string
+          maxLength: 14
+          nullable: false
+          example: '123456'
+        emailsAlternativos:
+          type: string
+          maxLength: 8
+          nullable: true
+          example: 'teste@teste.com,teste@teste.com'
+        telefone:
+          type: string
+          minLength: 7
+          maxLength: 13
+          nullable: false
+          example: '81999999999'
+        email:
+          type: string
+          maxLength: 60
+          nullable: true
+          example: 'teste@teste.com'
+        endereco:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+          example: 'Texto da observação. Escrito aqui.'
+
+    EnvolvidoCreate:
+      properties:
+        nome:
+          type: string
+          example: 'Transporta Tudo'
+          maxLength: 60
+          nullable: false
+        nomeFantasia:
+          type: string
+          maxLength: 60
+          nullable: false
+          example: 'Transporta Tudo'
+        cnpj:
+          type: string
+          minLength: 11
+          maxLength: 14
+          nullable: false
+          example: '12345678901234'
+        ie:
+          type: string
+          maxLength: 14
+          nullable: false
+          example: '123456'
+        emailsAlternativos:
+          type: string
+          maxLength: 8
+          nullable: true
+          example: 'teste@teste.com,teste@teste.com'
+        telefone:
+          type: string
+          minLength: 7
+          maxLength: 13
+          nullable: false
+          example: '81999999999'
+        email:
+          type: string
+          maxLength: 60
+          nullable: true
+          example: 'teste@teste.com'
+        endereco:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+          example: 'Texto da observação. Escrito aqui.'
+
+    EnvolvidoView:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+        nome:
+          type: string
+          example: 'Transporta Tudo'
+          maxLength: 60
+          nullable: false
+        nomeFantasia:
+          type: string
+          maxLength: 60
+          nullable: false
+          example: 'Transporta Tudo'
+        cnpj:
+          type: string
+          minLength: 11
+          maxLength: 14
+          nullable: false
+          example: '12345678901234'
+        ie:
+          type: string
+          maxLength: 14
+          nullable: false
+          example: '123456'
+        emailsAlternativos:
+          type: string
+          maxLength: 8
+          nullable: true
+          example: 'teste@teste.com,teste@teste.com'
+        telefone:
+          type: string
+          minLength: 7
+          maxLength: 13
+          nullable: false
+          example: '81999999999'
+        email:
+          type: string
+          maxLength: 60
+          nullable: true
+          example: 'teste@teste.com'
+        endereco:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+          example: 'Texto da observação. Escrito aqui.'
+        logoUrl:
+          type: string
+          nullable: true
+          example: 'https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg'
+
+    EnvolvidoSummary:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+        nome:
+          type: string
+          example: 'Nova Geração Transporte'
+        municipio:
+          type: string
+          example: 'Recife'
+        uf:
+          type: string
+          example: 'PE'
+
+    EnvolvidoSuggestion:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+        nome:
+          type: string
+          example: 'Nova Geração Transporte'
+        cnpj:
+          type: string
+          example: '33598634021'
+
+    EnvolvidoResource:
+      allOf:
+        - $ref: '#/components/schemas/PagedResource'
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Envolvido'
 
     DeleteItens:
         type: array
