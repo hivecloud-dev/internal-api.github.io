@@ -43,7 +43,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/AmbienteResource'
 
-  /v1/ambientes/{tenantId}/acessos:
+  /v1/usuarios:
     parameters:
       - $ref: '#/components/parameters/tenantIdPathParam'
       - $ref: '#/components/parameters/usuarioLogadoHeaderParam'
@@ -51,7 +51,7 @@ paths:
       security:
         - tokenAuth: []
       tags:
-        - 'Acessos Ambientes'
+        - 'Usuários'
       summary: ''
       description: ''
       requestBody:
@@ -59,7 +59,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AcessoAmbienteCreate'
+              $ref: '#/components/schemas/UsuarioCreate'
       responses:
         '201':
           $ref: '#/components/responses/CreateResponse'
@@ -67,7 +67,7 @@ paths:
       security:
         - tokenAuth: []
       tags:
-        - 'Acessos Ambientes'
+        - 'Usuários'
       parameters:
         - $ref: '#/components/parameters/pageNumberParam'
         - $ref: '#/components/parameters/pageSizeParam'
@@ -79,12 +79,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AcessoAmbienteResource'
+                $ref: '#/components/schemas/UsuarioResource'
     delete:
       security:
         - tokenAuth: []
       tags:
-        - 'Acessos Ambientes'
+        - 'Usuários'
       summary: ''
       description: ''
       responses:
@@ -101,6 +101,25 @@ paths:
                     '9c015cc6-8471-4838-8391-e17fbc5a0a75',
                     '7d231cf5-5111-456b-93d0-df6401762adb',
                   ]
+
+  /v1/usuarios/{id}:
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Usuários'
+      parameters:
+        - $ref: '#/components/parameters/UsuarioIdPathParam'
+      summary: ''
+      description: ''
+      responses:
+        '204':
+          description: Operacao deletada
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /v1/ambientes/licenca:
     get:
@@ -121,7 +140,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /v1/ambientes/{tenantId}/habilitar-homologacao:
+  /v1/ambientes/{id}/habilitar-homologacao:
     parameters:
       - $ref: '#/components/parameters/tenantIdPathParam'
       - $ref: '#/components/parameters/usuarioLogadoHeaderParam'
@@ -214,7 +233,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
   
-  /v1/empresas/{empresaId}:
+  /v1/empresas/{id}:
     parameters:
       - $ref: '#/components/parameters/empresaIdPathParam'
     get:
@@ -269,7 +288,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /v1/empresas/{empresaId}/logo:
+  /v1/empresas/{id}/logo:
     post:
       security:
         - tokenAuth: []
@@ -382,7 +401,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Rastreamento'
 
-  /v1/entregadores/{entregadorId}/preview:
+  /v1/entregadores/{id}/preview:
     get:
       security:
         - tokenAuth: []
@@ -401,7 +420,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/EntregadorPreview'
 
-  /v1/romaneios/{romaneioId}/preview:
+  /v1/romaneios/{id}/preview:
     get:
       security:
         - tokenAuth: []
@@ -446,7 +465,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/RomaneioSuggestion'
 
-  /v1/romaneios/{romaneioId}/operacoes/preview:
+  /v1/romaneios/{id}/operacoes/preview:
     get:
       security:
         - tokenAuth: []
@@ -467,7 +486,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/OperacaoPreview'
 
-  /v1/romaneios/{romaneioId}/operacoes:
+  /v1/romaneios/{id}/operacoes:
     get:
       security:
         - tokenAuth: []
@@ -561,8 +580,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-
-  /v1/romaneios/{romaneioId}:
+  /v1/romaneios/{id}:
     get:
       security:
         - tokenAuth: []
@@ -764,7 +782,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/EntregadorSuggestion'
 
-  /v1/entregadores/{entregadorId}:
+  /v1/entregadores/{id}:
     get:
       security:
         - tokenAuth: []
@@ -823,7 +841,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /v1/entregadores/{entregadorId}/historico:
+  /v1/entregadores/{id}/historico:
     get:
       security:
         - tokenAuth: []
@@ -928,7 +946,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /v1/operacoes/{operacaoId}:
+  /v1/operacoes/{id}:
     get:
       security:
         - tokenAuth: []
@@ -989,7 +1007,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /v1/operacoes/{operacaoId}/ocorrencias:
+  /v1/operacoes/{id}/ocorrencias:
     get:
       security:
         - tokenAuth: []
@@ -1061,7 +1079,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/pageNumberParam'
         - $ref: '#/components/parameters/pageSizeParam'
-        - $ref: '#/components/parameters/tipoOcorrenciaAtivosQueryParam'
+        - $ref: '#/components/parameters/tipoOcorrenciaCodigoQueryParam'
+        - $ref: '#/components/parameters/tipoOcorrenciaDesativadoQueryParam'
+        - $ref: '#/components/parameters/tipoOcorrenciaPadraoQueryParam'
+        - $ref: '#/components/parameters/tipoOcorrenciaTipoOperacaoQueryParam'
 
       summary: ''
       description: ''
@@ -1113,36 +1134,6 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /v1/tipos-ocorrencias/{tipoOcorrenciaId}/habilitar-tipo-ocorrencia:
-    post:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Tipos de Ocorrências'
-      parameters:
-        - $ref: '#/components/parameters/tipoOcorrenciaIdPathParam'
-      summary: ''
-      description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                acao:
-                  type: string
-                  enum:
-                    - ATIVAR
-                    - DESATIVAR
-                  nullable: false
-              required:
-                - acao
-      responses:
-        '204':
-          description: 'Tipos de Ocorrências atualizadas'
-
   /v1/tipos-ocorrencia/{tipoOcorrenciaId}/padrao:
     post:
       security:
@@ -1157,6 +1148,42 @@ paths:
       responses:
         '204':
           description: 'Tipo de Ocorrência se tornou padrão'
+
+  /v1/tipos-ocorrencia/ativar:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Tipos de Ocorrências'
+      summary: ''
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteItens'
+      responses:
+        '204':
+          description: 'Tipos de Ocorrência ativas'
+    
+  /v1/tipos-ocorrencia/desativar:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Tipos de Ocorrências'
+      summary: ''
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteItens'
+      responses:
+        '204':
+          description: 'Tipos de Ocorrência desativas'
 
   /v1/preferencias:
     parameters:
@@ -1529,7 +1556,7 @@ components:
 
     romaneioIdPathParam:
       in: path
-      name: romaneioId
+      name: id
       description: Id do romaneio
       required: true
       schema:
@@ -1547,7 +1574,7 @@ components:
 
     entregadorIdPathParam:
       in: path
-      name: entregadorId
+      name: id
       description: Id do entregador
       required: true
       schema:
@@ -1724,7 +1751,7 @@ components:
 
     empresaIdPathParam:
       in: path
-      name: empresaId
+      name: id
       description: Id da empresa
       required: true
       schema:
@@ -1752,17 +1779,40 @@ components:
         type: string
         example: '00a34581-03d8-4ef4-aa54-d45cd5353743'
 
-    tipoOcorrenciaAtivosQueryParam:
+    tipoOcorrenciaPadraoQueryParam:
       in: query
-      name: ocorrenciasAtivas
-      description: Filtro pro ativação. TRUE, para apenas ativas e FALSE, para apenas desativas
+      name: padrao
+      description: Filtro pro ocorrências PADRÃO. TRUE, para padrão e FALSE, todas exceto padrão
       required: false
       schema:
         type: boolean
+    tipoOcorrenciaDesativadoQueryParam:
+      in: query
+      name: desativado
+      description: Filtro pro ativação. TRUE, para apenas desativadas e FALSE, para apenas ativadas
+      required: false
+      schema:
+        type: boolean
+    tipoOcorrenciaCodigoQueryParam:
+      in: query
+      name: codigo
+      description: Código do Tipo Ocorrência
+      required: false
+      schema:
+        type: string
+        example: '999'
+    tipoOcorrenciaTipoOperacaoQueryParam:
+      in: query
+      name: tipoOperacao
+      description: Tipo da Operação
+      required: false
+      schema:
+        allOf:
+          - $ref: '#/components/schemas/TipoOperacao'
 
     tenantIdPathParam:
       in: path
-      name: tenantId
+      name: id
       description: Id do ambiente
       required: true
       schema:
@@ -1913,7 +1963,7 @@ components:
 
     operacaoIdPathParam:
       in: path
-      name: operacaoId
+      name: id
       description: Id da operação
       required: true
       schema:
@@ -2069,6 +2119,7 @@ components:
             '9c015cc6-8471-4838-8391-e17fbc5a0a75',
             '7d231cf5-5111-456b-93d0-df6401762adb',
           ]
+
     OrdemServicoT3PLCampoPesquisaParam:
       in: query
       name: campoPesquisa
@@ -2077,6 +2128,15 @@ components:
       schema:
         type: string
         example: '123'
+
+    UsuarioIdPathParam:
+      in: path
+      name: id
+      description: Id do usuário
+      required: true
+      schema:
+        type: string
+        example: '00a34581-03d8-4ef4-aa54-d45cd5353743'
 
   responses:
     CreateResponse:
@@ -3295,7 +3355,7 @@ components:
               items:
                 $ref: '#/components/schemas/Ambiente'
 
-    AcessoAmbienteResource:
+    UsuarioResource:
       allOf:
         - $ref: '#/components/schemas/PagedResource'
         - type: object
@@ -3303,28 +3363,38 @@ components:
             content:
               type: array
               items:
-                $ref: '#/components/schemas/AcessoAmbiente'
+                $ref: '#/components/schemas/Usuario'
 
-    AcessoAmbiente:
+    Usuario:
       properties:
         id:
           type: string
           example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
         login:
           type: string
-          example: "usuario"
+          example: 'jose.lito'
+          nullable: false
+        nome:
+          type: string
+          example: 'Joselito'
+          maxLength: 60
+          nullable: false
+        email:
+          type: string
+          example: 'suporte@hivecloud.com.br'
+          nullable: false
         tipoAcesso:
           oneOf:
-            - $ref: "#/components/schemas/TipoAcesso"
+            - $ref: "#/components/schemas/UsuarioPerfil"
 
-    AcessoAmbienteCreate:
+    UsuarioCreate:
       properties:
         login:
           type: string
           example: "usuario"
         tipoAcesso:
           allOf:
-            - $ref: '#/components/schemas/TipoAcesso'
+            - $ref: '#/components/schemas/UsuarioPerfil'
 
     DeleteItens:
         type: array
@@ -3481,6 +3551,11 @@ components:
           type: string
           nullable: true
           example: 'https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg'
+        dataCadastramento:
+          type: string
+          format: date
+          example: '2021-01-25'
+          nullable: false
 
     EmpresaSummary:
       properties:
@@ -3535,20 +3610,28 @@ components:
               type: boolean
               example: false
               nullable: false
-            quantidade:
+            total:
               type: integer
               example: 30
+              nullable: true
+            quantidade:
+              type: integer
+              example: 3
               nullable: true
         armazenamento:
           type: object
           properties:
             ilimitado:
               type: boolean
-              example: true
+              example: false
               nullable: false
+            total:
+              type: integer
+              example: 30
+              nullable: true
             quantidade:
               type: integer
-              example: 0
+              example: 5
               nullable: true
 
         contaId:
@@ -3765,7 +3848,7 @@ components:
 
     IntegracaoT3PL:
       properties:
-        tenantToken:
+        tenant:
           type: string
           example: 'abc-def-ghi'
           nullable: false
@@ -3887,7 +3970,7 @@ components:
       - "TESTE"
       example: "PRODUCAO"
 
-    TipoAcesso:
+    UsuarioPerfil:
       type: string
       enum:
       - "USUARIO"
