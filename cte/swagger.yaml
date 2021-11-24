@@ -769,7 +769,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResultadoEmissao'
+                $ref: '#/components/schemas/TransactionId'
         '204':
           description: Cte(s) gerados
         '400':
@@ -1244,6 +1244,26 @@ paths:
                 $ref: '#/components/schemas/ValoresIniciaisDadosGerais'
         '400':
           $ref: '#/components/responses/BadRequest'
+
+  /v1/ctes/remover-ctes/:
+    delete:
+      security:
+        - tokenAuth: [ ]
+        - tenantAuth: [ ]
+      tags:
+        - 'CTe'
+      summary: ''
+      description: 'Delete em lote'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteItens'
+      responses:
+        '200':
+          description: ''
+        '500':
+          description: ''
 
 components:
   securitySchemes:
@@ -3727,6 +3747,9 @@ components:
           items:
             type: string
           example: ['8456978453845697845384569784538456978453']
+        valorTotalFrete:
+          type: number
+          example: 895.56
 
     ComponenteFrete:
       properties:
@@ -3962,6 +3985,12 @@ components:
           type: string
         iniciadaSucesso:
           type: boolean
+
+    TransactionId:
+      properties:
+        id:
+          type: string
+          example: '9384aa84-80e0-420f-9ab5-6320ded10283'
 
     TipoEmissao:
       type: string
