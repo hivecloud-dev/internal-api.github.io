@@ -1265,6 +1265,29 @@ paths:
         '500':
           description: ''
 
+  /v1/utils/consultar-cep/{cep}:
+    parameters:
+      - $ref: '#/components/parameters/cepConsultarEnderecoPathParam'
+    get:
+      security:
+        - tokenAuth: [ ]
+        - tenantAuth: [ ]
+      tags:
+        - 'Endereço'
+      summary: ''
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Localidade'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
   securitySchemes:
     tokenAuth:
@@ -1315,6 +1338,15 @@ components:
       schema:
         type: string
         example: '9c015cc6-8471-4838-8391-e17fbc5a0a75'
+
+    cepConsultarEnderecoPathParam:
+      in: path
+      name: cep
+      description: cep para busca de indereço
+      required: true
+      schema:
+        type: string
+        example: '00000000'
 
     tenantIDHeaderParam:
       in: header
