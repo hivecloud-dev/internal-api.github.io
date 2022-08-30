@@ -1288,6 +1288,25 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /v1/ambientes/existe-tenant-cadastrado:
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Tenant'
+      summary: ''
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CriacaoTenantResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
   securitySchemes:
     tokenAuth:
@@ -4312,3 +4331,9 @@ components:
         numero:
           type: integer
           example: 652333
+
+    CriacaoTenantResponse:
+      properties:
+        tenantCadastrado:
+          type: boolean
+          example: true
