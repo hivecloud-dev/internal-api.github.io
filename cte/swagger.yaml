@@ -1264,6 +1264,24 @@ paths:
           description: ''
         '500':
           description: ''
+  /v1/integrar:
+    post:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Integração'
+      summary: "Método que cria um CTe via da integração, autocompletando os dados a partir das configurações"
+      operationId: "integrarCte"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CteIntegracao"
+        required: true
+      responses:
+        responses:
+          '201':
+            $ref: '#/components/responses/CreateResponseId'
 
   /v1/utils/consultar-cep/{cep}:
     parameters:
@@ -4337,3 +4355,673 @@ components:
         tenantCadastrado:
           type: boolean
           example: true
+
+    CteIntegracao:
+      type: "object"
+      example:
+        idIntegracao: "a9ee59cd-0e1c-4b2f-b043-17cd9cb2f8ce"
+        remetente:
+          telefone: "11993580564"
+          inscricaoFederal: "39702201000176"
+          inscricaoEstadual: "491999630084"
+          nome: "Daniela e Daniel Pães e Doces Ltda"
+          email: "almoxarifado@danielaedanielpaesedocesltda.com.br"
+          endereco:
+            uf: "SP"
+            logradouro: "Rua Doutor Afonso Pena Júnior"
+            numero: "178"
+            bairro: "Vila Sônia"
+            municipio: "São Paulo"
+            pais: "BRASIL"
+            cep: "05622040"
+        destinatario:
+          consumidorFinal: false
+          telefone: "21981997671"
+          inscricaoFederal: "75585793000157"
+          inscricaoEstadual: "33509383"
+          nome: "Renata e Rebeca Contábil ME"
+          email: "manutencao@renataerebecacontabilme.com.br"
+          endereco:
+            uf: "SP"
+            logradouro: "Rua Joaquim Pereira de Matos"
+            numero: "283"
+            bairro: "Inoã"
+            municipio: "Maricá"
+            pais: "BRASIL"
+            cep: "24943700"
+        tomador:
+          atividade: "SERVICO"
+          telefone: "21981997671"
+          inscricaoFederal: "75585793000157"
+          inscricaoEstadual: "33509383"
+          nome: "Renata e Rebeca Contábil ME"
+          email: "manutencao@renataerebecacontabilme.com.br"
+          endereco:
+            uf: "SP"
+            logradouro: "Rua Joaquim Pereira de Matos"
+            numero: "283"
+            bairro: "Inoã"
+            municipio: "Maricá"
+            pais: "BRASIL"
+            cep: "24943700"
+        embutirImposto: true
+        frete:
+          freteValor: 150.00
+          fretePeso: 50.00
+          adValorem: 30.00
+          outrosFretes:
+            - nomeFrete: taxa descarga
+              valorFrete: 15.00
+            - nomeFrete: taxa dificil acesso
+              valorFrete: 30.00
+        carga:
+          valorTotal: 1490.00
+          produtoPredominante: Borrecha
+          medidas:
+            unidades: 50000
+            pesoBrutoKG: 1000
+            outrasMedidas:
+              - nomeMedida: peso drenado
+                valorMedida: 999
+                tipoMedida: KG
+        documentos:
+          chaveAcessoNFe:
+            - "25160208974214000170550010000323421000145023"
+            - "35160203665157000124550010000454941000401441"
+        tipoTransporte:
+          rodoviario:
+            RNTRC: 44444444
+        observacaoGeral: "Cte de testes, emitido durante treinamento"
+        observacaoIntegracaoContribuinte:
+          - campo: "Lei da Transparência"
+            texto: "O valor aproximado de tributos incidentes sobre o preço deste serviço é de R$ 0.0"
+      required:
+        - idIntegracao
+        - remetente
+        - destinatario
+        - tomador
+        - frete
+        - carga
+        - documentos
+        - tipoTransporte
+      properties:
+        idIntegracao:
+          type: "string"
+          example: "a9ee59cd-0e1c-4b2f-b043-17cd9cb2f8ce"
+          description: "Chave que irá identificar unicamente este CTE"
+        remetente:
+          title: "Remetente"
+          description: "Pessoa / Endereço de origem da carga"
+          allOf:
+            - $ref: "#/components/schemas/EnvolvidoIntegracao"
+          example:
+            telefone: "11993580564"
+            inscricaoFederal: "39702201000176"
+            inscricaoEstadual: "491999630084"
+            nome: "Daniela e Daniel Pães e Doces Ltda"
+            email: "almoxarifado@danielaedanielpaesedocesltda.com.br"
+            endereco:
+              uf: "SP"
+              logradouro: "Rua Doutor Afonso Pena Júnior"
+              numero: "178"
+              bairro: "Vila Sônia"
+              municipio: "São Paulo"
+              pais: "BRASIL"
+              cep: "05622040"
+        expedidor:
+          title: "Expedidor"
+          description: "Pessoa / Endereço de origem da carga, quando a mesma não está saindo do local descrito em Remetente"
+          allOf:
+            - $ref: "#/components/schemas/EnvolvidoIntegracao"
+          example:
+            telefone: "1135002751"
+            inscricaoFederal: "58450136000183"
+            inscricaoEstadual: "516745520741"
+            nome: "Nicolas e Larissa Doces & Salgados ME"
+            email: "financeiro@nicolaselarissadocessalgadosme.com.br"
+            endereco:
+              uf: "SP"
+              complemento: ""
+              logradouro: "Rua Francisco Cordeiro"
+              numero: "150"
+              bairro: "Lajeado"
+              municipio: "São Paulo"
+              pais: "BRASIL"
+              cep: "08451170"
+        recebedor:
+          title: "Recebedor"
+          description: "Pessoa / Endereço de destino da carga, quando a mesma não será entregue do local descrito em Destinatário"
+          allOf:
+            - $ref: "#/components/schemas/EnvolvidoIntegracao"
+          example:
+            telefone: "2126312825"
+            inscricaoFederal: "32278636000196"
+            inscricaoEstadual: "50722864"
+            nome: "Lara e Josefa Joalheria ME"
+            email: "atendimento@laraejosefajoalheriame.com.br"
+            endereco:
+              uf: "RJ"
+              logradouro: "Rua Dona Clara de Araújo"
+              numero: "293"
+              bairro: "Vila Sônia"
+              municipio: "Nova Iguaçu"
+              pais: "BRASIL"
+              cep: "26010390"
+        destinatario:
+          title: "Destinatário"
+          description: "Pessoa / Endereço de destino da carga"
+          allOf:
+            - $ref: "#/components/schemas/DestinatarioIntegracao"
+          example:
+            consumidorFinal: false
+            telefone: "21981997671"
+            inscricaoFederal: "75585793000157"
+            inscricaoEstadual: "33509383"
+            nome: "Renata e Rebeca Contábil ME"
+            email: "manutencao@renataerebecacontabilme.com.br"
+            endereco:
+              uf: "SP"
+              logradouro: "Rua Joaquim Pereira de Matos"
+              numero: "283"
+              bairro: "Inoã"
+              municipio: "Maricá"
+              pais: "BRASIL"
+              cep: "24943700"
+        tomador:
+          title: "Tomador"
+          description: "Pessoa responsável pelo recolhimento do imposto gerado por esse transporte"
+          allOf:
+            - $ref: "#/components/schemas/TomadorIntegracao"
+          example:
+            atividade: "SERVICO"
+            telefone: "21981997671"
+            inscricaoFederal: "75585793000157"
+            inscricaoEstadual: "33509383"
+            nome: "Renata e Rebeca Contábil ME"
+            email: "manutencao@renataerebecacontabilme.com.br"
+            endereco:
+              uf: "SP"
+              logradouro: "Rua Joaquim Pereira de Matos"
+              numero: "283"
+              bairro: "Inoã"
+              municipio: "Maricá"
+              pais: "BRASIL"
+              cep: "24943700"
+        dataOperacao:
+          type: "string"
+          format: "date-time"
+          example: "2023-01-01T15:14:13"
+          description: "Data em que esta operação foi realizada"
+        embutirImposto:
+          description: "Indicativo de que o ICMS deve ser diluído nas tarifas de frete"
+          type: "boolean"
+        frete:
+          $ref: "#/components/schemas/FreteIntegracao"
+        carga:
+          $ref: "#/components/schemas/CargaIntegracao"
+        documentos:
+          $ref: "#/components/schemas/DocumentosIntegracao"
+        tipoTransporte:
+          type: "object"
+          description: "Informações sobre o tipo de transporte, se será Aéreo ou Rodoviário"
+          example:
+            rodoviario:
+              RNTRC: 44444444
+          oneOf:
+            - type: "object"
+              properties:
+                rodoviario:
+                  $ref: "#/components/schemas/RodoviarioIntegracao"
+            - type: "object"
+              properties:
+                aereo:
+                  $ref: "#/components/schemas/AereoIntegracao"
+        subcontratacaoRedespacho:
+          type: "object"
+          description: "Informações em caso do transporte ser uma Subcontratação ou um Redespacho"
+          required:
+            - tipoServico
+            - documentosAnteriores
+          properties:
+            tipoServico:
+              type: "string"
+              enum:
+                - "SUBCONTRATACAO"
+                - "REDESPACHO"
+            documentosAnteriores:
+              type: "array"
+              description: "Documentos originais do transporte que está sendo subcontratado ou redespachado"
+              items:
+                $ref: "#/components/schemas/DocumentosAnterioresIntegracao"
+        observacaoGeral:
+          type: "string"
+          maxLength: 2000
+          description: "Observações gerais do documento"
+        observacaoIntegracaoFisco:
+          type: "array"
+          description: "Observações para uso do Fisco"
+          maxItems: 10
+          items:
+            type: "object"
+            required:
+              - campo
+              - texto
+            properties:
+              campo:
+                type: "string"
+                maxLength: 20
+              texto:
+                type: "string"
+                maxLength: 60
+        observacaoIntegracaoContribuinte:
+          type: "array"
+          description: "Observações para uso do Contribuinte"
+          maxItems: 10
+          items:
+            type: "object"
+            required:
+              - campo
+              - texto
+            properties:
+              campo:
+                type: "string"
+                maxLength: 20
+              texto:
+                type: "string"
+                maxLength: 60
+        autorizadosXML:
+          type: "array"
+          description: "Conjunto de Inscrições Federais que poderão acessar esse documento na íntegra após a sua autorização"
+          maxLength: 14
+          maxItems: 10
+          items:
+            type: "string"
+        sobrescritas:
+          $ref: "#/components/schemas/SobrescritasIntegracao"
+    EnvolvidoIntegracao:
+      type: "object"
+      required:
+        - inscricaoFederal
+        - nome
+        - telefone
+        - endereco
+      properties:
+        inscricaoFederal:
+          type: "string"
+        nome:
+          type: "string"
+        telefone:
+          type: "string"
+        email:
+          type: "string"
+          format: email
+        inscricaoEstadual:
+          type: "string"
+        endereco:
+          allOf:
+            - $ref: "#/components/schemas/EnderecoIntegracao"
+    DestinatarioIntegracao:
+      allOf:
+        - $ref: "#/components/schemas/EnvolvidoIntegracao"
+      type: "object"
+      properties:
+        consumidorFinal:
+          type: "boolean"
+    TomadorIntegracao:
+      allOf:
+        - $ref: "#/components/schemas/EnvolvidoIntegracao"
+      type: "object"
+      properties:
+        atividade:
+          type: "string"
+          enum:
+            - "NAO_CONTRIBUINTE"
+            - "INDUSTRIA"
+            - "COMERCIO"
+            - "AUTONOMO"
+            - "SERVICO"
+            - "PRODUTORRURAL"
+            - "COMUNICACAO"
+            - "ENERGIA"
+            - "OUTROS"
+            - "TRANSPORTE"
+    EnderecoIntegracao:
+      type: "object"
+      required:
+        - logradouro
+        - numero
+        - bairro
+        - municipio
+        - uf
+        - cep
+        - complemento
+      properties:
+        pais:
+          type: "string"
+          maxLength: 60
+        logradouro:
+          type: "string"
+          maxLength: 60
+        numero:
+          type: "string"
+          maxLength: 30
+        bairro:
+          type: "string"
+          maxLength: 60
+        municipio:
+          type: "string"
+          maxLength: 60
+        uf:
+          type: "string"
+          maxLength: 2
+        cep:
+          type: "string"
+          maxLength: 8
+        complemento:
+          type: "string"
+          maxLength: 60        -
+    FreteIntegracao:
+      description: "Valores do frete deste transporte"
+      type: "object"
+      example:
+        freteValor: 150.00
+        fretePeso: 50.00
+        adValorem: 30.00
+        outrosFretes:
+          - nomeFrete: taxa descarga
+            valorFrete: 15.00
+          - nomeFrete: taxa dificil acesso
+            valorFrete: 30.00
+      properties:
+        freteValor:
+          type: "number"
+          format: "decimal"
+        fretePeso:
+          type: "number"
+          format: "decimal"
+        pedagio:
+          type: "number"
+          format: "decimal"
+        coleta:
+          type: "number"
+          format: "decimal"
+        gris:
+          type: "number"
+          format: "decimal"
+        adValorem:
+          type: "number"
+          format: "decimal"
+        outrosFretes:
+          type: "array"
+          items:
+            type: "object"
+            required:
+              - nomeFrete
+              - valorFrete
+            properties:
+              nomeFrete:
+                type: "string"
+              valorFrete:
+                type: "number"
+                format: "decimal"
+    CargaIntegracao:
+      description: "Informações referentes aos dados da carga, consolidados"
+      type: "object"
+      example:
+        valorTotal: 1490.00
+        produtoPredominante: Borrecha
+        medidas:
+          unidades: 50000
+          pesoBrutoKG: 1000
+          outrasMedidas:
+            - nomeMedida: peso drenado
+              valorMedida: 999
+              tipoMedida: KG
+      required:
+        - valorTotal
+        - produtoPredominante
+        - medidas
+      properties:
+        valorTotal:
+          type: "number"
+          format: "decimal"
+        produtoPredominante:
+          type: "string"
+          maxLength: 60
+        medidas:
+          $ref: "#/components/schemas/MedidasIntegracao"
+
+    MedidasIntegracao:
+      type: "object"
+      properties:
+        unidades:
+          type: "integer"
+        pesoBrutoKG:
+          type: "number"
+          format: "decimal"
+        pesoLiquidoKg:
+          type: "number"
+          format: "decimal"
+        pesoCubadoKg:
+          type: "number"
+          format: "decimal"
+        volumeM3:
+          type: "number"
+          format: "decimal"
+        cubagemM3:
+          type: "number"
+          format: "decimal"
+        outrasMedidas:
+          type: "array"
+          items:
+            type: "object"
+            required:
+              - nomeMedida
+              - valorMedida
+              - tipoMedida
+            properties:
+              nomeMedida:
+                type: "string"
+              valorMedida:
+                type: "number"
+                format: "decimal"
+              tipoMedida:
+                type: "string"
+                enum:
+                  - "M3"
+                  - "KG"
+                  - "TON"
+                  - "UNIDADE"
+                  - "LITROS"
+                  - "MMBTU"
+
+    DocumentosIntegracao:
+      description: "Informações sobre os documentos transportados, podendo ser um conjunto de NFes ou um conjunto de 'Outros' documentos"
+      example:
+        chaveAcessoNFe:
+          - "25160208974214000170550010000323421000145023"
+          - "35160203665157000124550010000454941000401441"
+      oneOf:
+        - type: object
+          properties:
+            chaveAcessoNFe:
+              type: array
+              items:
+                type: "string"
+                maxLength: 36
+        - type: object
+          properties:
+            outros:
+              type: array
+              items:
+                type: "object"
+                required:
+                  - tipo
+                properties:
+                  tipo:
+                    type: "string"
+                    enum:
+                      - "DECLARACAO"
+                      - "DUTOVIARIO"
+                      - "CF_E_SAT"
+                      - "NFC_E"
+                      - "OUTROS"
+                  numero:
+                    type: "string"
+                  dataEmissao:
+                    type: "string"
+                    format: "date-time"
+                  valor:
+                    type: "number"
+                    format: "decimal"
+                  descricao:
+                    type: "string"
+
+    RodoviarioIntegracao:
+      type: "object"
+      properties:
+        RNTRC:
+          type: "string"
+          maxLength: 8
+    AereoIntegracao:
+      type: "object"
+      required:
+        - dataPrevista
+        - classe
+        - valorTarifa
+      properties:
+        dataPrevista:
+          type: "string"
+          format: "date-time"
+        codigoCargaEspecial:
+          type: "string"
+        classe:
+          $ref: "#/components/schemas/ClasseTarifaria"
+        dimensao:
+          type: "string"
+        valorTarifa:
+          type: "number"
+          format: "decimal"
+    DocumentosAnterioresIntegracao:
+      type: "object"
+      required:
+        - chavesCte
+        - emissor
+      properties:
+        chavesCte:
+          type: "array"
+          items:
+            type: "string"
+            maxLength: 36
+        emissor:
+          $ref: "#/components/schemas/EnvolvidoIntegracao"
+    OutrosTiposICMSIntegracao:
+      type: "object"
+      required:
+        - tipoICMS
+      properties:
+        tipoICMS:
+          type: "string"
+          enum:
+            - "ISENTO"
+            - "DIFERIDO"
+            - "SIMPLESNACIONAL"
+            - "NAOTRIBUTADO"
+    ICMSNormalIntegracao:
+      type: "object"
+      required:
+        - aliquota
+        - valorICMS
+        - valorBaseCalculo
+      properties:
+        aliquota:
+          type: "number"
+          format: "decimal"
+        valorICMS:
+          type: "number"
+          format: "decimal"
+        valorBaseCalculo:
+          type: "number"
+          format: "decimal"
+    ICMSSubstituicaoIntegracao:
+      type: "object"
+      required:
+        - aliquota
+        - valorICMS
+        - valorBaseCalculo
+        - valorCredito
+      properties:
+        aliquota:
+          type: "number"
+          format: "decimal"
+        valorICMS:
+          type: "number"
+          format: "decimal"
+        valorBaseCalculo:
+          type: "number"
+          format: "decimal"
+        valorCredito:
+          type: "number"
+          format: "decimal"
+    ICMSReducaoIntegracao:
+      type: "object"
+      required:
+        - aliquota
+        - valorICMS
+        - valorBaseCalculo
+        - percentualReducao
+      properties:
+        aliquota:
+          type: "number"
+          format: "decimal"
+        valorICMS:
+          type: "number"
+          format: "decimal"
+        valorBaseCalculo:
+          type: "number"
+          format: "decimal"
+        percentualReducao:
+          type: "number"
+          format: "decimal"
+    ICMSOutraUFIntegracao:
+      type: "object"
+      required:
+        - aliquota
+        - valorICMS
+        - valorBaseCalculo
+      properties:
+        aliquota:
+          type: "number"
+          format: "decimal"
+        valorICMS:
+          type: "number"
+          format: "decimal"
+        valorBaseCalculo:
+          type: "number"
+          format: "decimal"
+    SobrescritasIntegracao:
+      description: "Muitos campos são preenchidos automaticamente, caso haja a necessidade de inibir esse comportamento e inserir os valores diretamente, utilizar esses campos"
+      type: "object"
+      properties:
+        icms:
+          oneOf:
+            - type: "object"
+              properties:
+                outrosTipos:
+                  $ref: "#/components/schemas/OutrosTiposICMSIntegracao"
+            - type: "object"
+              properties:
+                normal:
+                  $ref: "#/components/schemas/ICMSNormalIntegracao"
+            - type: "object"
+              properties:
+                substituicao:
+                  $ref: "#/components/schemas/ICMSSubstituicaoIntegracao"
+            - type: "object"
+              properties:
+                reducao:
+                  $ref: "#/components/schemas/ICMSReducaoIntegracao"
+            - type: "object"
+              properties:
+                outraUF:
+                  $ref: "#/components/schemas/ICMSOutraUFIntegracao"
