@@ -2578,6 +2578,12 @@ components:
 
     CancelarCteItens:
       properties:
+        motivoCancelamento:
+          type: string
+        dataAtual:
+          description: "data de cancelamento"
+          type: "string"
+          format: "date-time"
         idList:
           type: array
           items:
