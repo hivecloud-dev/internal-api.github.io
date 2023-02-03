@@ -1058,26 +1058,6 @@ paths:
         '500':
           $ref: '#/components/responses/MultiStatus'
 
-    parameters:
-      - $ref: '#/components/parameters/idsCtesRemoveCtesPorIdPathParam'
-    delete:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: boolean
-                example: 1
-        '500':
-          description: 'CT-e (Série: 789, Número: 56965966), não é possível excluir CT-e com status em Processamento, Cancelado ou Autorizado! - OU - "message": "Impossível Remover um CT-e gerado através de Integração!",'
 
   /v1/ctes/imprimir-documento-cte:
     parameters:
@@ -1264,7 +1244,7 @@ paths:
           description: ''
         '500':
           description: ''
-  /v1/integrar:
+  /v1/integracoes/cte:
     post:
       security:
         - tokenAuth: [ ]
@@ -4366,6 +4346,9 @@ components:
       type: "object"
       example:
         idIntegracao: "a9ee59cd-0e1c-4b2f-b043-17cd9cb2f8ce"
+        empresa:
+          inscricaoFederal: "39702201000176"
+          inscricaoEstadual: "491999630084"
         remetente:
           telefone: "11993580564"
           inscricaoFederal: "39702201000176"
@@ -4435,14 +4418,14 @@ components:
             - "25160208974214000170550010000323421000145023"
             - "35160203665157000124550010000454941000401441"
         tipoTransporte:
-          rodoviario:
-            RNTRC: 44444444
+          tipoTransporte: "RODOVIARIO"
         observacaoGeral: "Cte de testes, emitido durante treinamento"
         observacaoIntegracaoContribuinte:
           - campo: "Lei da Transparência"
             texto: "O valor aproximado de tributos incidentes sobre o preço deste serviço é de R$ 0.0"
       required:
         - idIntegracao
+        - empresa
         - remetente
         - destinatario
         - tomador
@@ -4455,6 +4438,21 @@ components:
           type: "string"
           example: "a9ee59cd-0e1c-4b2f-b043-17cd9cb2f8ce"
           description: "Chave que irá identificar unicamente este CTE"
+        empresa:
+          title: "Empresa"
+          description: "Empresa / Filial que está realizando a emissão"
+          required:
+            - inscricaoFederal
+            - inscricaoEstadual
+          properties:
+            inscricaoFederal:
+              type: "string"
+              maxLength: 14
+            inscricaoEstadual:
+              type: "string"
+          example:
+            inscricaoFederal: "39702201000176"
+            inscricaoEstadual: "491999630084"
         remetente:
           title: "Remetente"
           description: "Pessoa / Endereço de origem da carga"
@@ -4570,18 +4568,19 @@ components:
         tipoTransporte:
           type: "object"
           description: "Informações sobre o tipo de transporte, se será Aéreo ou Rodoviário"
+          required:
+            - tipoTransporte
           example:
-            rodoviario:
-              RNTRC: 44444444
-          oneOf:
-            - type: "object"
-              properties:
-                rodoviario:
-                  $ref: "#/components/schemas/RodoviarioIntegracao"
-            - type: "object"
-              properties:
-                aereo:
-                  $ref: "#/components/schemas/AereoIntegracao"
+            tipoTransporte: "RODOVIARIO"
+          properties:
+            tipoTransporte:
+              type: "string"
+              enum:
+                - "RODOVIARIO"
+                - "AEREO"
+            aereo:
+              $ref: "#/components/schemas/AereoIntegracao"
+
         subcontratacaoRedespacho:
           type: "object"
           description: "Informações em caso do transporte ser uma Subcontratação ou um Redespacho"
@@ -4603,22 +4602,6 @@ components:
           type: "string"
           maxLength: 2000
           description: "Observações gerais do documento"
-        observacaoIntegracaoFisco:
-          type: "array"
-          description: "Observações para uso do Fisco"
-          maxItems: 10
-          items:
-            type: "object"
-            required:
-              - campo
-              - texto
-            properties:
-              campo:
-                type: "string"
-                maxLength: 20
-              texto:
-                type: "string"
-                maxLength: 60
         observacaoIntegracaoContribuinte:
           type: "array"
           description: "Observações para uso do Contribuinte"
@@ -4644,6 +4627,7 @@ components:
             type: "string"
         sobrescritas:
           $ref: "#/components/schemas/SobrescritasIntegracao"
+
     EnvolvidoIntegracao:
       type: "object"
       required:
@@ -4700,7 +4684,6 @@ components:
         - municipio
         - uf
         - cep
-        - complemento
       properties:
         pais:
           type: "string"
