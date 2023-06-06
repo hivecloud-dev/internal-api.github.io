@@ -701,29 +701,6 @@ paths:
         '500':
           description: 'CT-e (Série: 999, Número: 1607855) não está Em Digitação!'
 
-  /v1/ctes/numero-mais-recente-por-serie/{serie}:
-    parameters:
-      - $ref: '#/components/parameters/numeroMaisRecentePorSeriePathParam'
-      - $ref: '#/components/parameters/empresaIdHeaderParam'
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: '**empresaId** sempre segue no header'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: number
-                example: 1
-        '404':
-          description: 'Não Encontrado'
-
   /v1/ctes/importar-cte-nfe:
     post:
       security:
