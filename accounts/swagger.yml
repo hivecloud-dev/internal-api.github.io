@@ -1,0 +1,1137 @@
+---
+openapi: 3.0.3
+info:
+  title: Documentação da integração interna do Accounts
+  description: Esta é a documentação das interfaces REST do Accounts
+  contact:
+    name: Equipe de desenvolvimento
+    email: desenvolvimento@hivecloud.com.br
+  version: 1.0
+servers:
+  - url: /accounts/api
+    description: Servidor Local com /Accounts
+  - url: /api
+    description: Servidor Local sem /Accounts
+tags:
+  - name: Empresa
+    description: Serviços básicos da entidade Empresa
+  - name: Organizacao Acesso
+    description: Serviços básicos da entidade OrganizaçãoAcesso
+  - name: Organizacao
+    description: Serviços básicos da entidade Organização
+  - name: Pesquisa V1
+    description: Serviços básicos da Pesquisa
+paths:
+  /v1/organizacoes/{organizacaoId}/empresa:
+    get:
+      tags:
+        - Empresa
+      operationId: EmpresaControllerImp.listEmpresa
+      description: Recupera uma Coleção de Empresas baseado no parâmetro informado
+      parameters:
+        - name: organizacaoId
+          description: ID da Organizacao
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpj
+          description: Cnpj Exato da Empresa
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Uma Coleção de Empresas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmpresaDtoLista'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: listEmpresa
+    post:
+      tags:
+        - Empresa
+      operationId: EmpresaControllerImp.criarEmpresa
+      description: Criar um Empresa para uma determinada Organizacao
+      parameters:
+        - name: organizacaoId
+          description: ID da Organizacao
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarEmpresaDto'
+        description: Dados da Empresa que está sendo criado
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: criarEmpresa
+  /v1/organizacoes/{organizacaoId}/empresa/{id}:
+    get:
+      tags:
+        - Empresa
+      operationId: EmpresaControllerImp.getEmpresa
+      description: Recupera uma Empresa Acesso a partir da Identificação
+      parameters:
+        - name: organizacaoId
+          description: ID da Organização
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          description: ID da Empresa
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Empresa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpresaDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getEmpresa
+  /v1/organizacoes:
+    post:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.criarOrganizacao
+      description: Criar um Organizacao
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarOrganizacaoDto'
+        description: Dados da Organizacao
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: criarOrganizacao
+  /v1/organizacoes/por-usuario/{login}:
+    get:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.getPorUsuario
+      description: Recupera as Organizações às quais o usuário tem acesso
+      parameters:
+        - name: login
+          description: O login do usuário que tem acesso às Organizações
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpj
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Uma Coleção de Organizações
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrganizacaoDtoLista'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getPorUsuario
+  /v1/organizacoes/{id}:
+    get:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.get
+      description: Recupera uma Organização a partir da Identificação
+      parameters:
+        - name: id
+          description: ID da Organização
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Organização
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizacaoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: get
+  /v1/organizacoes/{organizacaoId}/acesso:
+    get:
+      tags:
+        - Organizacao Acesso
+      operationId: OrganizacaoAcessoControllerImp.listAcesso
+      description: Recupera uma Coleção de Organização Acessos baseado no parâmetro
+      parameters:
+        - name: organizacaoId
+          description: ID da Organizacao
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: login
+          description: Login do usuário associado á regra de acesso
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Uma Coleção de Organização Acessos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrganizacaoAcessoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: listAcesso
+    post:
+      tags:
+        - Organizacao Acesso
+      operationId: OrganizacaoAcessoControllerImp.criarAcesso
+      description: Criar um Acesso para uma determinada Organizacao
+      parameters:
+        - name: organizacaoId
+          description: ID da Organizacao
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarOrganizacaoAcessoDto'
+            examples:
+              EXEMPLO_ADM:
+                perfil: ADMIN
+                login: usuarioValido@teste.com
+              EXEMPLO_USER:
+                perfil: USER
+                login: usuarioValido@teste.com
+        description: Dados do Acesso que está sendo criado
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: criarAcesso
+  /v1/organizacoes/{organizacaoId}/acesso/{id}:
+    get:
+      tags:
+        - Organizacao Acesso
+      operationId: OrganizacaoAcessoControllerImp.getAcesso
+      description: "Recupera uma Organização Acesso a partir da Identificação, praticamente\
+        \ nunca será utilizada"
+      parameters:
+        - name: organizacaoId
+          description: ID da Organização
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          description: ID da Organização Acesso
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Organização Acesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizacaoAcessoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getAcesso
+    delete:
+      tags:
+        - Organizacao Acesso
+      operationId: OrganizacaoAcessoControllerImp.deleteAcesso
+      description: "Remove uma Organização Acesso a partir da Identificação, praticamente\
+        \ nunca será utilizada"
+      parameters:
+        - name: organizacaoId
+          description: ID da
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          description: ID da Organização Acesso
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Organização Acesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: deleteAcesso
+  /v1/pesquisas/registrar-dados:
+    post:
+      tags:
+        - Pesquisa V1
+      operationId: PesquisaV1ControllerImp.registrarPesquisaDados
+      description: Registra os dados da pesquisa.
+      parameters:
+        - name: produto
+          description: O nome do produto enviado no cabeçalho da requisição.
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PesquisaDadosDto'
+        description: O DTO contendo os dados da pesquisa.
+      responses:
+        200:
+          description: ResponseEntity contendo uma mensagem de sucesso.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: registrarPesquisaDados
+  /v1/pesquisas/retornar-pesquisa:
+    get:
+      tags:
+        - Pesquisa V1
+      operationId: PesquisaV1ControllerImp.retornarPesquisa
+      description: Retorna os dados da pesquisa para o período atual.
+      responses:
+        200:
+          description: ResponseEntity contendo o DTO do período da pesquisa.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PesquisaPeriodoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: retornarPesquisa
+components:
+  schemas:
+    CertificadoDto:
+      type: object
+      properties:
+        validadeCertificado:
+          type: string
+          format: date-time
+        tokenCertificado:
+          type: string
+        tipoCertificado:
+          $ref: '#/components/schemas/TipoCertificado'
+    CriarEmpresaDto:
+      description: "DTO de Empresa, usado para a ação de cadastramento"
+      required:
+        - tipoDocumento
+        - cpfCnpj
+        - nome
+        - endereco
+      type: object
+      properties:
+        tipoDocumento:
+          description: "Tipo do documento de identificação, se é CPF ou CNPJ"
+          $ref: '#/components/schemas/TipoDocumento'
+        cpfCnpj:
+          description: Documento de Identificação
+          type: string
+        ie:
+          description: "Inscrição estadual, informar quando possuir, ou ISENTO quando\
+            \ isento"
+          type: string
+        nome:
+          description: Nome da empresa
+          type: string
+        nomeFantasia:
+          description: Nome fantasia da empresa
+          type: string
+        email:
+          description: E-mail da empresa
+          type: string
+        telefone:
+          description: Telefone da empresa
+          type: string
+        tipoEmitente:
+          description: Tipo Emitente
+          $ref: '#/components/schemas/TipoEmitenteDto'
+        crt:
+          description: Tipo de CRT
+          $ref: '#/components/schemas/TipoCrtDto'
+        rntrc:
+          description: Número do RNTRC
+          type: string
+        endereco:
+          $ref: '#/components/schemas/EnderecoDto'
+      example:
+        tipoDocumento: CNPJ
+        cpfCnpj: '01234567890123'
+        ie: ISENTO
+        nome: Empresa de Testes
+        nomeFantasia: Testinho
+        email: empresa@teste.com
+        telefone: 81999999999
+        tipoEmitente: SERVICO
+        crt: SIMPLES_NACIONAL
+        rntrc: 12345678
+        endereco:
+          logradouro: Rua que a empresa Reside
+          numero: SN
+          codigoMunicipio: 51553
+          municipio: Recife
+          codigoUf: 51
+          uf: PE
+          cep: 52000000
+    CriarOrganizacaoAcessoDto:
+      description: "DTO de Organização Acesso, usado para a ação de cadastramento"
+      required:
+        - perfil
+        - login
+      type: object
+      properties:
+        perfil:
+          description: Perfil de permissão do Acesso que está sendo criado
+          type: string
+        login:
+          description: Login do usuário para o qual está sendo criado o Acesso
+          type: string
+      example:
+        perfil: ADMIN
+        login: usuarioValido@teste.com
+    CriarOrganizacaoDto:
+      description: "DTO de Organização, usado para a ação de cadastramento"
+      required:
+        - emailFinanceiro
+        - nomeResponsavel
+        - loginUsuarioAdministrador
+        - empresa
+      type: object
+      properties:
+        emailFinanceiro:
+          description: Email do setor financeiro
+          type: string
+        nomeResponsavel:
+          description: Nome do Responsável no setor financeiro
+          type: string
+        loginUsuarioAdministrador:
+          description: Login do usuário administrador do sistema
+          type: string
+        empresa:
+          $ref: '#/components/schemas/CriarEmpresaDto'
+      example:
+        emailFinanceiro: teste@teste.com
+        nomeResponsavel: Responsavel Financeiro
+        loginUsuarioAdministrador: usuario@valido.com
+        empresa:
+          tipoDocumento: CNPJ
+          cpfCnpj: '01234567890123'
+          ie: ISENTO
+          nome: Empresa de Testes
+          nomeFantasia: Testinho
+          email: empresa@teste.com
+          telefone: 81999999999
+          tipoEmitente: SERVICO
+          crt: SIMPLES_NACIONAL
+          rntrc: 12345678
+          endereco:
+            logradouro: Rua que a empresa Reside
+            numero: SN
+            codigoMunicipio: 51553
+            municipio: Recife
+            codigoUf: 51
+            uf: PE
+            cep: 52000000
+    EmpresaDto:
+      description: DTO de Empresa
+      type: object
+      properties:
+        id:
+          type: string
+        dataUltimaAtualizacao:
+          type: string
+          format: date-time
+        tipoDocumento:
+          $ref: '#/components/schemas/TipoDocumento'
+        cpfCnpj:
+          type: string
+        ie:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          type: string
+        email:
+          type: string
+        telefone:
+          type: string
+        tipoEmitente:
+          $ref: '#/components/schemas/TipoEmitenteDto'
+        crt:
+          $ref: '#/components/schemas/TipoCrtDto'
+        rntrc:
+          type: string
+        situacaoAtivacao:
+          $ref: '#/components/schemas/SituacaoAtivacaoDto'
+        logomarca:
+          type: string
+        empresaCte:
+          type: string
+        empresaMdfe:
+          type: string
+        organizacao:
+          $ref: '#/components/schemas/OrganizacaoDtoReduzido'
+        certificado:
+          $ref: '#/components/schemas/CertificadoDto'
+        endereco:
+          $ref: '#/components/schemas/EnderecoDto'
+        matriz:
+          type: boolean
+    EmpresaDtoLista:
+      description: "DTO de Empresa, usado nas operações de listagem"
+      type: object
+      properties:
+        id:
+          type: string
+        dataUltimaAtualizacao:
+          type: string
+          format: date-time
+        cpfCnpj:
+          type: string
+        ie:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          type: string
+        email:
+          type: string
+        uf:
+          type: string
+        municipio:
+          type: string
+        tipoEmitente:
+          $ref: '#/components/schemas/TipoEmitenteDto'
+        crt:
+          $ref: '#/components/schemas/TipoCrtDto'
+        rntrc:
+          type: string
+        situacaoAtivacao:
+          $ref: '#/components/schemas/SituacaoAtivacaoDto'
+        tipoCertificado:
+          type: string
+        matriz:
+          type: boolean
+      example:
+        id: UUID
+        dataUltimaAtualizacao: 2024-12-10 16:12:00
+        cpfCnpj: '01234567890123'
+        ie: ISENTO
+        nome: Empresa de Teste
+        nomeFantasia: Testinho
+        email: emailEmpresa@teste.com
+        uf: PE
+        municipio: Recife
+        tipoEmitente: SERVICO
+        situacaoAtivacao: ATIVADA
+        tipoCertificado: A1
+        matriz: true
+    EmpresaDtoReduzido:
+      description: "DTO de Empresa, usado principalmente para quando precisar trazer\
+        \ os dados de Empresa,\r\nporém como parte da informação de outra entidade,\
+        \ possui menor quantidade de dados"
+      type: object
+      properties:
+        id:
+          type: string
+        dataUltimaAtualizacao:
+          type: string
+          format: date-time
+        cpfCnpj:
+          type: string
+        ie:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          type: string
+        uf:
+          type: string
+        municipio:
+          type: string
+        empresaCte:
+          type: string
+        empresaMdfe:
+          type: string
+        matriz:
+          type: boolean
+      example:
+        id: UUID
+        dataUltimaAtualizacao: 2024-12-10 16:12:00
+        cpfCnpj: '01234567890123'
+        ie: ISENTO
+        nome: Empresa de Teste
+        nomeFantasia: Testinho
+        uf: PE
+        municipio: Recife
+        empresaCte: UUID
+        matriz: true
+    EnderecoDto:
+      description: DTO de Endereço
+      required:
+        - logradouro
+        - numero
+        - codigoMunicipio
+        - municipio
+        - codigoUf
+        - uf
+      type: object
+      properties:
+        logradouro:
+          description: Logradouro
+          type: string
+        cep:
+          description: CEP
+          type: string
+        numero:
+          description: Número
+          type: string
+        codigoMunicipio:
+          description: "Codigo Municipio, IGBE"
+          type: string
+        municipio:
+          description: Nome Municipio
+          type: string
+        codigoUf:
+          description: "Código da UF, IBGE"
+          type: string
+        uf:
+          description: Sigla da UF
+          type: string
+        bairro:
+          description: Bairro
+          type: string
+        complemento:
+          description: Complemento
+          type: string
+      example:
+        logradouro: Rua que a empresa Reside
+        numero: SN
+        codigoMunicipio: 51553
+        municipio: Recife
+        codigoUf: 51
+        uf: PE
+        cep: 52000000
+    OrganizacaoAcessoDto:
+      description: "DTO padrão de Organização Acesso, usado principalmente para a??es\
+        \ de View, por possuir dados mais completos"
+      type: object
+      properties:
+        id:
+          type: string
+        login:
+          type: string
+        perfil:
+          description: Perfil de permissão do Acesso
+          type: string
+        usuario:
+          $ref: '#/components/schemas/UsuarioDtoReduzido'
+      example:
+        id: UUID
+        login: loginTest@teste.com
+        perfil: ADMIN
+        usuario:
+          id: 17
+          login: loginTest@teste.com
+          nome: usuarioTesteMock
+          email: loginTest@teste.com
+    OrganizacaoAcessoDtoReduzido:
+      description: "DTO de Organização Acesso, usado principalmente para quando precisar\
+        \ trazer os dados de Organização Acesso,\r\nporém como parte da informaçã\
+        o de outra entidade, possuir menor quantidade de dados"
+      type: object
+      properties:
+        perfil:
+          description: Perfil de permissão do Acesso
+          type: string
+        usuario:
+          description: Dados do usuário vinculado ao Acesso
+          $ref: '#/components/schemas/UsuarioDtoReduzido'
+      example:
+        perfil: ADMIN
+        usuario:
+          id: 17
+          login: loginTest@teste.com
+          nome: usuarioTesteMock
+          email: loginTest@teste.com
+    OrganizacaoDto:
+      type: object
+      properties:
+        id:
+          type: string
+        cpfCnpj:
+          type: string
+        ie:
+          type: string
+        nome:
+          type: string
+        emailFinanceiro:
+          type: string
+        nomeResponsavel:
+          type: string
+        usuarioAdministrador:
+          $ref: '#/components/schemas/UsuarioDtoReduzido'
+        dataBloqueioSistemaPagamento:
+          type: string
+          format: date-time
+        dataDesativacaoSistemaPagamento:
+          type: string
+          format: date-time
+        situacaoSistemaPagamento:
+          $ref: '#/components/schemas/SituacaoClienteSistemaPagamentoDto'
+        idSistemaPagamento:
+          type: string
+        mrr:
+          type: number
+          format: double
+        perfilConta:
+          $ref: '#/components/schemas/PerfilContaDto'
+        organizacaoAccessos:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizacaoAcessoDtoReduzido'
+        empresas:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmpresaDtoReduzido'
+        tenantCte:
+          $ref: '#/components/schemas/TenantDtoReduzido'
+        tenantMdfe:
+          $ref: '#/components/schemas/TenantDtoReduzido'
+        tenantEdi:
+          $ref: '#/components/schemas/TenantDtoReduzido'
+        tenantTms:
+          $ref: '#/components/schemas/TenantDtoReduzido'
+        tenantRpa:
+          $ref: '#/components/schemas/TenantDtoReduzido'
+      example:
+        id: UUID
+        cpfCnpj: '01234567890123'
+        ie: ISENTO
+        nome: Organizacao XYZ
+        emailFinanceiro: financeiro@teste.com
+        nomeResponsavel: Responsável Financeiro
+        idSistemaPagamento: SL123
+        usuarioAdministrador:
+          id: 17
+          login: loginTest@teste.com
+          nome: usuarioTesteMock
+          email: loginTest@teste.com
+        situacaoSistemaPagamento: ATIVO
+        mrr: 0
+        organizacaoAccessos:
+          - perfil: ADMIN
+            usuario:
+              id: 17
+              login: loginTest@teste.com
+              nome: usuarioTesteMock
+              email: loginTest@teste.com
+        empresas:
+          - id: UUID
+            dataUltimaAtualizacao: 2024-12-10 16:12:00
+            cpfCnpj: '01234567890123'
+            ie: ISENTO
+            nome: Empresa de Teste
+            nomeFantasia: Testinho
+            uf: PE
+            municipio: Recife
+            empresaCte: UUID
+            matriz: true
+        tenantCte: UUID
+    OrganizacaoDtoLista:
+      type: object
+      properties:
+        id:
+          type: string
+        cpfCnpj:
+          type: string
+        ie:
+          type: string
+        nome:
+          type: string
+        usuarioAdministrador:
+          $ref: '#/components/schemas/UsuarioDtoReduzido'
+        dataBloqueioSistemaPagamento:
+          type: string
+          format: date-time
+        dataDesativacaoSistemaPagamento:
+          type: string
+          format: date-time
+        situacaoSistemaPagamento:
+          $ref: '#/components/schemas/SituacaoClienteSistemaPagamentoDto'
+        idSistemaPagamento:
+          type: string
+        mrr:
+          type: number
+          format: double
+        perfilConta:
+          $ref: '#/components/schemas/PerfilContaDto'
+        tenantCte:
+          $ref: '#/components/schemas/TenantDtoReduzido'
+        tenantMdfe:
+          $ref: '#/components/schemas/TenantDtoReduzido'
+        tenantEdi:
+          $ref: '#/components/schemas/TenantDtoReduzido'
+        tenantTms:
+          $ref: '#/components/schemas/TenantDtoReduzido'
+        tenantRpa:
+          $ref: '#/components/schemas/TenantDtoReduzido'
+      example:
+        id: UUID
+        cpfCnpj: '01234567890123'
+        ie: ISENTO
+        nome: Organizacao XYZ
+        idSistemaPagamento: SL123
+        usuarioAdministrador:
+          id: 17
+          login: loginTest@teste.com
+          nome: usuarioTesteMock
+          email: loginTest@teste.com
+        situacaoSistemaPagamento: ATIVO
+        mrr: 0
+        tenantCte: UUID
+    OrganizacaoDtoReduzido:
+      type: object
+      properties:
+        id:
+          type: string
+        cpfCnpj:
+          type: string
+        ie:
+          type: string
+        nome:
+          type: string
+        idSistemaPagamento:
+          type: string
+      example:
+        id: UUID
+        cpfCnpj: '01234567890123'
+        ie: ISENTO
+        nome: Organizacao XYZ
+        idSistemaPagamento: SL123
+    PageMetadata:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          format: int64
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+    PerfilContaDto:
+      type: string
+      enum:
+        - TRANSPORTADOR
+        - CONTADOR
+        - PARCEIRO
+    PesquisaDadosDto:
+      type: object
+      properties:
+        idPeriodo:
+          type: string
+        nome:
+          type: string
+        email:
+          type: string
+        telefone:
+          type: string
+        dataHoraContato:
+          type: string
+          format: date-time
+        produto:
+          type: string
+        tipoEntradaPesquisa:
+          $ref: '#/components/schemas/TipoEntradaPesquisaDto'
+    PesquisaPeriodoDto:
+      type: object
+      properties:
+        id:
+          type: string
+        dataInicio:
+          type: string
+          format: date-time
+        dataFinal:
+          type: string
+          format: date-time
+    SituacaoAtivacaoDto:
+      type: string
+      enum:
+        - ATIVADA
+        - DESATIVADA
+    SituacaoClienteSistemaPagamentoDto:
+      type: string
+      enum:
+        - ATIVO
+        - BLOQUEADO
+        - INATIVO
+    TenantDtoReduzido:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        cpfCnpj:
+          type: string
+        descricao:
+          type: string
+        tipoAmbiente:
+          $ref: '#/components/schemas/TipoAmbienteDto'
+        ativo:
+          type: boolean
+        desbloqueado:
+          type: boolean
+        nomePlano:
+          type: string
+      example:
+        id: UUID
+        nome: Ambiente de testes
+        cpfCnpj: '01234567890123'
+        descricao: Ambiente de testes
+        tipoAmbiente: PRODUCAO
+        ativo: true
+        desbloqueado: true
+        nomePlano: Emissores 30
+    TipoAmbienteDto:
+      type: string
+      enum:
+        - HOMOLOGACAO
+        - PRODUCAO
+    TipoCertificado:
+      type: string
+      enum:
+        - A1
+        - A3
+        - CS
+    TipoCrtDto:
+      type: string
+      enum:
+        - SIMPLES_NACIONAL
+        - SIMPLES_NACIONAL_EXCESSO
+        - NORMAL
+        - MEI
+    TipoDocumento:
+      type: string
+      enum:
+        - CNPJ
+        - CPF
+    TipoEmitenteDto:
+      type: string
+      enum:
+        - SERVICO
+        - PROPRIO
+        - GLOBALIZADO
+    TipoEntradaPesquisaDto:
+      type: string
+      enum:
+        - ACEITE
+        - CANCELADA
+    UsuarioDtoReduzido:
+      type: object
+      properties:
+        id:
+          type: string
+        login:
+          type: string
+        nome:
+          type: string
+        email:
+          type: string
+      example:
+        id: 17
+        login: loginTest@teste.com
+        nome: usuarioTesteMock
+        email: loginTest@teste.com
+    Void:
+      type: object
+    Error:
+      description: Um Objeto de erro
+      properties:
+        mensagem:
+          description: Descrição do erro
+          type: string
+      type: object
+  securitySchemes:
+    authorization:
+      type: http
+      scheme: bearer
+      description: "Authorization header using the Bearer scheme. Example: \"Authorization:\
+        \ Bearer {token}\""
+  responses:
+    Unauthorized:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Unauthorized
+    Forbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Forbidden
+security:
+  - authorization: []
