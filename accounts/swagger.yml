@@ -15,6 +15,8 @@ servers:
 tags:
   - name: Empresa
     description: Serviços básicos da entidade Empresa
+  - name: Empresa Produto Log
+    description: Controller for EmpresaProdutoLog
   - name: Organizacao Acesso
     description: Serviços básicos da entidade OrganizaçãoAcesso
   - name: Organizacao
@@ -22,7 +24,7 @@ tags:
   - name: Pesquisa V1
     description: Serviços básicos da Pesquisa
 paths:
-  /v1/organizacoes/{organizacaoId}/empresa:
+  /v1/organizacoes/{organizacaoId}/empresas:
     get:
       tags:
         - Empresa
@@ -93,6 +95,18 @@ paths:
           required: true
           schema:
             type: string
+        - name: tenant-origem
+          description: Tenant da empresa da requisição
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id-origem
+          description: ID da empresa da requisição
+          in: header
+          required: false
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -111,7 +125,7 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: criarEmpresa
-  /v1/organizacoes/{organizacaoId}/empresa/{id}:
+  /v1/organizacoes/{organizacaoId}/empresas/{id}:
     get:
       tags:
         - Empresa
@@ -142,6 +156,143 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: getEmpresa
+    put:
+      tags:
+        - Empresa
+      operationId: EmpresaControllerImp.editarEmpresa
+      description: Editar uma Empresa existente
+      parameters:
+        - name: organizacaoId
+          description: ID da Organizacao
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          description: ID da Empresa
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tenant-origem
+          description: Tenant da empresa da requisição
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarEmpresaDto'
+        description: Dados da Empresa que está sendo editada
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: editarEmpresa
+  /v1/empresas/{empresaId}/log:
+    get:
+      tags:
+        - Empresa Produto Log
+      operationId: EmpresaProdutoLogControllerImp.listar
+      description: List EmpresaProdutoLog by empresa id with optional filters
+      parameters:
+        - name: empresaId
+          description: ID of the empresa
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: produto
+          description: Filtro por produto
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: sucesso
+          description: Filtro por sucesso ou falha
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: List of EmpresaProdutoLogDto
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmpresaProdutoLogDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: listar
+  /v1/empresas/{empresaId}/log/{logId}/reenviar:
+    post:
+      tags:
+        - Empresa Produto Log
+      operationId: EmpresaProdutoLogControllerImp.reenviar
+      description: Resend a log entry
+      parameters:
+        - name: empresaId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: logId
+          description: ID of the log entry
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: The updated log entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: reenviar
   /v1/organizacoes:
     post:
       tags:
@@ -192,11 +343,6 @@ paths:
             type: integer
             format: int32
         - name: campoPesquisa
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: cpfCnpj
           in: query
           required: false
           schema:
@@ -460,21 +606,37 @@ paths:
 components:
   schemas:
     CertificadoDto:
+      description: "DTO de Certificado Digital, representa informações sobre o certificado\
+        \ digital da empresa."
       type: object
       properties:
         validadeCertificado:
+          description: Data de validade do certificado
           type: string
           format: date-time
         tokenCertificado:
+          description: Token do certificado digital
           type: string
         tipoCertificado:
+          description: Tipo do certificado digital
           $ref: '#/components/schemas/TipoCertificado'
+    CnaeDto:
+      type: object
+      properties:
+        codigo:
+          description: Código Cnae
+          type: string
+        descricao:
+          description: Descrição do Cnae
+          type: string
     CriarEmpresaDto:
       description: "DTO de Empresa, usado para a ação de cadastramento"
       required:
         - tipoDocumento
         - cpfCnpj
+        - ie
         - nome
+        - tipoEmitente
         - endereco
       type: object
       properties:
@@ -510,11 +672,28 @@ components:
           description: Número do RNTRC
           type: string
         endereco:
+          description: Endereço da empresa
           $ref: '#/components/schemas/EnderecoDto'
+        cpfCnpjContabilidade:
+          description: CPF ou CNPJ da contabilidade responsável pela empresa
+          type: string
+        emailContabilidade:
+          description: E-mail da contabilidade responsável pela empresa
+          type: string
+        telefoneContabilidade:
+          description: Telefone da contabilidade responsável pela empresa
+          type: string
+        emailsAlternativos:
+          description: Lista de e-mails alternativos da empresa
+          type: array
+          items:
+            type: string
+        cnae:
+          $ref: '#/components/schemas/CnaeDto'
       example:
         tipoDocumento: CNPJ
         cpfCnpj: '01234567890123'
-        ie: ISENTO
+        ie: 12345678901234
         nome: Empresa de Testes
         nomeFantasia: Testinho
         email: empresa@teste.com
@@ -530,6 +709,11 @@ components:
           codigoUf: 51
           uf: PE
           cep: 52000000
+        cpfCnpjContabilidade: '012345678970'
+        emailContabilidade: contabilidade@teste.com
+        telefoneContabilidade: 81999999999
+        emailsAlternativos:
+          - alt1@teste.com
     CriarOrganizacaoAcessoDto:
       description: "DTO de Organização Acesso, usado para a ação de cadastramento"
       required:
@@ -573,7 +757,7 @@ components:
         empresa:
           tipoDocumento: CNPJ
           cpfCnpj: '01234567890123'
-          ie: ISENTO
+          ie: 12345678901234
           nome: Empresa de Testes
           nomeFantasia: Testinho
           email: empresa@teste.com
@@ -590,90 +774,147 @@ components:
             uf: PE
             cep: 52000000
     EmpresaDto:
-      description: DTO de Empresa
+      description: "DTO de Empresa\r\nRepresenta os dados de uma empresa para transferê\
+        ncia entre camadas."
       type: object
       properties:
         id:
+          description: Identificador único da empresa
           type: string
         dataUltimaAtualizacao:
+          description: Data da última atualização dos dados da empresa
           type: string
           format: date-time
         tipoDocumento:
+          description: "Tipo de documento da empresa (CNPJ, CPF, etc)"
           $ref: '#/components/schemas/TipoDocumento'
         cpfCnpj:
+          description: CPF ou CNPJ da empresa
           type: string
         ie:
+          description: Inscrição estadual
           type: string
         nome:
+          description: Nome da empresa
           type: string
         nomeFantasia:
+          description: Nome fantasia da empresa
           type: string
         email:
+          description: E-mail principal da empresa
           type: string
         telefone:
+          description: Telefone principal da empresa
           type: string
         tipoEmitente:
+          description: Tipo de emitente
           $ref: '#/components/schemas/TipoEmitenteDto'
         crt:
+          description: Código do regime tributário
           $ref: '#/components/schemas/TipoCrtDto'
         rntrc:
+          description: Número do RNTRC
           type: string
         situacaoAtivacao:
+          description: Situação de ativação da empresa
           $ref: '#/components/schemas/SituacaoAtivacaoDto'
         logomarca:
+          description: Logomarca da empresa
           type: string
         empresaCte:
+          description: Código da empresa CT-e
+          type: string
+        empresaCteHom:
+          description: Código da empresa CT-e em ambiente de homologação
           type: string
         empresaMdfe:
+          description: Código da empresa MDF-e
+          type: string
+        empresaMdfeHom:
+          description: Código da empresa MDF-e em ambiente de homologação
           type: string
         organizacao:
+          description: Organização associada à empresa
           $ref: '#/components/schemas/OrganizacaoDtoReduzido'
         certificado:
+          description: Certificado digital da empresa
           $ref: '#/components/schemas/CertificadoDto'
         endereco:
+          description: Endereço da empresa
           $ref: '#/components/schemas/EnderecoDto'
         matriz:
+          description: Indica se a empresa é matriz
           type: boolean
+        cpfCnpjContabilidade:
+          description: CPF ou CNPJ da contabilidade responsável pela empresa
+          type: string
+        emailContabilidade:
+          description: E-mail da contabilidade responsável pela empresa
+          type: string
+        telefoneContabilidade:
+          description: Telefone da contabilidade responsável pela empresa
+          type: string
+        emailsAlternativos:
+          description: Lista de e-mails alternativos da empresa
+          type: array
+          items:
+            type: string
     EmpresaDtoLista:
-      description: "DTO de Empresa, usado nas operações de listagem"
+      description: "DTO de Empresa, usado nas operações de listagem.\r\nRepresenta\
+        \ os dados resumidos de uma empresa para exibição em listas."
       type: object
       properties:
         id:
+          description: Identificador único da empresa
           type: string
         dataUltimaAtualizacao:
+          description: Data da última atualização dos dados da empresa
           type: string
           format: date-time
         cpfCnpj:
+          description: CPF ou CNPJ da empresa
           type: string
         ie:
+          description: Inscrição estadual
           type: string
         nome:
+          description: Nome da empresa
           type: string
         nomeFantasia:
+          description: Nome fantasia da empresa
           type: string
         email:
+          description: E-mail principal da empresa
           type: string
         uf:
+          description: UF da empresa
           type: string
         municipio:
+          description: Município da empresa
           type: string
         tipoEmitente:
+          description: Tipo de emitente
           $ref: '#/components/schemas/TipoEmitenteDto'
         crt:
+          description: Código do regime tributário
           $ref: '#/components/schemas/TipoCrtDto'
         rntrc:
+          description: Número do RNTRC
           type: string
         situacaoAtivacao:
+          description: Situação de ativação da empresa
           $ref: '#/components/schemas/SituacaoAtivacaoDto'
         tipoCertificado:
+          description: Tipo do certificado digital
           type: string
         matriz:
+          description: Indica se a empresa é matriz
           type: boolean
       example:
         id: UUID
         dataUltimaAtualizacao: 2024-12-10 16:12:00
         cpfCnpj: '01234567890123'
-        ie: ISENTO
+        ie: 12345678901234
         nome: Empresa de Teste
         nomeFantasia: Testinho
         email: emailEmpresa@teste.com
@@ -684,45 +925,103 @@ components:
         tipoCertificado: A1
         matriz: true
     EmpresaDtoReduzido:
-      description: "DTO de Empresa, usado principalmente para quando precisar trazer\
-        \ os dados de Empresa,\r\nporém como parte da informação de outra entidade,\
-        \ possui menor quantidade de dados"
+      description: "DTO de Empresa reduzido.\r\nUsado para retornar dados resumidos\
+        \ de uma empresa em outras entidades."
       type: object
       properties:
         id:
+          description: Identificador único da empresa
           type: string
         dataUltimaAtualizacao:
+          description: Data da última atualização dos dados da empresa
           type: string
           format: date-time
         cpfCnpj:
+          description: CPF ou CNPJ da empresa
           type: string
         ie:
+          description: Inscrição estadual
           type: string
         nome:
+          description: Nome da empresa
           type: string
         nomeFantasia:
+          description: Nome fantasia da empresa
           type: string
         uf:
+          description: UF da empresa
           type: string
         municipio:
+          description: Município da empresa
           type: string
         empresaCte:
+          description: Código da empresa CT-e
+          type: string
+        empresaCteHom:
+          description: Código da empresa CT-e em ambiente de homologação
           type: string
         empresaMdfe:
+          description: Código da empresa MDF-e
+          type: string
+        empresaMdfeHom:
+          description: Código da empresa MDF-e em ambiente de homologação
           type: string
         matriz:
+          description: Indica se a empresa é matriz
           type: boolean
       example:
         id: UUID
         dataUltimaAtualizacao: 2024-12-10 16:12:00
         cpfCnpj: '01234567890123'
-        ie: ISENTO
+        ie: 12345678901234
         nome: Empresa de Teste
         nomeFantasia: Testinho
         uf: PE
         municipio: Recife
         empresaCte: UUID
+        empresaCteHom: UUID
+        empresaMdfe: UUID
+        empresaMdfeHom: UUID
         matriz: true
+        cpfCnpjContabilidade: '012345678970'
+        emailContabilidade: contabilidade@teste.com
+        telefoneContabilidade: 81999999999
+        emailsAlternativos:
+          - alt1@teste.com
+    EmpresaProdutoLogDto:
+      description: "DTO de log de operações de produtos da empresa.\r\nUtilizado para\
+        \ transferir informações de logs de ações realizadas em produtos vinculados\
+        \ à empresa."
+      type: object
+      properties:
+        id:
+          description: Identificador do log
+          type: string
+        dataCriacao:
+          description: Data de criação do log
+          type: string
+          format: date-time
+        produto:
+          description: Produto relacionado ao log
+          type: string
+        operacao:
+          description: Operação realizada
+          type: string
+        sucesso:
+          description: Indica se a operação foi realizada com sucesso
+          type: boolean
+        producao:
+          description: Indica se a operação foi realizada em produção
+          type: boolean
+        mensagem:
+          description: Mensagem adicional do log
+          type: string
+      example:
+        id: UUID
+        dataCriacao: 2024-12-10 16:12:00
+        produto: CTE
+        operacao: CRIAR
+        sucesso: true
     EnderecoDto:
       description: DTO de Endereço
       required:
@@ -732,6 +1031,7 @@ components:
         - municipio
         - codigoUf
         - uf
+        - bairro
       type: object
       properties:
         logradouro:
@@ -770,18 +1070,21 @@ components:
         uf: PE
         cep: 52000000
     OrganizacaoAcessoDto:
-      description: "DTO padrão de Organização Acesso, usado principalmente para a??es\
-        \ de View, por possuir dados mais completos"
+      description: "DTO de Acesso à Organização.\r\nUsado para representar os dados\
+        \ de acesso/permissão de um usuário em uma organização."
       type: object
       properties:
         id:
+          description: Identificador do acesso
           type: string
         login:
+          description: Login do usuário
           type: string
         perfil:
-          description: Perfil de permissão do Acesso
+          description: Perfil de permissão do acesso
           type: string
         usuario:
+          description: Usuário associado ao acesso
           $ref: '#/components/schemas/UsuarioDtoReduzido'
       example:
         id: UUID
@@ -812,59 +1115,75 @@ components:
           nome: usuarioTesteMock
           email: loginTest@teste.com
     OrganizacaoDto:
+      description: "DTO de Organização.\r\nRepresenta os dados de uma organização\
+        \ para transferência entre camadas."
       type: object
       properties:
         id:
+          description: Identificador único da organização
           type: string
         cpfCnpj:
+          description: CPF ou CNPJ da organização
           type: string
         ie:
+          description: Inscrição estadual
           type: string
         nome:
+          description: Nome da organização
           type: string
         emailFinanceiro:
+          description: E-mail financeiro da organização
           type: string
         nomeResponsavel:
+          description: Nome do responsável pela organização
           type: string
         usuarioAdministrador:
+          description: Usuário administrador da organização
           $ref: '#/components/schemas/UsuarioDtoReduzido'
         dataBloqueioSistemaPagamento:
+          description: Data de bloqueio do sistema de pagamento
           type: string
           format: date-time
         dataDesativacaoSistemaPagamento:
+          description: Data de desativação do sistema de pagamento
           type: string
           format: date-time
         situacaoSistemaPagamento:
+          description: Situação do sistema de pagamento
           $ref: '#/components/schemas/SituacaoClienteSistemaPagamentoDto'
         idSistemaPagamento:
+          description: Identificador do sistema de pagamento
           type: string
         mrr:
+          description: Receita recorrente mensal (MRR)
           type: number
           format: double
         perfilConta:
+          description: Perfil da conta
           $ref: '#/components/schemas/PerfilContaDto'
         organizacaoAccessos:
+          description: Lista de acessos da organização
           type: array
           items:
             $ref: '#/components/schemas/OrganizacaoAcessoDtoReduzido'
         empresas:
+          description: Lista de empresas da organização
           type: array
           items:
             $ref: '#/components/schemas/EmpresaDtoReduzido'
         tenantCte:
+          description: Tenant CT-e
           $ref: '#/components/schemas/TenantDtoReduzido'
         tenantMdfe:
+          description: Tenant MDF-e
           $ref: '#/components/schemas/TenantDtoReduzido'
         tenantEdi:
-          $ref: '#/components/schemas/TenantDtoReduzido'
-        tenantTms:
-          $ref: '#/components/schemas/TenantDtoReduzido'
-        tenantRpa:
+          description: Tenant EDI
           $ref: '#/components/schemas/TenantDtoReduzido'
       example:
         id: UUID
         cpfCnpj: '01234567890123'
-        ie: ISENTO
+        ie: 12345678901234
         nome: Organizacao XYZ
         emailFinanceiro: financeiro@teste.com
         nomeResponsavel: Responsável Financeiro
@@ -887,7 +1206,7 @@ components:
           - id: UUID
             dataUltimaAtualizacao: 2024-12-10 16:12:00
             cpfCnpj: '01234567890123'
-            ie: ISENTO
+            ie: 12345678901234
             nome: Empresa de Teste
             nomeFantasia: Testinho
             uf: PE
@@ -896,47 +1215,65 @@ components:
             matriz: true
         tenantCte: UUID
     OrganizacaoDtoLista:
+      description: "DTO de lista de Organizações.\r\nUsado para retornar dados resumidos\
+        \ de várias organizações."
       type: object
       properties:
         id:
+          description: Identificador único da organização
           type: string
         cpfCnpj:
+          description: CPF ou CNPJ da organização
           type: string
         ie:
+          description: Inscrição estadual
           type: string
         nome:
+          description: Nome da organização
           type: string
         usuarioAdministrador:
+          description: Usuário administrador da organização
           $ref: '#/components/schemas/UsuarioDtoReduzido'
         dataBloqueioSistemaPagamento:
+          description: Data de bloqueio do sistema de pagamento
           type: string
           format: date-time
         dataDesativacaoSistemaPagamento:
+          description: Data de desativação do sistema de pagamento
           type: string
           format: date-time
         situacaoSistemaPagamento:
+          description: Situação do sistema de pagamento
           $ref: '#/components/schemas/SituacaoClienteSistemaPagamentoDto'
         idSistemaPagamento:
+          description: Identificador do sistema de pagamento
           type: string
         mrr:
+          description: Receita recorrente mensal (MRR)
           type: number
           format: double
         perfilConta:
+          description: Perfil da conta
           $ref: '#/components/schemas/PerfilContaDto'
         tenantCte:
+          description: Tenant CT-e
           $ref: '#/components/schemas/TenantDtoReduzido'
         tenantMdfe:
+          description: Tenant MDF-e
           $ref: '#/components/schemas/TenantDtoReduzido'
         tenantEdi:
+          description: Tenant EDI
           $ref: '#/components/schemas/TenantDtoReduzido'
         tenantTms:
+          description: Tenant TMS
           $ref: '#/components/schemas/TenantDtoReduzido'
         tenantRpa:
+          description: Tenant RPA
           $ref: '#/components/schemas/TenantDtoReduzido'
       example:
         id: UUID
         cpfCnpj: '01234567890123'
-        ie: ISENTO
+        ie: 12345678901234
         nome: Organizacao XYZ
         idSistemaPagamento: SL123
         usuarioAdministrador:
@@ -948,22 +1285,29 @@ components:
         mrr: 0
         tenantCte: UUID
     OrganizacaoDtoReduzido:
+      description: "DTO reduzido de Organização.\r\nUsado para retornar dados resumidos\
+        \ de uma organização."
       type: object
       properties:
         id:
+          description: Identificador único da organização
           type: string
         cpfCnpj:
+          description: CPF ou CNPJ da organização
           type: string
         ie:
+          description: Inscrição estadual
           type: string
         nome:
+          description: Nome da organização
           type: string
         idSistemaPagamento:
+          description: Identificador do sistema de pagamento
           type: string
       example:
         id: UUID
         cpfCnpj: '01234567890123'
-        ie: ISENTO
+        ie: 12345678901234
         nome: Organizacao XYZ
         idSistemaPagamento: SL123
     PageMetadata:
