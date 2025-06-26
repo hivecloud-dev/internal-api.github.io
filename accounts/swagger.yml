@@ -619,7 +619,7 @@ components:
           type: string
         tipoCertificado:
           description: Tipo do certificado digital
-          $ref: '#/components/schemas/TipoCertificado'
+          $ref: '#/components/schemas/TipoCertificadoDto'
     CnaeDto:
       type: object
       properties:
@@ -642,7 +642,7 @@ components:
       properties:
         tipoDocumento:
           description: "Tipo do documento de identificação, se é CPF ou CNPJ"
-          $ref: '#/components/schemas/TipoDocumento'
+          $ref: '#/components/schemas/TipoDocumentoDto'
         cpfCnpj:
           description: Documento de Identificação
           type: string
@@ -1404,12 +1404,11 @@ components:
       enum:
         - HOMOLOGACAO
         - PRODUCAO
-    TipoCertificado:
+    TipoCertificadoDto:
       type: string
       enum:
         - A1
         - A3
-        - CS
     TipoCrtDto:
       type: string
       enum:
@@ -1418,6 +1417,11 @@ components:
         - NORMAL
         - MEI
     TipoDocumento:
+      type: string
+      enum:
+        - CNPJ
+        - CPF
+    TipoDocumentoDto:
       type: string
       enum:
         - CNPJ
