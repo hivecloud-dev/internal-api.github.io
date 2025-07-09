@@ -13,6 +13,8 @@ servers:
   - url: /api
     description: Servidor Local sem /Accounts
 tags:
+  - name: Central Emissao V1
+    description: Serviços básicos da Central de Emissão
   - name: Empresa
     description: Serviços básicos da entidade Empresa
   - name: Empresa Produto Log
@@ -24,6 +26,28 @@ tags:
   - name: Pesquisa V1
     description: Serviços básicos da Pesquisa
 paths:
+  /v1/central-emissao/validar-email:
+    post:
+      tags:
+        - Central Emissao V1
+      operationId: CentralEmissaoV1ControllerImp.validarEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CentralEmissaoValidarEmailDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CentralEmissaoValidarEmailDto_1'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: validarEmail
   /v1/organizacoes/{organizacaoId}/empresas:
     get:
       tags:
@@ -605,6 +629,54 @@ paths:
       x-operation-name: retornarPesquisa
 components:
   schemas:
+    CentralEmissaoValidarEmailCertificadoDto:
+      type: object
+      properties:
+        tipo:
+          type: string
+        dataValidade:
+          type: string
+        statusVencimento:
+          type: string
+    CentralEmissaoValidarEmailDadosContaDto:
+      type: object
+      properties:
+        plano:
+          type: string
+        tenantCte:
+          type: string
+        tenantMdfe:
+          type: string
+        idSistemaPagamento:
+          type: string
+        idEmpresaCte:
+          type: string
+        cnpjCte:
+          type: string
+        idEmpresaMdfe:
+          type: string
+        cnpjMdfe:
+          type: string
+        certificado:
+          $ref: '#/components/schemas/CentralEmissaoValidarEmailCertificadoDto'
+        emailsVinculados:
+          type: array
+          items:
+            type: string
+    CentralEmissaoValidarEmailDto:
+      type: object
+      properties:
+        email:
+          type: string
+    CentralEmissaoValidarEmailDto_1:
+      type: object
+      properties:
+        status:
+          type: string
+        mensagem:
+          type: string
+        dadosConta:
+          $ref: '#/components/schemas/CentralEmissaoValidarEmailDadosContaDto'
     CertificadoDto:
       description: "DTO de Certificado Digital, representa informações sobre o certificado\
         \ digital da empresa."
