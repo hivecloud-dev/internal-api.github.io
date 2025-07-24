@@ -396,6 +396,31 @@ paths:
           $ref: '#/components/responses/CreateResponseId'
         '400':
           $ref: '#/components/responses/BadRequest'
+
+  /v1/integracoes/mdfes/{id}:
+    get:
+      tags:
+        - 'Integrar Mdfes'
+      operationId: IntegraMdfeV1ControllerImp.getMdfe
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: get
+
 components:
   securitySchemes:
     tokenAuth:
@@ -406,7 +431,6 @@ components:
       type: apiKey
       in: header
       name: tenantID
-
   schemas:
     EmitirMdfe:
       type: "object"
@@ -1171,3 +1195,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      description: Unauthorized
+    Forbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      description: Forbidden
