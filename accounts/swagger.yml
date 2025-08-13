@@ -15,6 +15,8 @@ servers:
 tags:
   - name: Central Emissao V1
     description: Serviços básicos da Central de Emissão
+  - name: Conta Faturamento
+    description: Controlador para Contas Faturamento
   - name: Empresa
     description: Serviços básicos da entidade Empresa
   - name: Empresa Produto Log
@@ -48,6 +50,113 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: validarEmail
+  /v1/contas-faturamento:
+    post:
+      tags:
+        - Conta Faturamento
+      operationId: ContaFaturamentoControllerImp.criarContaFaturamento
+      description: Criar um ContaFaturamento
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarContaFaturamentoDto'
+        description: Dados da Conta
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: criarContaFaturamento
+  /v1/contas-faturamento/from-login:
+    get:
+      tags:
+        - Conta Faturamento
+      operationId: ContaFaturamentoControllerImp.retornaUsuarioContaFaturamentoPorLogin
+      description: Recupera uma Coleção de Contas baseado no usuário e parâmetros
+        informados
+      parameters:
+        - name: userLogin
+          description: Usuário que tem acesso às contas
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          description: "Qual pÃ¡gina estÃ¡ sendo resgatada, o valor padrÃ£o Ã© 0"
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          description: "Quantidade de elementos por pÃ¡gina, o valor padrÃ£o Ã© 10"
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          description: "Campo de pesquisa livre, nem sempre estarÃ¡ implementado"
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Uma Coleção de Contas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UsuarioContaFaturamentoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: retornaUsuarioContaFaturamentoPorLogin
+  /v1/contas-faturamento/{id}:
+    get:
+      tags:
+        - Conta Faturamento
+      operationId: ContaFaturamentoControllerImp.recuperarContaFaturamento
+      description: Recupera uma Conta a partir da Identificação
+      parameters:
+        - name: id
+          description: ID da Conta
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContaFaturamentoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: recuperarContaFaturamento
   /v1/organizacoes/{organizacaoId}/empresas:
     get:
       tags:
@@ -497,11 +606,13 @@ paths:
               $ref: '#/components/schemas/CriarOrganizacaoAcessoDto'
             examples:
               EXEMPLO_ADM:
-                perfil: ADMIN
-                login: usuarioValido@teste.com
+                value:
+                  perfil: ADMIN
+                  login: usuarioValido@teste.com
               EXEMPLO_USER:
-                perfil: USER
-                login: usuarioValido@teste.com
+                value:
+                  perfil: USER
+                  login: usuarioValido@teste.com
         description: Dados do Acesso que está sendo criado
       responses:
         200:
@@ -701,6 +812,135 @@ components:
         descricao:
           description: Descrição do Cnae
           type: string
+    ContaFaturamentoDto:
+      required:
+        - cnpj
+        - nome
+        - idSistemaPagamento
+      type: object
+      properties:
+        id:
+          description: ID da conta
+          type: integer
+          format: int64
+        cnpj:
+          description: CNPJ da empresa
+          type: string
+        nome:
+          description: Nome da empresa
+          type: string
+        logradouro:
+          description: Logradouro da empresa
+          type: string
+        numero:
+          description: Numero da empresa
+          type: string
+        complemento:
+          description: complemento da empresa
+          type: string
+        bairro:
+          description: bairro da empresa
+          type: string
+        cep:
+          description: cep da empresa
+          type: string
+        uf:
+          description: UF da empresa
+          type: string
+        municipio:
+          description: Municipio da empresa
+          type: string
+        telefone:
+          description: Telefone da empresa
+          type: string
+        nomeResponsavel:
+          description: Nome do responsável pela empresa
+          type: string
+        email:
+          description: Emails da empresa
+          type: array
+          items:
+            type: string
+        emailCentralEmissao:
+          description: Emails da Central de emissão
+          type: array
+          items:
+            type: string
+        usuarioResponsavel:
+          description: Usuario Responsavel
+          $ref: '#/components/schemas/UsuarioDtoReduzido'
+        idSistemaPagamento:
+          description: ID do sistema de pagamento
+          type: string
+        sistemaPagamento:
+          description: Sistema de pagamento
+          $ref: '#/components/schemas/SistemaPagamentoDto'
+    CriarContaFaturamentoDto:
+      required:
+        - cnpj
+        - nome
+        - loginUsuarioAdministrador
+        - idSistemaPagamento
+      type: object
+      properties:
+        cnpj:
+          description: CNPJ da empresa
+          type: string
+        nome:
+          description: Nome da empresa
+          type: string
+        logradouro:
+          description: Logradouro da empresa
+          type: string
+        numero:
+          description: Numero da empresa
+          type: string
+        complemento:
+          description: complemento da empresa
+          type: string
+        bairro:
+          description: bairro da empresa
+          type: string
+        cep:
+          description: cep da empresa
+          type: string
+        uf:
+          description: UF da empresa
+          type: string
+        municipio:
+          description: Municipio da empresa
+          type: string
+        telefone:
+          description: Telefone da empresa
+          type: string
+        nomeResponsavel:
+          description: Nome do responsável pela empresa
+          type: string
+        email:
+          description: Emails da empresa
+          type: array
+          items:
+            type: string
+        emailCentralEmissao:
+          description: Emails da Central de emissão
+          type: array
+          items:
+            type: string
+        loginUsuarioAdministrador:
+          description: Login do usuário administrador do sistema
+          type: string
+        idSistemaPagamento:
+          description: ID do sistema de pagamento
+          type: string
+        sistemaPagamento:
+          description: Sistema de pagamento
+          $ref: '#/components/schemas/SistemaPagamentoDto'
+      example:
+        cnpj: '07960929000101'
+        nome: Empresa de Teste
+        loginUsuarioAdministrador: usuario@dominio.com
+        sistemaPagamento: CORE
+        idSistemaPagamento: 1234
     CriarEmpresaDto:
       description: "DTO de Empresa, usado para a ação de cadastramento"
       required:
@@ -1099,9 +1339,7 @@ components:
       required:
         - logradouro
         - numero
-        - codigoMunicipio
         - municipio
-        - codigoUf
         - uf
         - bairro
       type: object
@@ -1432,6 +1670,11 @@ components:
         dataFinal:
           type: string
           format: date-time
+    SistemaPagamentoDto:
+      type: string
+      enum:
+        - SL
+        - CORE
     SituacaoAtivacaoDto:
       type: string
       enum:
@@ -1509,6 +1752,78 @@ components:
       enum:
         - ACEITE
         - CANCELADA
+    UsuarioContaFaturamentoDto:
+      type: object
+      properties:
+        cnpj:
+          type: string
+        nome:
+          type: string
+        logradouro:
+          type: string
+        numero:
+          type: string
+        complemento:
+          type: string
+        bairro:
+          type: string
+        cep:
+          type: string
+        uf:
+          type: string
+        municipio:
+          type: string
+        telefone:
+          type: string
+        nomeResponsavel:
+          type: string
+        email:
+          type: array
+          items:
+            type: string
+        dataBloqueio:
+          type: string
+          format: date-time
+        dataCadastramento:
+          type: string
+          format: date-time
+        dataDesativacao:
+          type: string
+          format: date-time
+        usuarioResponsavel:
+          $ref: '#/components/schemas/UsuarioDto'
+        idSistemaPagamento:
+          type: string
+    UsuarioDto:
+      type: object
+      properties:
+        login:
+          type: string
+        nome:
+          type: string
+        sobrenome:
+          type: string
+        nomeEmpresa:
+          type: string
+        email:
+          type: string
+        emailAlternativo:
+          type: string
+        telefoneComercial:
+          type: string
+        telefoneCelular:
+          type: string
+        pais:
+          type: string
+        uf:
+          type: string
+        municipio:
+          type: string
+        timeZone:
+          type: string
+        dataCadastro:
+          type: string
+          format: date-time
     UsuarioDtoReduzido:
       type: object
       properties:
