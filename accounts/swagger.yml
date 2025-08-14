@@ -946,7 +946,6 @@ components:
       required:
         - tipoDocumento
         - cpfCnpj
-        - ie
         - nome
         - tipoEmitente
         - endereco
@@ -1484,11 +1483,20 @@ components:
         tenantCte:
           description: Tenant CT-e
           $ref: '#/components/schemas/TenantDtoReduzido'
+        tenantCteHom:
+          description: Tenant CT-e de Homologacao
+          $ref: '#/components/schemas/TenantDtoReduzido'
         tenantMdfe:
           description: Tenant MDF-e
           $ref: '#/components/schemas/TenantDtoReduzido'
+        tenantMdfeHom:
+          description: Tenant MDF-e de Homologacao
+          $ref: '#/components/schemas/TenantDtoReduzido'
         tenantEdi:
           description: Tenant EDI
+          $ref: '#/components/schemas/TenantDtoReduzido'
+        tenantEdiHom:
+          description: Tenant EDI de Homologacao
           $ref: '#/components/schemas/TenantDtoReduzido'
       example:
         id: UUID
