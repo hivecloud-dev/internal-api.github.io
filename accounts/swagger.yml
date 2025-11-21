@@ -21,6 +21,8 @@ tags:
     description: Serviços básicos da entidade Empresa
   - name: Empresa Produto Log
     description: Controller for EmpresaProdutoLog
+  - name: Feature Flag
+    description: Serviços relacionados a Feature Flags
   - name: Organizacao Acesso
     description: Serviços básicos da entidade OrganizaçãoAcesso
   - name: Organizacao
@@ -131,6 +133,31 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: retornaUsuarioContaFaturamentoPorLogin
+  /v1/contas-faturamento/por-cnpj/{cnpj}:
+    get:
+      tags:
+        - Conta Faturamento
+      operationId: ContaFaturamentoControllerImp.getPorCnpj
+      description: Recupera uma Conta Faturamento a partir do CNPJ
+      parameters:
+        - name: cnpj
+          description: CNPJ da Organização
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ContaFaturamento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContaFaturamentoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getPorCnpj
   /v1/contas-faturamento/{id}:
     get:
       tags:
@@ -426,6 +453,51 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: reenviar
+  /v1/feature-flag:
+    get:
+      tags:
+        - Feature Flag
+      operationId: FeatureFlagControllerImp.getFeatureFlags
+      description: Recupera a lista de Feature Flags disponíveis
+      responses:
+        200:
+          description: Lista de Feature Flags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeatureFlagDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getFeatureFlags
+  /v1/feature-flag/{flag}:
+    get:
+      tags:
+        - Feature Flag
+      operationId: FeatureFlagControllerImp.getFeatureFlag
+      description: Recupera uma Feature Flag a partir do identificador
+      parameters:
+        - name: flag
+          description: Identificador (nome) da Feature Flag
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Feature Flag correspondente ao identificador informado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlagDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getFeatureFlag
   /v1/organizacoes:
     post:
       tags:
@@ -450,6 +522,57 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: criarOrganizacao
+  /v1/organizacoes/por-cpf-cnpj-list:
+    get:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.getPorCnpjList
+      description: Recupera Organizações a partir dos seus CPF/CNPJs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizacaoListDto'
+        description: Lista de CPF/CNPJ das Organizações
+      responses:
+        200:
+          description: Lista de Organizações
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrganizacaoDtoLista'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getPorCnpjList
+  /v1/organizacoes/por-cpf-cnpj/{cpfCnpj}:
+    get:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.getPorCnpj
+      description: Recupera uma Organização a partir do CNPJ
+      parameters:
+        - name: cpfCnpj
+          description: CPF/CNPJ da Organização
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Organização
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizacaoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getPorCnpj
   /v1/organizacoes/por-usuario/{login}:
     get:
       tags:
@@ -758,8 +881,6 @@ components:
           type: string
         tenantMdfe:
           type: string
-        idSistemaPagamento:
-          type: string
         idEmpresaCte:
           type: string
         cnpjCte:
@@ -770,6 +891,8 @@ components:
           type: string
         certificado:
           $ref: '#/components/schemas/CentralEmissaoValidarEmailCertificadoDto'
+        empresa:
+          $ref: '#/components/schemas/CentralEmissaoValidarEmailEmpresaContaDto'
         emailsVinculados:
           type: array
           items:
@@ -778,6 +901,8 @@ components:
       type: object
       properties:
         email:
+          type: string
+        usuario:
           type: string
     CentralEmissaoValidarEmailDto_1:
       type: object
@@ -788,6 +913,19 @@ components:
           type: string
         dadosConta:
           $ref: '#/components/schemas/CentralEmissaoValidarEmailDadosContaDto'
+    CentralEmissaoValidarEmailEmpresaContaDto:
+      type: object
+      properties:
+        idSistemaPagamento:
+          type: string
+        tipoSistemaPagamento:
+          $ref: '#/components/schemas/SistemaPagamentoDto'
+        situacaoSistemaPagamento:
+          $ref: '#/components/schemas/SituacaoClienteSistemaPagamentoDto'
+        nome:
+          type: string
+        cnpj:
+          type: string
     CertificadoDto:
       description: "DTO de Certificado Digital, representa informações sobre o certificado\
         \ digital da empresa."
@@ -1378,6 +1516,15 @@ components:
         codigoUf: 51
         uf: PE
         cep: 52000000
+    FeatureFlagDto:
+      type: object
+      properties:
+        flag:
+          type: string
+        ativo:
+          type: boolean
+        produto:
+          type: string
     OrganizacaoAcessoDto:
       description: "DTO de Acesso à Organização.\r\nUsado para representar os dados\
         \ de acesso/permissão de um usuário em uma organização."
@@ -1628,6 +1775,13 @@ components:
         ie: 12345678901234
         nome: Organizacao XYZ
         idSistemaPagamento: SL123
+    OrganizacaoListDto:
+      type: object
+      properties:
+        cnpjList:
+          type: array
+          items:
+            type: string
     PageMetadata:
       type: object
       properties:
