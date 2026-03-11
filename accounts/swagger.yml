@@ -1199,6 +1199,8 @@ components:
           type: string
         empresa:
           $ref: '#/components/schemas/CriarEmpresaDto'
+        criarContaFaturamento:
+          type: boolean
       example:
         emailFinanceiro: teste@teste.com
         nomeResponsavel: Responsavel Financeiro
@@ -1475,7 +1477,6 @@ components:
       description: DTO de Endereço
       required:
         - logradouro
-        - numero
         - municipio
         - uf
         - bairro
@@ -1639,12 +1640,12 @@ components:
         tenantMdfeHom:
           description: Tenant MDF-e de Homologacao
           $ref: '#/components/schemas/TenantDtoReduzido'
-        tenantEdi:
-          description: Tenant EDI
-          $ref: '#/components/schemas/TenantDtoReduzido'
-        tenantEdiHom:
-          description: Tenant EDI de Homologacao
-          $ref: '#/components/schemas/TenantDtoReduzido'
+        contaFaturamentoId:
+          description: Identificador da conta de faturamento
+          type: string
+        sistemaPagamento:
+          description: Sistema de pagamento
+          type: string
       example:
         id: UUID
         cpfCnpj: '01234567890123'
@@ -2031,4 +2032,4 @@ components:
             $ref: '#/components/schemas/Error'
       description: Forbidden
 security:
-  - authorization: []
+  - authorization: [ ]
