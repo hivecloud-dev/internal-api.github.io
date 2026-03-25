@@ -1646,6 +1646,10 @@ components:
         sistemaPagamento:
           description: Sistema de pagamento
           type: string
+        dataCriacao:
+          description: Data de criação da organização
+          type: string
+          format: date-time
       example:
         id: UUID
         cpfCnpj: '01234567890123'
@@ -1727,15 +1731,13 @@ components:
         tenantMdfe:
           description: Tenant MDF-e
           $ref: '#/components/schemas/TenantDtoReduzido'
-        tenantEdi:
-          description: Tenant EDI
-          $ref: '#/components/schemas/TenantDtoReduzido'
-        tenantTms:
-          description: Tenant TMS
-          $ref: '#/components/schemas/TenantDtoReduzido'
-        tenantRpa:
-          description: Tenant RPA
-          $ref: '#/components/schemas/TenantDtoReduzido'
+        sistemaPagamento:
+          description: Sistema de pagamento
+          type: string
+        dataCriacao:
+          description: Data de criação da organização
+          type: string
+          format: date-time
       example:
         id: UUID
         cpfCnpj: '01234567890123'
