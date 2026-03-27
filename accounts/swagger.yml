@@ -651,6 +651,32 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: get
+  /v1/organizacoes/{id}/atualizar-sistema-pagamento:
+    post:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.atualizarSistemaPagamento
+      description: "Atualiza o sistema de pagamento da organiza??o para Core.\r\n\
+        Consulta e cria/atualiza a conta no sistema Core."
+      parameters:
+        - name: id
+          description: ID da Organiza??o
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Resposta com status da opera??o
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtualizarSistemaPagamentoResponseDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: atualizarSistemaPagamento
   /v1/organizacoes/{organizacaoId}/acesso:
     get:
       tags:
@@ -863,6 +889,18 @@ paths:
       x-operation-name: retornarPesquisa
 components:
   schemas:
+    AtualizarSistemaPagamentoResponseDto:
+      description: DTO de resposta para atualização do sistema de pagamento para
+        Core.
+      type: object
+      properties:
+        sucesso:
+          type: boolean
+        mensagem:
+          type: string
+        idCore:
+          type: integer
+          format: int32
     CentralEmissaoValidarEmailCertificadoDto:
       type: object
       properties:
