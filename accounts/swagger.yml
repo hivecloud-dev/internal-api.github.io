@@ -26,7 +26,7 @@ tags:
   - name: Organizacao Acesso
     description: Serviços básicos da entidade OrganizaçãoAcesso
   - name: Organizacao
-    description: ServiÃ§os bÃ¡sicos da entidade OrganizaÃ§Ã£o
+    description: Serviços básicos da entidade Organização
   - name: Pesquisa V1
     description: Serviços básicos da Pesquisa
 paths:
@@ -91,21 +91,21 @@ paths:
           schema:
             type: string
         - name: pageNumber
-          description: "Qual pÃ¡gina estÃ¡ sendo resgatada, o valor padrÃ£o Ã© 0"
+          description: "Qual página está sendo resgatada, o valor padrão é 0"
           in: query
           required: false
           schema:
             type: integer
             format: int32
         - name: pageSize
-          description: "Quantidade de elementos por pÃ¡gina, o valor padrÃ£o Ã© 10"
+          description: "Quantidade de elementos por página, o valor padrão é 10"
           in: query
           required: false
           schema:
             type: integer
             format: int32
         - name: campoPesquisa
-          description: "Campo de pesquisa livre, nem sempre estarÃ¡ implementado"
+          description: "Campo de pesquisa livre, nem sempre estará implementado"
           in: query
           required: false
           schema:
@@ -522,21 +522,95 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: criarOrganizacao
+  /v1/organizacoes/buscar-vinculos-tenant/{tenantId}:
+    get:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.buscarVinculosTenant
+      description: Busca os vínculos de um tenant específico.
+      parameters:
+        - name: tenantId
+          description: ID do Tenant
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Resposta com informações do tenant e suas empresas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuscarVinculoTenantResponseDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: buscarVinculosTenant
+  /v1/organizacoes/criar-vincular-organizacao:
+    post:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.criarVincularOrganizacao
+      description: Cria uma organização e vincula tenants e/ou conta de faturamento.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarVincularOrganizacaoRequestDto'
+        description: Dados da organização e vínculos
+      responses:
+        200:
+          description: Resposta com status da operação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CriarVincularOrganizacaoResponseDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: criarVincularOrganizacao
+  /v1/organizacoes/desvincular-tenant/{tenantId}:
+    post:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.desvincularTenant
+      description: Desvincula um tenant da organização.
+      parameters:
+        - name: tenantId
+          description: ID do Tenant
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Resposta com status da operação de desvinculação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DesvincularTenantResponseDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: desvincularTenant
   /v1/organizacoes/por-cpf-cnpj-list:
     get:
       tags:
         - Organizacao
       operationId: OrganizacaoControllerImp.getPorCnpjList
-      description: Recupera OrganizaÃ§Ãµes a partir dos seus CPF/CNPJs
+      description: Recupera Organizações a partir dos seus CPF/CNPJs
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/OrganizacaoListDto'
-        description: Lista de CPF/CNPJ das OrganizaÃ§Ãµes
+        description: Lista de CPF/CNPJ das Organizações
       responses:
         200:
-          description: Lista de OrganizaÃ§Ãµes
+          description: Lista de Organizações
           content:
             application/json:
               schema:
@@ -553,17 +627,17 @@ paths:
       tags:
         - Organizacao
       operationId: OrganizacaoControllerImp.getPorCnpj
-      description: Recupera uma OrganizaÃ§Ã£o a partir do CNPJ
+      description: Recupera uma Organização a partir do CNPJ
       parameters:
         - name: cpfCnpj
-          description: CPF/CNPJ da OrganizaÃ§Ã£o
+          description: CPF/CNPJ da Organização
           in: path
           required: true
           schema:
             type: string
       responses:
         200:
-          description: OrganizaÃ§Ã£o
+          description: Organização
           content:
             application/json:
               schema:
@@ -578,7 +652,7 @@ paths:
       tags:
         - Organizacao
       operationId: OrganizacaoControllerImp.getPorTenant
-      description: Recupera uma OrganizaÃ§Ã£o a partir do tenant.
+      description: Recupera uma Organização a partir do tenant.
       parameters:
         - name: tenantId
           description: id do tenant
@@ -613,7 +687,7 @@ paths:
               type: string
       responses:
         200:
-          description: InformaÃ§Ãµes do tenant/empresa ou 404 se nÃ£o encontrada
+          description: Informações do tenant/empresa ou 404 se não encontrada
           content:
             application/json:
               schema:
@@ -628,10 +702,10 @@ paths:
       tags:
         - Organizacao
       operationId: OrganizacaoControllerImp.getPorUsuario
-      description: Recupera as OrganizaÃ§Ãµes Ã s quais o usuÃ¡rio tem acesso
+      description: Recupera as Organizações às quais o usuário tem acesso
       parameters:
         - name: login
-          description: O login do usuÃ¡rio que tem acesso Ã s OrganizaÃ§Ãµes
+          description: O login do usuário que tem acesso às Organizações
           in: path
           required: true
           schema:
@@ -655,7 +729,7 @@ paths:
             type: string
       responses:
         200:
-          description: Uma ColeÃ§Ã£o de OrganizaÃ§Ãµes
+          description: Uma Coleção de Organizações
           content:
             application/json:
               schema:
@@ -676,22 +750,46 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: getPorUsuario
+  /v1/organizacoes/vincular-tenant:
+    post:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.vincularTenantNaOrganizacao
+      description: Vincula um tenant a uma organização.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VincularTenantRequestDto'
+        description: DTO contendo IDs do Tenant e da Organização
+      responses:
+        200:
+          description: Resposta com status da operação de vinculação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VincularTenantResponseDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: vincularTenantNaOrganizacao
   /v1/organizacoes/{id}:
     get:
       tags:
         - Organizacao
-      operationId: OrganizacaoControllerImp.get
-      description: Recupera uma OrganizaÃ§Ã£o a partir da IdentificaÃ§Ã£o
+      operationId: OrganizacaoControllerImp.getOrganizacao
+      description: Recupera uma Organização a partir da Identificação
       parameters:
         - name: id
-          description: ID da OrganizaÃ§Ã£o
+          description: ID da Organização
           in: path
           required: true
           schema:
             type: string
       responses:
         200:
-          description: OrganizaÃ§Ã£o
+          description: Organização
           content:
             application/json:
               schema:
@@ -700,24 +798,24 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         "403":
           $ref: '#/components/responses/Forbidden'
-      x-operation-name: get
+      x-operation-name: getOrganizacao
   /v1/organizacoes/{id}/atualizar-sistema-pagamento:
     post:
       tags:
         - Organizacao
       operationId: OrganizacaoControllerImp.atualizarSistemaPagamento
-      description: "Atualiza o sistema de pagamento da organiza??o para Core.\r\n\
+      description: "Atualiza o sistema de pagamento da organização para Core.\r\n\
         Consulta e cria/atualiza a conta no sistema Core."
       parameters:
         - name: id
-          description: ID da Organiza??o
+          description: ID da Organização
           in: path
           required: true
           schema:
             type: string
       responses:
         200:
-          description: Resposta com status da opera??o
+          description: Resposta com status da operação
           content:
             application/json:
               schema:
@@ -758,7 +856,7 @@ paths:
           schema:
             type: string
         - name: login
-          description: Login do usuário associado á regra de acesso
+          description: Login do usuário associado à regra de acesso
           in: query
           required: false
           schema:
@@ -940,8 +1038,7 @@ paths:
 components:
   schemas:
     AtualizarSistemaPagamentoResponseDto:
-      description: DTO de resposta para atualizaÃ§Ã£o do sistema de pagamento para
-        Core.
+      description: DTO de resposta para atualização do sistema de pagamento para Core.
       type: object
       properties:
         sucesso:
@@ -951,6 +1048,17 @@ components:
         idCore:
           type: integer
           format: int32
+    BuscarVinculoTenantResponseDto:
+      description: "DTO de resposta para buscar vínculos de tenant.\r\nHerda campos\
+        \ comuns de sucesso e mensagem."
+      type: object
+      properties:
+        sucesso:
+          type: boolean
+        mensagem:
+          type: string
+        tenant:
+          $ref: '#/components/schemas/TenantVinculoDto'
     CentralEmissaoValidarEmailCertificadoDto:
       type: object
       properties:
@@ -1323,6 +1431,63 @@ components:
             codigoUf: 51
             uf: PE
             cep: 52000000
+    CriarVincularOrganizacaoRequestDto:
+      description: "DTO de Organização, usado para a ação de criar organização e vincular\
+        \ tenants/conta faturamento"
+      required:
+        - emailFinanceiro
+        - nomeResponsavel
+        - loginUsuarioAdministrador
+        - cpfCnpj
+        - nome
+      type: object
+      properties:
+        emailFinanceiro:
+          description: Email do setor financeiro
+          type: string
+        nomeResponsavel:
+          description: Nome do Responsável no setor financeiro
+          type: string
+        loginUsuarioAdministrador:
+          description: Login do usuário administrador do sistema
+          type: string
+        cpfCnpj:
+          description: CPF/CNPJ da organização
+          type: string
+        ie:
+          description: Inscrição Estadual da organização
+          type: string
+        nome:
+          description: Nome da organização
+          type: string
+        idContaFaturamento:
+          description: ID da conta de faturamento a vincular (opcional)
+          type: string
+        idTenantCte:
+          description: ID do tenant CTE a vincular (opcional)
+          type: string
+        idTenantMdfe:
+          description: ID do tenant MDFE a vincular (opcional)
+          type: string
+    CriarVincularOrganizacaoResponseDto:
+      description: "DTO de resposta para criação de organização e vínculo de tenants/conta\
+        \ faturamento.\r\nHerda campos comuns de sucesso e mensagem."
+      type: object
+      properties:
+        sucesso:
+          type: boolean
+        mensagem:
+          type: string
+        idOrganizacao:
+          type: string
+        nomeOrganizacao:
+          type: string
+        cnpjOrganizacao:
+          type: string
+        vinculoCte:
+          $ref: '#/components/schemas/VincularTenantResponseDto'
+        vinculoMdfe:
+          $ref: '#/components/schemas/VincularTenantResponseDto'
     DataSourceDto:
       type: object
       properties:
@@ -1338,6 +1503,21 @@ components:
           type: boolean
         cluster:
           $ref: '#/components/schemas/ClusterDto'
+    DesvincularTenantResponseDto:
+      description: "DTO de resposta para desvincular tenant.\r\nHerda campos comuns\
+        \ de sucesso e mensagem."
+      type: object
+      properties:
+        sucesso:
+          type: boolean
+        mensagem:
+          type: string
+        tenant:
+          $ref: '#/components/schemas/TenantVinculoDto'
+        resultadosEmpresas:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmpresaVinculoResultadoDto'
     EmpresaDto:
       description: "DTO de Empresa\r\nRepresenta os dados de uma empresa para transferê\
         ncia entre camadas."
@@ -1587,6 +1767,46 @@ components:
         produto: CTE
         operacao: CRIAR
         sucesso: true
+    EmpresaProdutoVinculoDto:
+      type: object
+      properties:
+        idEmpresaProduto:
+          type: string
+        idEmpresaOrganizacao:
+          type: string
+        nome:
+          type: string
+        cnpj:
+          type: string
+        ie:
+          type: string
+        produto:
+          $ref: '#/components/schemas/ProdutoEmissorEnumDto'
+        novaEmpresa:
+          type: boolean
+    EmpresaVinculoResultadoDto:
+      description: "DTO para resultado de operações de vínculo/desvínculo de empresas.\r\
+        \nUnifica os campos de vinculo e desvinculo."
+      type: object
+      properties:
+        idEmpresaProduto:
+          type: string
+        idEmpresaOrganizacao:
+          type: string
+        nome:
+          type: string
+        cnpj:
+          type: string
+        ie:
+          type: string
+        sucesso:
+          type: boolean
+        mensagem:
+          type: string
+        novaEmpresa:
+          type: boolean
+        producao:
+          type: boolean
     EnderecoDto:
       description: DTO de Endereço
       required:
@@ -1686,41 +1906,41 @@ components:
           nome: usuarioTesteMock
           email: loginTest@teste.com
     OrganizacaoDto:
-      description: "DTO de OrganizaÃ§Ã£o.\r\nRepresenta os dados de uma organizaÃ§\
-        Ã£o para transferÃªncia entre camadas."
+      description: "DTO de Organização.\r\nRepresenta os dados de uma organização\
+        \ para transferência entre camadas."
       type: object
       properties:
         id:
-          description: Identificador Ãºnico da organizaÃ§Ã£o
+          description: Identificador único da organização
           type: string
         cpfCnpj:
-          description: CPF ou CNPJ da organizaÃ§Ã£o
+          description: CPF ou CNPJ da organização
           type: string
         ie:
-          description: InscriÃ§Ã£o estadual
+          description: Inscrição estadual
           type: string
         nome:
-          description: Nome da organizaÃ§Ã£o
+          description: Nome da organização
           type: string
         emailFinanceiro:
-          description: E-mail financeiro da organizaÃ§Ã£o
+          description: E-mail financeiro da organização
           type: string
         nomeResponsavel:
-          description: Nome do responsÃ¡vel pela organizaÃ§Ã£o
+          description: Nome do responsável pela organização
           type: string
         usuarioAdministrador:
-          description: UsuÃ¡rio administrador da organizaÃ§Ã£o
+          description: Usuário administrador da organização
           $ref: '#/components/schemas/UsuarioDtoReduzido'
         dataBloqueioSistemaPagamento:
           description: Data de bloqueio do sistema de pagamento
           type: string
           format: date-time
         dataDesativacaoSistemaPagamento:
-          description: Data de desativaÃ§Ã£o do sistema de pagamento
+          description: Data de desativação do sistema de pagamento
           type: string
           format: date-time
         situacaoSistemaPagamento:
-          description: SituaÃ§Ã£o do sistema de pagamento
+          description: Situação do sistema de pagamento
           $ref: '#/components/schemas/SituacaoClienteSistemaPagamentoDto'
         idSistemaPagamento:
           description: Identificador do sistema de pagamento
@@ -1733,12 +1953,12 @@ components:
           description: Perfil da conta
           $ref: '#/components/schemas/PerfilContaDto'
         organizacaoAccessos:
-          description: Lista de acessos da organizaÃ§Ã£o
+          description: Lista de acessos da organização
           type: array
           items:
             $ref: '#/components/schemas/OrganizacaoAcessoDtoReduzido'
         empresas:
-          description: Lista de empresas da organizaÃ§Ã£o
+          description: Lista de empresas da organização
           type: array
           items:
             $ref: '#/components/schemas/EmpresaDtoReduzido'
@@ -1761,7 +1981,7 @@ components:
           description: Sistema de pagamento
           type: string
         dataCriacao:
-          description: Data de criaÃ§Ã£o da organizaÃ§Ã£o
+          description: Data de criação da organização
           type: string
           format: date-time
       example:
@@ -1799,35 +2019,35 @@ components:
             matriz: true
         tenantCte: UUID
     OrganizacaoDtoLista:
-      description: "DTO de lista de organizaÃ§Ãµes.\r\nUsado para retornar dados resumidos\
-        \ de vÃ¡rias organizaÃ§Ãµes."
+      description: "DTO de lista de organizações.\r\nUsado para retornar dados resumidos\
+        \ de várias organizações."
       type: object
       properties:
         id:
-          description: Identificador Ãºnico da organizaÃ§Ã£o
+          description: Identificador único da organização
           type: string
         cpfCnpj:
-          description: CPF ou CNPJ da organizaÃ§Ã£o
+          description: CPF ou CNPJ da organização
           type: string
         ie:
-          description: InscriÃ§Ã£o estadual
+          description: Inscrição estadual
           type: string
         nome:
-          description: Nome da organizaÃ§Ã£o
+          description: Nome da organização
           type: string
         usuarioAdministrador:
-          description: UsuÃ¡rio administrador da organizaÃ§Ã£o
+          description: Usuário administrador da organização
           $ref: '#/components/schemas/UsuarioDtoReduzido'
         dataBloqueioSistemaPagamento:
           description: Data de bloqueio do sistema de pagamento
           type: string
           format: date-time
         dataDesativacaoSistemaPagamento:
-          description: Data de desativaÃ§Ã£o do sistema de pagamento
+          description: Data de desativação do sistema de pagamento
           type: string
           format: date-time
         situacaoSistemaPagamento:
-          description: SituaÃ§Ã£o do sistema de pagamento
+          description: Situação do sistema de pagamento
           $ref: '#/components/schemas/SituacaoClienteSistemaPagamentoDto'
         idSistemaPagamento:
           description: Identificador do sistema de pagamento
@@ -1849,7 +2069,7 @@ components:
           description: Sistema de pagamento
           type: string
         dataCriacao:
-          description: Data de criaÃ§Ã£o da organizaÃ§Ã£o
+          description: Data de criação da organização
           type: string
           format: date-time
       example:
@@ -1989,6 +2209,11 @@ components:
         - LIVE
         - CNPJ
         - ARMAZENAMENTO
+    ProdutoEmissorEnumDto:
+      type: string
+      enum:
+        - CTE
+        - MDFE
     SistemaPagamentoDto:
       type: string
       enum:
@@ -2116,6 +2341,25 @@ components:
           type: string
         propertyValue:
           type: string
+    TenantVinculoDto:
+      type: object
+      properties:
+        id:
+          type: string
+        produto:
+          $ref: '#/components/schemas/ProdutoEmissorEnumDto'
+        nome:
+          type: string
+        cpfCnpj:
+          type: string
+        idOrganizacao:
+          type: string
+        homologacao:
+          $ref: '#/components/schemas/TenantVinculoDto'
+        empresas:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmpresaProdutoVinculoDto'
     TipoAmbienteDto:
       type: string
       enum:
@@ -2242,6 +2486,37 @@ components:
         login: loginTest@teste.com
         nome: usuarioTesteMock
         email: loginTest@teste.com
+    VincularTenantRequestDto:
+      required:
+        - tenantId
+        - organizacaoId
+      type: object
+      properties:
+        tenantId:
+          type: string
+        organizacaoId:
+          type: string
+    VincularTenantResponseDto:
+      description: "DTO de resposta para vincular tenant à organização.\r\nHerda campos\
+        \ comuns de sucesso e mensagem."
+      type: object
+      properties:
+        sucesso:
+          type: boolean
+        mensagem:
+          type: string
+        tenant:
+          $ref: '#/components/schemas/TenantVinculoDto'
+        idOrganizacao:
+          type: string
+        nomeOrganizacao:
+          type: string
+        cnpjOrganizacao:
+          type: string
+        resultadosEmpresas:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmpresaVinculoResultadoDto'
     Void:
       type: object
     Error:
