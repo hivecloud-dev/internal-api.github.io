@@ -29,6 +29,8 @@ tags:
     description: Serviços básicos da entidade Organização
   - name: Pesquisa V1
     description: Serviços básicos da Pesquisa
+  - name: Tenant
+    description: Serviços básicos da entidade Tenant
 paths:
   /v1/central-emissao/validar-email:
     post:
@@ -1035,6 +1037,70 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: retornarPesquisa
+  /v1/tenants/{id}:
+    get:
+      tags:
+        - Tenant
+      operationId: TenantControllerImp.getTenant
+      description: "Retorna os dados completos de um tenant pelo seu identificador.\r\
+        \n<p>\r\nSuporta carregamento sob demanda de dados relacionados via parâmetro\
+        \ \"loadWith\":\r\n- \"tenant.tenantProperty\" — carrega as propriedades customizadas\
+        \ do tenant\r\n- \"tenant.tenantAccess\" — carrega os acessos vinculados ao\
+        \ tenant\r\n- \"tenant.dataSource\" — carrega as configurações do data source\r\
+        \n- \"tenant.planos\" — carrega o detalhamento dos planos contratados"
+      parameters:
+        - name: id
+          description: identificador único do tenant
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: loadWith
+          description: lista opcional de relacionamentos a carregar junto com o tenant
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        200:
+          description: "200 OK com o TenantDto preenchido, ou 404 Not Found se o tenant\
+            \ não existir"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getTenant
+  /v1/tenants/{id}/plano:
+    get:
+      tags:
+        - Tenant
+      operationId: TenantControllerImp.getPlano
+      description: Retorna o detalhamento dos planos contratados por um tenant.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "200 OK com o TenantPlanoDto preenchido, ou 404 Not Found se\
+            \ o tenant não existir"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantPlanoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getPlano
 components:
   schemas:
     AtualizarSistemaPagamentoResponseDto:
@@ -1137,16 +1203,50 @@ components:
         tipoCertificado:
           description: Tipo do certificado digital
           $ref: '#/components/schemas/TipoCertificadoDto'
+    CiotDto:
+      description: "DTO que representa um plano de CIOT (Código Identificador da Operaç\
+        ão de Transporte)\r\ncontratado pelo tenant. Compõe TenantPlanoDto tanto para\
+        \ frota própria quanto para TAC."
+      type: object
+      properties:
+        nomePlano:
+          description: Nome do plano de CIOT contratado.
+          type: string
+        quantidadeCiot:
+          description: Quantidade de CIOTs contratados.
+          type: string
+        valorTotalCiot:
+          description: Valor total do CIOT.
+          type: string
+        radicalCnpj:
+          description: Radical do CNPJ (8 primeiros dígitos) vinculado a este plano
+            de CIOT.
+          type: string
+        sistemaPagamento:
+          description: Sistema de pagamento utilizado para este plano de CIOT.
+          $ref: '#/components/schemas/SistemaPagamentoDto'
+        idSistemaPagamento:
+          description: Identificador do plano no sistema de pagamento.
+          type: string
+        liberado:
+          description: Indica se o plano de CIOT está liberado (assinatura ATIVA ou
+            ATIVATEMPORARIAMENTE).
+          type: boolean
     ClusterDto:
+      description: "DTO que representa um cluster de infraestrutura.\r\nCompõe DataSourceDto."
       type: object
       properties:
         id:
+          description: Identificador único do cluster.
           type: string
         appVersion:
+          description: Versão da aplicação implantada no cluster.
           type: string
         enabled:
+          description: Indica se o cluster está habilitado e disponível.
           type: boolean
         url:
+          description: URL de acesso ao cluster.
           type: string
     CnaeDto:
       type: object
@@ -1489,19 +1589,27 @@ components:
         vinculoMdfe:
           $ref: '#/components/schemas/VincularTenantResponseDto'
     DataSourceDto:
+      description: "DTO com as configurações de conexão ao banco de dados do tenant.\r\
+        \nCompõe TenantDto e é carregado sob demanda via loadWith=tenant.dataSource."
       type: object
       properties:
         id:
+          description: Identificador único do data source.
           type: string
         user:
+          description: Usuário de acesso ao banco de dados.
           type: string
         password:
+          description: Senha de acesso ao banco de dados.
           type: string
         jdbcUrl:
+          description: URL JDBC de conexão ao banco de dados.
           type: string
         available:
+          description: Indica se o data source está disponível para conexão.
           type: boolean
         cluster:
+          description: Cluster ao qual este data source pertence.
           $ref: '#/components/schemas/ClusterDto'
     DesvincularTenantResponseDto:
       description: "DTO de resposta para desvincular tenant.\r\nHerda campos comuns\
@@ -2190,6 +2298,32 @@ components:
         dataFinal:
           type: string
           format: date-time
+    PlanoItemDto:
+      description: "DTO que representa um item de plano contratado (CT-e, MDF-e, consulta,\
+        \ averbação, emitentes ou armazenamento).\r\nCompõe TenantPlanoDto."
+      type: object
+      properties:
+        nomePlano:
+          description: Nome do plano contratado para este item.
+          type: string
+        limite:
+          description: "Limite contratado no plano (ex.: quantidade de documentos\
+            \ ou GB)."
+          type: string
+        sistemaPagamento:
+          description: Sistema de pagamento utilizado para este item do plano.
+          $ref: '#/components/schemas/SistemaPagamentoDto'
+        idSistemaPagamento:
+          description: Identificador do item no sistema de pagamento.
+          type: string
+        liberado:
+          description: "Indica se o plano está liberado (assinatura ATIVA ou ATIVATEMPORARIAMENTE,\
+            \ ou trial ainda válido)."
+          type: boolean
+        trialAte:
+          description: "Data de expiração do período trial (dd/MM/yyyy), preenchida\
+            \ apenas para itens sem plano contratado."
+          type: string
     ProdutoDto:
       type: string
       enum:
@@ -2231,79 +2365,120 @@ components:
         - BLOQUEADO
         - INATIVO
     TenantAccessDto:
+      description: "DTO que representa um acesso concedido a um usuário ou sistema\
+        \ sobre um tenant.\r\nCompõe TenantDto e é carregado sob demanda via loadWith=tenant.tenantAccess."
       type: object
       properties:
         id:
+          description: Identificador único do registro de acesso.
           type: string
         principal:
+          description: Identificador do principal (usuário ou sistema) que possui
+            o acesso.
           type: string
         role:
+          description: Papel (role) concedido ao principal sobre o tenant.
           type: string
     TenantDto:
+      description: "DTO completo de um tenant, retornado pelo endpoint GET /v1/tenants/{id}.\r\
+        \n<p>\r\nDados relacionados são carregados sob demanda usando as constantes\
+        \ LOAD_WITH_*\r\nno parâmetro \"loadWith\" da requisição."
       type: object
       properties:
         tenantPropertySet:
+          description: Propriedades customizadas do tenant; populado apenas quando
+            "loadWith" contém "tenant.tenantProperty".
           type: array
           items:
             $ref: '#/components/schemas/TenantPropertyDto'
           uniqueItems: true
         tenantAccessSet:
+          description: Acessos vinculados ao tenant; populado apenas quando "loadWith"
+            contém "tenant.tenantAccess".
           type: array
           items:
             $ref: '#/components/schemas/TenantAccessDto'
           uniqueItems: true
         id:
+          description: Identificador único do tenant.
           type: string
         creationDate:
+          description: Data de criação do tenant.
           type: string
           format: date-time
         lastUpdateDate:
+          description: Data da última atualização do tenant.
           type: string
           format: date-time
         product:
+          description: Produto associado ao tenant.
           $ref: '#/components/schemas/ProdutoDto'
         name:
+          description: Nome do tenant.
           type: string
         cpfCnpj:
+          description: CPF ou CNPJ do tenant.
           type: string
         description:
+          description: Descrição do tenant.
           type: string
         ambientType:
+          description: "Tipo de ambiente (produção, homologação, etc.)."
           $ref: '#/components/schemas/TipoAmbienteDto'
         enabled:
+          description: Indica se o tenant está habilitado.
           type: boolean
         licenseActive:
+          description: Indica se a licença do tenant está ativa.
           type: boolean
         planName:
+          description: Nome do plano contratado.
           type: string
         billingAccountId:
+          description: ID da conta de faturamento vinculada ao tenant.
           type: integer
           format: int64
         integrationToken:
+          description: Token de integração do tenant.
           type: string
         dataSource:
+          description: Configurações do data source do tenant; populado apenas quando
+            "loadWith" contém "tenant.dataSource".
           $ref: '#/components/schemas/DataSourceDto'
         updateBillingAccountId:
+          description: Flag que indica se o campo billingAccountId deve ser atualizado.
           type: boolean
         updatePlanName:
+          description: Flag que indica se o campo planName deve ser atualizado.
           type: boolean
         updateLicenseActive:
+          description: Flag que indica se o campo licenseActive deve ser atualizado.
           type: boolean
         planEndDate:
+          description: Data de encerramento do plano contratado.
           type: string
           format: date-time
         dueDay:
+          description: Dia de vencimento da cobrança.
           type: string
         precoAvulso:
+          description: Preço avulso por operação.
           type: number
           format: double
         precoAvulsoTaxaMinima:
+          description: Taxa mínima aplicada ao preço avulso.
           type: number
           format: double
         idOrganizacao:
+          description: ID da organização vinculada ao tenant.
           type: string
         userRole:
+          description: Papel do usuário autenticado neste tenant.
           type: string
+        planos:
+          description: Detalhamento dos planos contratados; populado apenas quando
+            "loadWith" contém "planos".
+          $ref: '#/components/schemas/TenantPlanoDto'
     TenantDtoReduzido:
       type: object
       properties:
@@ -2332,14 +2507,74 @@ components:
         ativo: true
         desbloqueado: true
         nomePlano: Emissores 30
+    TenantPlanoDto:
+      description: "DTO com o detalhamento dos planos contratados por um tenant,\r\
+        \nretornado pelo endpoint GET /v1/tenants/{id}/plano e também\r\nembutido\
+        \ em TenantDto quando solicitado via loadWith=planos."
+      type: object
+      properties:
+        idContaFaturamento:
+          description: ID da conta de faturamento no sistema de pagamento.
+          type: integer
+          format: int64
+        sistemaPagamento:
+          description: Sistema de pagamento utilizado pelo tenant.
+          $ref: '#/components/schemas/SistemaPagamentoDto'
+        idSistemaPagamento:
+          description: Identificador do tenant no sistema de pagamento.
+          type: string
+        liberado:
+          description: Indica se a conta está liberada (SituacaoClienteSistemaPagamento.ATIVO).
+          type: boolean
+        planoJaLiberadoTemporariamente:
+          description: Indica se o plano foi liberado temporariamente via atributo
+            PLANO_JALIBERADO_TEMP.
+          type: boolean
+        planoLiberadoAte:
+          description: "Data até quando o plano está liberado temporariamente (dd/MM/yyyy),\
+            \ ou null."
+          type: string
+        cte:
+          description: Plano contratado para emissão de CT-e.
+          $ref: '#/components/schemas/PlanoItemDto'
+        mdfe:
+          description: Plano contratado para emissão de MDF-e.
+          $ref: '#/components/schemas/PlanoItemDto'
+        consulta:
+          description: Plano contratado para consultas de documentos fiscais.
+          $ref: '#/components/schemas/PlanoItemDto'
+        averbacao:
+          description: Plano contratado para averbação de cargas.
+          $ref: '#/components/schemas/PlanoItemDto'
+        emitentes:
+          description: Plano contratado para cadastro de emitentes.
+          $ref: '#/components/schemas/PlanoItemDto'
+        armazenamento:
+          description: Plano contratado para armazenamento de documentos.
+          $ref: '#/components/schemas/PlanoItemDto'
+        ciotTac:
+          description: Planos de CIOT para transportadores autônomos (TAC).
+          type: array
+          items:
+            $ref: '#/components/schemas/CiotDto'
+        ciotProprio:
+          description: Planos de CIOT para frota própria.
+          type: array
+          items:
+            $ref: '#/components/schemas/CiotDto'
     TenantPropertyDto:
+      description: "DTO que representa uma propriedade customizada (chave-valor) de\
+        \ um tenant.\r\nCompõe TenantDto e é carregado sob demanda via loadWith=tenant.tenantProperty."
       type: object
       properties:
         id:
+          description: Identificador único da propriedade.
           type: string
         propertyKey:
+          description: Chave identificadora da propriedade.
           type: string
         propertyValue:
+          description: Valor associado à chave da propriedade.
           type: string
     TenantVinculoDto:
       type: object
