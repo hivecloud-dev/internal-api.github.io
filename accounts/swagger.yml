@@ -1569,6 +1569,10 @@ components:
         idTenantMdfe:
           description: ID do tenant MDFE a vincular (opcional)
           type: string
+        criarTenantAusentes:
+          description: "Quando true, cria automaticamente o tenant ausente (CTE ou\
+            \ MDFE)"
+          type: boolean
     CriarVincularOrganizacaoResponseDto:
       description: "DTO de resposta para criação de organização e vínculo de tenants/conta\
         \ faturamento.\r\nHerda campos comuns de sucesso e mensagem."
