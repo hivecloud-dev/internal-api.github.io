@@ -936,6 +936,28 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: consultarFreteMinimo
+  /v1/ciot/consultar-frete-minimo-rota:
+    post:
+      tags:
+        - Ciot
+      operationId: CiotControllerImp.consultarFreteMinimoRota
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalcularFreteMinimoRotaDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreteMinimoRotaResponseDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarFreteMinimoRota
   /v1/ciot/gerar-ciot-simples:
     post:
       tags:
@@ -970,6 +992,7 @@ paths:
         - Ciot
       operationId: CiotControllerImp.gerarCiot
       description: Gera CIOT para o MDF-e especificado.
+      deprecated: true
       parameters:
         - name: idMdfe
           in: path
@@ -6496,6 +6519,118 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: sugestion
+  /v1/veiculos/vinculo-excludente:
+    get:
+      tags:
+        - Veiculos
+      operationId: VeiculosV1ControllerImp.listVinculoExcludente
+      parameters:
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nome
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: placa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: renavam
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: tipoPropriedade
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoPropriedade'
+        - name: tipoVeiculo
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoVeiculo'
+        - name: tipoRodado
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoRodado'
+        - name: tipoCarroceria
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoCarroceria'
+        - name: tipoProprietario
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoProprietario'
+        - name: codBancoProprietario
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: codAgenciaProprietario
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cnpjIpefProprietario
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: pixProprietario
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfMotorista
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: placaReboque
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: placaExcludente
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VeiculoVinculoExcludenteReturnWrapper'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: listVinculoExcludente
   /v1/veiculos/{id}:
     get:
       tags:
@@ -6885,6 +7020,22 @@ components:
         chamado:
           type: string
     CalcularFreteMinimoDto:
+      type: object
+      properties:
+        distancia:
+          type: integer
+          format: int32
+        eixos:
+          type: integer
+          format: int32
+        tipoFrete:
+          type: string
+        tipoCarga:
+          type: integer
+          format: int32
+        retornoVazio:
+          type: boolean
+    CalcularFreteMinimoRotaDto:
       type: object
       properties:
         percurso:
@@ -8230,6 +8381,8 @@ components:
           type: boolean
         usuarioLandingPage:
           $ref: '#/components/schemas/UsuarioLandingPage'
+        tenantIdAutoSelecionado:
+          type: string
     ExtratoAvulsoDto:
       type: object
       properties:
@@ -8307,6 +8460,15 @@ components:
         freteMinimo:
           type: number
           format: double
+    FreteMinimoRotaResponseDto:
+      type: object
+      properties:
+        freteMinimo:
+          type: number
+          format: double
+        distancia:
+          type: integer
+          format: int32
     GerarCiotDto:
       description: "Classe para requisição de geração de CIOT.\r\nContém os dados\
         \ necessários para gerar um novo CIOT (Código Identificador\r\nda Operaçã\
@@ -8428,6 +8590,9 @@ components:
           type: boolean
         umaColetaUmaEntrega:
           type: boolean
+        dataFimViagem:
+          type: string
+          format: date-time
     GoogleTagManagerInfo:
       type: object
       properties:
@@ -11323,6 +11488,13 @@ components:
         tipoPropriedadeReboque2:
           type: string
         tipoPropriedadeReboque3:
+          type: string
+    VeiculoVinculoExcludenteReturnWrapper:
+      type: object
+      properties:
+        id:
+          type: string
+        placa:
           type: string
     VerificarAutorizacaoExistenteDto:
       type: object
