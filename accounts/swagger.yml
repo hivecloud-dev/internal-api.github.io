@@ -27,6 +27,8 @@ tags:
     description: Serviços básicos da entidade OrganizaçãoAcesso
   - name: Organizacao
     description: Serviços básicos da entidade Organização
+  - name: Organizacao Empresa
+    description: Controller REST responsável pelo gerenciamento de Empresas por tenant.
   - name: Pesquisa V1
     description: Serviços básicos da Pesquisa
   - name: Tenant
@@ -649,6 +651,33 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: getPorCnpj
+  /v1/organizacoes/por-id-nstech/{idNstech}:
+    get:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.getPorIdNstech
+      description: Recupera uma Organização a partir do id da organização correspondente
+        na Nstech.
+      parameters:
+        - name: idNstech
+          description: "id da organização na Nstech (nsApps/Keycloak, realm nstech)"
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Organização, ou 404 se nenhuma Organização estiver associada\
+            \ a esse id"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizacaoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getPorIdNstech
   /v1/organizacoes/por-tenant/{tenantId}:
     get:
       tags:
@@ -988,6 +1017,62 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: deleteAcesso
+  /v1/organizacoes/empresa/empresas-com-acesso/por-tenant/{tenantId}:
+    get:
+      tags:
+        - Organizacao Empresa
+      operationId: OrganizacaoEmpresaControllerImp.list
+      description: Retorna as empresas da organização com acesso para o tenant informado.
+      parameters:
+        - name: tenantId
+          description: id do tenant
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          description: "Qual página está sendo resgatada, o valor padrão é 0"
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          description: "Quantidade de elementos por página, o valor padrão é 10"
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          description: "Campo de pesquisa livre, nem sempre estará implementado"
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: lista de empresas ou 404 se não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmpresaDtoLista'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: list
   /v1/pesquisas/registrar-dados:
     post:
       tags:
@@ -2057,6 +2142,10 @@ components:
         idSistemaPagamento:
           description: Identificador do sistema de pagamento
           type: string
+        idNstech:
+          description: "Identificador da organização correspondente na Nstech (nsApps/Keycloak,\
+            \ realm nstech)"
+          type: string
         mrr:
           description: Receita recorrente mensal (MRR)
           type: number
@@ -2368,6 +2457,12 @@ components:
         - ATIVO
         - BLOQUEADO
         - INATIVO
+    SituacaoLoginNstechDto:
+      type: string
+      enum:
+        - NAO_MIGRADO
+        - MIGRADO
+        - IMPORTADO
     TenantAccessDto:
       description: "DTO que representa um acesso concedido a um usuário ou sistema\
         \ sobre um tenant.\r\nCompõe TenantDto e é carregado sob demanda via loadWith=tenant.tenantAccess."
@@ -2479,6 +2574,12 @@ components:
         userRole:
           description: Papel do usuário autenticado neste tenant.
           type: string
+        empresasComAcesso:
+          description: Lista de cnpjs das empresas que o usuário autenticado tem acesso
+            liberado
+          type: array
+          items:
+            type: string
         planos:
           description: Detalhamento dos planos contratados; populado apenas quando
             "loadWith" contém "planos".
@@ -2720,6 +2821,11 @@ components:
           type: string
         email:
           type: string
+        situacaoLoginNstech:
+          $ref: '#/components/schemas/SituacaoLoginNstechDto'
+        dataMigracaoLogin:
+          type: string
+          format: date-time
       example:
         id: 17
         login: loginTest@teste.com
