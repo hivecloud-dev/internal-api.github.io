@@ -51,6 +51,7 @@ tags:
   - name: Imprimir Documento Cte
   - name: Imprimir Relatorios Cte
   - name: Informacao Cte Globalizado
+  - name: Insucesso Entrega
   - name: Integracoes
   - name: Nstech
   - name: Pesquisa
@@ -2669,7 +2670,7 @@ paths:
                   content:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Cte'
+                      $ref: '#/components/schemas/CteDto'
                   param:
                     $ref: '#/components/schemas/RequestParam'
                   requestUrl:
@@ -3372,7 +3373,7 @@ paths:
                   content:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Cte'
+                      $ref: '#/components/schemas/CteDto'
                   param:
                     $ref: '#/components/schemas/RequestParam'
                   requestUrl:
@@ -6146,15 +6147,21 @@ paths:
       tags:
         - Importacao Cte Nfe
       operationId: ImportacaoCteNfeV1ControllerImp.importarCteNfe
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           text/plain:
             schema:
               required:
-                - arg0
+                - arquivo
               type: object
               properties:
-                arg0:
+                arquivo:
                   type: string
                   format: binary
       responses:
@@ -6174,15 +6181,21 @@ paths:
       tags:
         - Importacao Cte Nfe
       operationId: ImportacaoCteNfeV1ControllerImp.importarCteNfelista
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
             schema:
               required:
-                - arg0
+                - arquivos
               type: object
               properties:
-                arg0:
+                arquivos:
                   type: array
                   items:
                     type: string
@@ -6206,15 +6219,21 @@ paths:
       tags:
         - Importacao Cte Nfe
       operationId: ImportacaoCteNfeV1ControllerImp.importarCteNfelistaSimplificado
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
             schema:
               required:
-                - arg0
+                - arquivos
               type: object
               properties:
-                arg0:
+                arquivos:
                   type: array
                   items:
                     type: string
@@ -6295,6 +6314,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: successful operation
@@ -6315,6 +6339,11 @@ paths:
       parameters:
         - name: chaveNfe
           in: path
+          required: true
+          schema:
+            type: string
+        - name: empresaId
+          in: header
           required: true
           schema:
             type: string
@@ -6766,6 +6795,52 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: getInfCteGlobalizado
+  /v1/insucesso-entrega/cancelar/{cteId}:
+    post:
+      tags:
+        - Insucesso Entrega
+      operationId: InsucessoEntregaControllerImp.cancelar
+      parameters:
+        - name: cteId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: cancelar
+  /v1/insucesso-entrega/registrar/{cteId}:
+    post:
+      tags:
+        - Insucesso Entrega
+      operationId: InsucessoEntregaControllerImp.registrar
+      parameters:
+        - name: cteId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: registrar
   /v1/configuracoes/integracoes:
     get:
       tags:
@@ -6916,7 +6991,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AverbacaoAtmProperties'
+                $ref: '#/components/schemas/AverbacaoAtmPropertiesDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -7762,7 +7837,7 @@ components:
           type: array
           items:
             type: string
-    AverbacaoAtmProperties:
+    AverbacaoAtmPropertiesDto:
       type: object
       properties:
         usuario:
@@ -7944,7 +8019,7 @@ components:
           type: number
           format: double
         pesoLiquido:
-          description: Peso lï¿½quido total.
+          description: Peso líquido total.
           type: number
           format: double
         quantidadeVolumes:
@@ -8665,50 +8740,6 @@ components:
           format: int32
       example:
         id: 99e39200-3bfb-465f-886f-85ee28e8cfda
-    Cte:
-      type: object
-      properties:
-        id:
-          type: string
-        numero:
-          type: integer
-          format: int32
-        serie:
-          type: integer
-          format: int32
-        ufInicial:
-          type: string
-        ufFinal:
-          type: string
-        valorTotalFrete:
-          type: number
-          format: double
-        nomeRemetente:
-          type: string
-        nomeTombador:
-          type: string
-        nomeDestinatario:
-          type: string
-        statusCte:
-          $ref: '#/components/schemas/StatusCte_1'
-        tipoEmissao:
-          $ref: '#/components/schemas/TipoEmissao_1'
-        xmlExportado:
-          type: boolean
-        dacteImpresso:
-          type: boolean
-        dataAutorizacao:
-          type: string
-          format: date-time
-        dataEmissao:
-          type: string
-          format: date-time
-        integrado:
-          type: boolean
-        statusAverbacao:
-          $ref: '#/components/schemas/StatusAverbacao'
-        protocoloAverbacao:
-          type: string
     CteAvulsoCreate:
       type: object
       properties:
@@ -8834,6 +8865,50 @@ components:
           $ref: '#/components/schemas/DadosEmitente'
         cteObservacoesCustomizadas:
           $ref: '#/components/schemas/CteObservacoesCustomizadas'
+    CteDto:
+      type: object
+      properties:
+        id:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        ufInicial:
+          type: string
+        ufFinal:
+          type: string
+        valorTotalFrete:
+          type: number
+          format: double
+        nomeRemetente:
+          type: string
+        nomeTombador:
+          type: string
+        nomeDestinatario:
+          type: string
+        statusCte:
+          $ref: '#/components/schemas/StatusCte_1'
+        tipoEmissao:
+          $ref: '#/components/schemas/TipoEmissao_1'
+        xmlExportado:
+          type: boolean
+        dacteImpresso:
+          type: boolean
+        dataAutorizacao:
+          type: string
+          format: date-time
+        dataEmissao:
+          type: string
+          format: date-time
+        integrado:
+          type: boolean
+        statusAverbacao:
+          $ref: '#/components/schemas/StatusAverbacao'
+        protocoloAverbacao:
+          type: string
     CteEmissaoResponse:
       type: object
       properties:
@@ -9028,6 +9103,8 @@ components:
             $ref: '#/components/schemas/SeguroCarga'
         mdfeId:
           type: string
+        eventos:
+          $ref: '#/components/schemas/Eventos'
       example:
         statusCte: AUTORIZADO
         dataAutorizacao: 2021-08-28T09:30:00-0300
@@ -9554,6 +9631,10 @@ components:
           type: boolean
         msgConsultaNfe:
           type: string
+        arquivos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportarCteNfeFiles'
       example:
         remetente:
           id: 99e39200-3bfb-465f-886f-85ee28e8cfda
@@ -10592,6 +10673,13 @@ components:
           $ref: '#/components/schemas/Envolvido'
         recebedor:
           $ref: '#/components/schemas/Envolvido'
+    Eventos:
+      type: object
+      properties:
+        listaInsucessoEntrega:
+          type: array
+          items:
+            $ref: '#/components/schemas/InsucessoEntregaView'
     ExibidoInfoCertificadoExpiracao:
       type: object
       properties:
@@ -10606,6 +10694,8 @@ components:
       properties:
         tenantCadastrado:
           type: boolean
+        tenantIdAutoSelecionado:
+          type: string
     ExtratoAvulsoDto:
       type: object
       properties:
@@ -11048,6 +11138,14 @@ components:
           type: string
         success:
           type: boolean
+        numero:
+          type: string
+        ctesJaUtilizandoEsseDocumento:
+          type: array
+          items:
+            type: string
+        alertarDocumentoJaUtilizado:
+          type: boolean
     ImportarDceDto:
       type: object
       properties:
@@ -11418,6 +11516,28 @@ components:
         subserie:
           type: string
         tipoDocumento:
+          type: string
+    InsucessoEntregaView:
+      type: object
+      properties:
+        tipoEvento:
+          type: string
+        dataHoraEvento:
+          type: string
+          format: date-time
+        dataHoraTentativaEntrega:
+          type: string
+          format: date-time
+        motivo:
+          type: integer
+          format: int32
+        justificativaMotivo:
+          type: string
+        chavesAcessoNfe:
+          type: array
+          items:
+            type: string
+        usuarioResponsavel:
           type: string
     LacreCreate:
       type: object
@@ -11986,6 +12106,8 @@ components:
         habilitarRateio:
           type: boolean
         freteAutomaticoSubcontratacao:
+          type: boolean
+        validarDocumentoJaUtilizado:
           type: boolean
     OperacaoCalculoIcms:
       type: object
@@ -12676,7 +12798,7 @@ components:
       type: object
       properties:
         cte:
-          $ref: '#/components/schemas/Cte'
+          $ref: '#/components/schemas/CteDto'
         nomeSeguradora:
           type: string
         cnpjSeguradora:
