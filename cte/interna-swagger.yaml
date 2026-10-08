@@ -62,6 +62,7 @@ tags:
   - name: Validacao E Numero Mais Recente Cte
   - name: Valores Taxas Ctes
   - name: Vinculacao Informacao Cte Multmodal
+  - name: Webhook
 paths:
   /v1/ambientes:
     get:
@@ -6846,6 +6847,8 @@ paths:
       tags:
         - Integracoes
       operationId: IntegracoesV1ControllerImp.lista
+      description: ""
+      deprecated: true
       parameters:
         - name: pageNumber
           in: query
@@ -6907,8 +6910,7 @@ paths:
                     type: string
                   content:
                     type: array
-                    items:
-                      $ref: '#/components/schemas/WebHookDTO'
+                    items: {}
                   param:
                     $ref: '#/components/schemas/RequestParam'
                   requestUrl:
@@ -7588,6 +7590,347 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: vincularInformacaoCteMultmodal
+  /v1/webhooks:
+    get:
+      tags:
+        - Webhook
+      operationId: WebhookControllerImp.listar
+      parameters:
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: empresaId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: ativo
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WebhookDto'
+                  param:
+                    $ref: '#/components/schemas/RequestParam'
+                  requestUrl:
+                    $ref: '#/components/schemas/ServletUriComponentsBuilder'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: listar
+    post:
+      tags:
+        - Webhook
+      operationId: WebhookControllerImp.criar
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookCreateDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: criar
+  /v1/webhooks/eventos:
+    get:
+      tags:
+        - Webhook
+      operationId: WebhookControllerImp.listarEventos
+      parameters:
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: empresaId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: webhookId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: sucesso
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: tipoEvento
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/NotificationEventDto'
+        - name: cteId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: serie
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: numero
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: chaveAcesso
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: dataCriacaoInicial
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dataCriacaoFinal
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WebhookEventoDto'
+                  param:
+                    $ref: '#/components/schemas/RequestParam'
+                  requestUrl:
+                    $ref: '#/components/schemas/ServletUriComponentsBuilder'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: listarEventos
+  /v1/webhooks/eventos/reenviar:
+    post:
+      tags:
+        - Webhook
+      operationId: WebhookControllerImp.reenviarLote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookReenviarLoteDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: reenviarLote
+  /v1/webhooks/eventos/{eventoId}/resultados:
+    get:
+      tags:
+        - Webhook
+      operationId: WebhookControllerImp.listarResultados
+      parameters:
+        - name: eventoId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: webhookEventoId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: sucesso
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: dataEnvioInicial
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dataEnvioFinal
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WebhookResultadoDto'
+                  param:
+                    $ref: '#/components/schemas/RequestParam'
+                  requestUrl:
+                    $ref: '#/components/schemas/ServletUriComponentsBuilder'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: listarResultados
+  /v1/webhooks/{id}:
+    delete:
+      tags:
+        - Webhook
+      operationId: WebhookControllerImp.remover
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: remover
+  /v1/webhooks/{id}/testar:
+    post:
+      tags:
+        - Webhook
+      operationId: WebhookControllerImp.testar
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: cteId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookTesteDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: testar
 components:
   schemas:
     AceiteAvulso:
@@ -11989,6 +12332,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Nota'
+    NotificationEventDto:
+      type: string
+      enum:
+        - CTE_AUTORIZADO
+        - CTE_CANCELADO
+        - CTE_AVERBACAO_AUTORIZADA
+        - CTE_AVERBACAO_CANCELADA
     NstechAcessoProdutoCnpjDto:
       required:
         - cnpj
@@ -13792,22 +14142,105 @@ components:
           type: string
     Void:
       type: object
-    WebHookDTO:
+    WebhookCreateDto:
+      type: object
+      properties:
+        url:
+          type: string
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookHeaderDto'
+    WebhookDto:
       type: object
       properties:
         id:
           type: string
-        emitente:
-          type: string
         url:
           type: string
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookHeaderDto'
+        ativo:
+          type: boolean
         dataCriacao:
           type: string
           format: date-time
-        eventoLista:
+        usuarioCadastro:
+          type: string
+        dataDesativacao:
+          type: string
+          format: date-time
+        usuarioDesativacao:
+          type: string
+    WebhookEventoDto:
+      type: object
+      properties:
+        id:
+          type: string
+        webhookId:
+          type: string
+        cteId:
+          type: string
+        tipoEvento:
+          $ref: '#/components/schemas/NotificationEventDto'
+        payloadEnvio:
+          type: string
+        cabecalhosEnvio:
+          type: string
+        sucesso:
+          type: boolean
+        dataCriacao:
+          type: string
+          format: date-time
+    WebhookHeaderDto:
+      type: object
+      properties:
+        chave:
+          type: string
+        valor:
+          type: string
+    WebhookReenviarLoteDto:
+      type: object
+      properties:
+        webhookEventoIds:
           type: array
           items:
             type: string
+    WebhookResultadoDto:
+      type: object
+      properties:
+        id:
+          type: string
+        webhookEventoId:
+          type: string
+        url:
+          type: string
+        sucesso:
+          type: boolean
+        statusHttp:
+          type: integer
+          format: int32
+        payloadResposta:
+          type: string
+        mensagemErro:
+          type: string
+        dataEnvio:
+          type: string
+          format: date-time
+        usuarioReenvio:
+          type: string
+    WebhookTesteDto:
+      type: object
+      properties:
+        sucesso:
+          type: boolean
+        statusHttp:
+          type: integer
+          format: int32
+        mensagemErro:
+          type: string
     byte:
       type: object
     Error:
