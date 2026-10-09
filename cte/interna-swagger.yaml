@@ -12588,8 +12588,6 @@ components:
           $ref: '#/components/schemas/TenantDtoReduzido'
         tenantMdfeHom:
           $ref: '#/components/schemas/TenantDtoReduzido'
-        tenantEdi:
-          $ref: '#/components/schemas/TenantDtoReduzido'
     OutroDocumentoCreate:
       type: object
       properties:
