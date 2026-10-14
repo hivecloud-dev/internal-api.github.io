@@ -7019,6 +7019,9 @@ components:
       properties:
         chamado:
           type: string
+        linkFatura:
+          type: string
+          description: Link da fatura gerada na Bsoft para os planos de CIOT contratados
     CalcularFreteMinimoDto:
       type: object
       properties:
