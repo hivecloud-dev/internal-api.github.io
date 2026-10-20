@@ -17,6 +17,9 @@ tags:
     description: Serviços básicos da Central de Emissão
   - name: Conta Faturamento
     description: Controlador para Contas Faturamento
+  - name: Controle Conta
+    description: "Equivalente REST das operações findControleConta/createControleConta\r\
+      \ndo AccountsIntegrationService (SOAP)."
   - name: Empresa
     description: Serviços básicos da entidade Empresa
   - name: Empresa Produto Log
@@ -188,6 +191,62 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: recuperarContaFaturamento
+  /v1/controle-conta:
+    post:
+      tags:
+        - Controle Conta
+      operationId: ControleContaControllerImp.criar
+      description: Equivalente REST de AccountsIntegrationService.createControleConta
+        (SOAP).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ControleContaDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ControleContaCriacaoResultadoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: criar
+  /v1/controle-conta/busca:
+    post:
+      tags:
+        - Controle Conta
+      operationId: ControleContaControllerImp.busca
+      description: Equivalente REST de AccountsIntegrationService.findControleConta
+        (SOAP).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ControleContaDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ControleContaResultadoBuscaDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: busca
   /v1/organizacoes/{organizacaoId}/empresas:
     get:
       tags:
@@ -1405,6 +1464,36 @@ components:
         sistemaPagamento:
           description: Sistema de pagamento
           $ref: '#/components/schemas/SistemaPagamentoDto'
+    ControleContaCriacaoResultadoDto:
+      description: "Equivalente REST de CreateControleContaResponse.ControleContaCreationResultIntegrationType\r\
+        \n(SOAP), um item por elemento da lista enviada em POST /v1/controle-conta."
+      type: object
+      properties:
+        sucesso:
+          type: boolean
+        mensagem:
+          type: string
+    ControleContaDto:
+      description: Equivalente REST de ControleContaIntegrationType (SOAP).
+      type: object
+      properties:
+        cpfCnpj:
+          type: string
+        produto:
+          type: string
+        tipoAmbiente:
+          type: string
+        tenantId:
+          type: string
+    ControleContaResultadoBuscaDto:
+      description: "Equivalente REST de FindControleContaResponse.DadosControleContaResponse\
+        \ (SOAP),\r\num item por elemento da lista enviada em POST /v1/controle-conta/busca."
+      type: object
+      properties:
+        encontrado:
+          type: boolean
+        controleConta:
+          $ref: '#/components/schemas/ControleContaDto'
     CriarContaFaturamentoDto:
       required:
         - cnpj
