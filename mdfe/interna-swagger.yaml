@@ -9847,6 +9847,8 @@ components:
           type: string
         motivoRejeicao:
           type: string
+        motivoRejeicaoAverbacao:
+          type: string
         valorCarga:
           type: number
           format: double
@@ -10832,6 +10834,7 @@ components:
         - SEM_AVERBACAO
         - AVERBADO
         - ENCERRADO
+        - FALHA_AVERBACAO
     StatusCiot:
       type: string
       enum:
