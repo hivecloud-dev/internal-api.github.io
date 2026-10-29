@@ -2721,13 +2721,15 @@ components:
           description: Indica se a conta está liberada (SituacaoClienteSistemaPagamento.ATIVO).
           type: boolean
         planoJaLiberadoTemporariamente:
-          description: Indica se o plano foi liberado temporariamente via atributo
-            PLANO_JALIBERADO_TEMP.
+          description: Deprecated. A liberação temporária foi descontinuada; sempre
+            false. Mantido por compatibilidade.
           type: boolean
+          deprecated: true
         planoLiberadoAte:
-          description: "Data até quando o plano está liberado temporariamente (dd/MM/yyyy),\
-            \ ou null."
+          description: Deprecated. A liberação temporária foi descontinuada; sempre
+            null. Mantido por compatibilidade.
           type: string
+          deprecated: true
         cte:
           description: Plano contratado para emissão de CT-e.
           $ref: '#/components/schemas/PlanoItemDto'
