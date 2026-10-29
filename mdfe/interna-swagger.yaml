@@ -11858,6 +11858,12 @@ components:
             type: string
     Void:
       type: object
+    FormatoDocumentosWebhookDto:
+      type: string
+      description: Formato do XML no payload do webhook. O PDF (DAMDFE) e sempre link S3. Padrao BASE64
+      enum:
+        - BASE64
+        - S3
     WebhookCreateDto:
       required:
         - url
@@ -11869,6 +11875,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WebhookHeaderDto'
+        incluirPdf:
+          type: boolean
+          description: Inclui o PDF (DAMDFE) no payload, sempre como link S3. Padrao false
+        formatoDocumentos:
+          $ref: '#/components/schemas/FormatoDocumentosWebhookDto'
     WebhookDto:
       type: object
       properties:
@@ -11882,6 +11893,10 @@ components:
             $ref: '#/components/schemas/WebhookHeaderDto'
         ativo:
           type: boolean
+        incluirPdf:
+          type: boolean
+        formatoDocumentos:
+          $ref: '#/components/schemas/FormatoDocumentosWebhookDto'
         dataCriacao:
           type: string
           format: date-time
