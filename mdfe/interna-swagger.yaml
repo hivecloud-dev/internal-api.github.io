@@ -149,7 +149,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AmbienteCreate'
+              $ref: '#/components/schemas/AmbienteCreateDto'
       responses:
         200:
           description: successful operation
@@ -171,14 +171,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AmbienteCreate'
+              $ref: '#/components/schemas/AmbienteCreateDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AmbienteOnboarding'
+                $ref: '#/components/schemas/AmbienteOnboardingDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -195,7 +195,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExisteTenantCadastrado'
+                $ref: '#/components/schemas/ExisteTenantCadastradoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -231,7 +231,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Licenca'
+                $ref: '#/components/schemas/LicencaAmbienteDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -248,7 +248,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MensagemResposta'
+                $ref: '#/components/schemas/MensagemRespostaDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -331,7 +331,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TermosServico'
+              $ref: '#/components/schemas/TermosServicoDto'
       responses:
         200:
           description: successful operation
@@ -368,7 +368,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaSintegraLandingPage'
+                $ref: '#/components/schemas/ConsultaSintegraLandingPageDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -391,7 +391,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DadosEmpresaExistenteOnboarding'
+                $ref: '#/components/schemas/DadosEmpresaExistenteOnboardingDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -465,7 +465,7 @@ paths:
                   content:
                     type: array
                     items:
-                      $ref: '#/components/schemas/MdfeAvulsoResponse'
+                      $ref: '#/components/schemas/MdfeAvulsoResponseDto'
                   param:
                     $ref: '#/components/schemas/RequestParam'
                   requestUrl:
@@ -489,14 +489,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MdfeAvulsoCreate'
+              $ref: '#/components/schemas/MdfeAvulsoCreateDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateEntityReturn'
+                $ref: '#/components/schemas/CreateEntityReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -524,7 +524,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateEntityReturn'
+                $ref: '#/components/schemas/CreateEntityReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -616,14 +616,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CancelarMdfe'
+              $ref: '#/components/schemas/CancelarMdfeDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -649,7 +649,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CancelarMdfeModal'
+                  $ref: '#/components/schemas/CancelarMdfeModalDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -672,7 +672,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -697,7 +697,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CancelarMdfeReturn'
+                  $ref: '#/components/schemas/CancelarMdfeReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -1046,6 +1046,27 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: obterPdfCiot
+  /v1/ciot/planos/valores:
+    post:
+      tags:
+        - Ciot
+      operationId: CiotControllerImp.consultarValoresPlanos
+      description: Consulta na BSoft Sistemas os valores dos planos para a conta de
+        faturamento do tenant.
+      responses:
+        200:
+          description: planos com valor de aquisicao e de mensalidade
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlanoBsoftDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarValoresPlanos
   /v1/colunas-customizadas/atualizar:
     put:
       tags:
@@ -1055,7 +1076,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CadastroColunaCustomizada'
+              $ref: '#/components/schemas/CadastroColunaCustomizadaDto'
       responses:
         200:
           description: successful operation
@@ -1079,7 +1100,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CadastroColunaCustomizada'
+              $ref: '#/components/schemas/CadastroColunaCustomizadaDto'
       responses:
         200:
           description: successful operation
@@ -1251,7 +1272,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SeguroCreate'
+              $ref: '#/components/schemas/SeguroCreateDto'
       responses:
         200:
           description: successful operation
@@ -1404,7 +1425,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Token'
+              $ref: '#/components/schemas/TokenDto'
       responses:
         200:
           description: successful operation
@@ -1462,7 +1483,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token'
+                $ref: '#/components/schemas/TokenDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -1558,7 +1579,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CriarConfiguracoesPadrao'
+              $ref: '#/components/schemas/CriarConfiguracoesPadraoDto'
       responses:
         200:
           description: successful operation
@@ -1646,7 +1667,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UsuarioCreate'
+              $ref: '#/components/schemas/UsuarioCreateDto'
       responses:
         200:
           description: successful operation
@@ -1667,7 +1688,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UsuarioCreate'
+              $ref: '#/components/schemas/UsuarioCreateDto'
       responses:
         200:
           description: successful operation
@@ -1727,7 +1748,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ParametrosConsultaBanco'
+              $ref: '#/components/schemas/ParametrosConsultaBancoDto'
       responses:
         200:
           description: successful operation
@@ -1736,7 +1757,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Banco'
+                  $ref: '#/components/schemas/BancoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -1762,7 +1783,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CepIntegrationTypeResponse'
+                  $ref: '#/components/schemas/CepIntegrationTypeResponseDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -1787,7 +1808,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CepIntegrationTypeResponse'
+                  $ref: '#/components/schemas/CepIntegrationTypeResponseDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -1802,7 +1823,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ParametrosConsultaMunicipios'
+              $ref: '#/components/schemas/ParametrosConsultaMunicipiosDto'
       responses:
         200:
           description: successful operation
@@ -1811,7 +1832,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Municipio'
+                  $ref: '#/components/schemas/MunicipioDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -1826,7 +1847,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ParametrosConsultaMunicipios'
+              $ref: '#/components/schemas/ParametrosConsultaMunicipiosDto'
       responses:
         200:
           description: successful operation
@@ -1890,7 +1911,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -1918,7 +1939,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RespostaSimples'
+                $ref: '#/components/schemas/RespostaSimplesDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -1941,7 +1962,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -1966,7 +1987,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ConsultarMdfeReturn'
+                  $ref: '#/components/schemas/ConsultarMdfeReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -1989,7 +2010,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2012,7 +2033,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2037,7 +2058,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ConsultarMdfeNaoEncerradoReturn'
+                  $ref: '#/components/schemas/ConsultarMdfeNaoEncerradoReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2052,14 +2073,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmitirMdfe'
+              $ref: '#/components/schemas/EmitirMdfeDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2080,14 +2101,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmitirContingenciaMdfe'
+              $ref: '#/components/schemas/EmitirContingenciaMdfeDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImprimirMdfesReturn'
+                $ref: '#/components/schemas/ImprimirMdfesReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2113,7 +2134,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/MdfeInfoRetorno'
+                  $ref: '#/components/schemas/MdfeInfoRetornoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2136,7 +2157,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2159,7 +2180,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MdfeRetorno'
+                $ref: '#/components/schemas/MdfeRetornoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2176,7 +2197,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DesativarEmpresasResponse'
+                $ref: '#/components/schemas/DesativarEmpresasResponseDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2317,7 +2338,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/SituacaoEmpresaAdicional'
+                $ref: '#/components/schemas/SituacaoEmpresaAdicionalDto'
       responses:
         200:
           description: successful operation
@@ -2338,7 +2359,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SituacaoEmpresaAdicional'
+              $ref: '#/components/schemas/SituacaoEmpresaAdicionalDto'
       responses:
         200:
           description: successful operation
@@ -2509,7 +2530,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmpresaCreate'
+              $ref: '#/components/schemas/EmpresaCreateDto'
       responses:
         200:
           description: successful operation
@@ -2651,7 +2672,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusServicoSefaz'
+                $ref: '#/components/schemas/ConsultaStatusServicoSefazDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2703,7 +2724,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EmpresaSuggestion'
+                  $ref: '#/components/schemas/EmpresaSuggestionDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2746,7 +2767,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmpresaCreate'
+              $ref: '#/components/schemas/EmpresaCreateDto'
       responses:
         200:
           description: successful operation
@@ -2795,7 +2816,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmpresaAtualizaRntrc'
+              $ref: '#/components/schemas/EmpresaAtualizaRntrcDto'
       responses:
         200:
           description: successful operation
@@ -2945,7 +2966,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2968,7 +2989,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -2991,7 +3012,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token'
+                $ref: '#/components/schemas/TokenDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3008,7 +3029,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token'
+                $ref: '#/components/schemas/TokenDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3046,14 +3067,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConfiguraCertificadoCreate'
+              $ref: '#/components/schemas/ConfiguraCertificadoCreateDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3076,7 +3097,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3104,7 +3125,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaCertificadoReturn'
+                $ref: '#/components/schemas/ConsultaCertificadoReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3127,7 +3148,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Certificado'
+                $ref: '#/components/schemas/CertificadoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3147,7 +3168,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExibidoInfoCertificadoExpiracao'
+              $ref: '#/components/schemas/ExibidoInfoCertificadoExpiracaoDto'
       responses:
         200:
           description: successful operation
@@ -3169,14 +3190,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EncerrarMdfe'
+              $ref: '#/components/schemas/EncerrarMdfeDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3202,7 +3223,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EncerrarMdfeModal'
+                  $ref: '#/components/schemas/EncerrarMdfeModalDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3225,7 +3246,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3250,7 +3271,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EncerrarMdfeReturn'
+                  $ref: '#/components/schemas/EncerrarMdfeReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3271,14 +3292,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EncerrarMdfeOutroSistema'
+              $ref: '#/components/schemas/EncerrarMdfeOutroSistemaDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3301,7 +3322,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3324,7 +3345,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EncerrarMdfeOutroSistemaReturn'
+                $ref: '#/components/schemas/EncerrarMdfeOutroSistemaReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3339,7 +3360,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ParametroEnvioEmailMdfe'
+              $ref: '#/components/schemas/ParametroEnvioEmailMdfeDto'
       responses:
         200:
           description: successful operation
@@ -3379,7 +3400,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EnvolvidoSuggestionResponse'
+                  $ref: '#/components/schemas/EnvolvidoSuggestionResponseDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3402,7 +3423,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EnvolvidoSuggestionResponse'
+                $ref: '#/components/schemas/EnvolvidoSuggestionResponseDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3450,14 +3471,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ParametrosExportacaoXls'
+              $ref: '#/components/schemas/ParametrosExportacaoXlsDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3480,7 +3501,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3503,7 +3524,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetornoExportacaoXls'
+                $ref: '#/components/schemas/RetornoExportacaoXlsDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3527,7 +3548,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetornoExportacaoXmlMdfes'
+                $ref: '#/components/schemas/RetornoExportacaoXmlMdfesDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3657,7 +3678,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetornoExportacaoXmlMdfes'
+                $ref: '#/components/schemas/RetornoExportacaoXmlMdfesDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3790,14 +3811,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ParametrosExportacaoXls'
+              $ref: '#/components/schemas/ParametrosExportacaoXlsDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3820,7 +3841,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StatusTransacao'
+                $ref: '#/components/schemas/StatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3843,7 +3864,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetornoExportacaoXls'
+                $ref: '#/components/schemas/RetornoExportacaoXlsDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3865,7 +3886,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3888,7 +3909,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StatusTransacao'
+                $ref: '#/components/schemas/StatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -3911,7 +3932,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetornoExportacaoXls'
+                $ref: '#/components/schemas/RetornoExportacaoXlsDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4019,14 +4040,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ParametrosExportacaoXls'
+              $ref: '#/components/schemas/ParametrosExportacaoXlsDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4049,7 +4070,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StatusTransacao'
+                $ref: '#/components/schemas/StatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4072,7 +4093,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetornoExportacaoXls'
+                $ref: '#/components/schemas/RetornoExportacaoXlsDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4095,7 +4116,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GoogleTagManagerInfo'
+                $ref: '#/components/schemas/GoogleTagManagerInfoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4112,14 +4133,14 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/DadosImportacaoDocumentoFiscal'
+                $ref: '#/components/schemas/DadosImportacaoDocumentoFiscalDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetornoImportacaoCalculo'
+                $ref: '#/components/schemas/RetornoImportacaoCalculoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4186,7 +4207,7 @@ paths:
                   content:
                     type: array
                     items:
-                      $ref: '#/components/schemas/DadosCte'
+                      $ref: '#/components/schemas/DadosCteDto'
                   param:
                     $ref: '#/components/schemas/RequestParam'
                   requestUrl:
@@ -4221,7 +4242,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DadosDocumentoFiscal'
+                  $ref: '#/components/schemas/DadosDocumentoFiscalDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4251,7 +4272,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetornoImportacao'
+                $ref: '#/components/schemas/RetornoImportacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4292,7 +4313,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetornoImportacao'
+                $ref: '#/components/schemas/RetornoImportacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4307,14 +4328,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ParametrosImportacaoComCertificado'
+              $ref: '#/components/schemas/ParametrosImportacaoComCertificadoDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4337,7 +4358,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4349,6 +4370,11 @@ paths:
         - Importacao Documentos
       operationId: ImportacaoDocumentosControllerImp.importarNfeComCertificadoResultado
       parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
         - name: id
           in: path
           required: true
@@ -4360,7 +4386,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DadosDocumentoFiscal'
+                $ref: '#/components/schemas/DadosDocumentoFiscalDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4372,6 +4398,11 @@ paths:
         - Importacao Documentos
       operationId: ImportacaoDocumentosControllerImp.importarNfePorChave
       parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
         - name: chaveNfe
           in: path
           required: true
@@ -4383,7 +4414,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DadosDocumentoFiscal'
+                $ref: '#/components/schemas/DadosDocumentoFiscalDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4419,7 +4450,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4442,7 +4473,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4480,14 +4511,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ParametrosImprimirMdfes'
+              $ref: '#/components/schemas/ParametrosImprimirMdfesDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImprimirMdfesReturn'
+                $ref: '#/components/schemas/ImprimirMdfesReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4502,14 +4533,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MdfeCreate'
+              $ref: '#/components/schemas/MdfeCreateDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImprimirMdfesReturn'
+                $ref: '#/components/schemas/ImprimirMdfesReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4524,14 +4555,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IncluirCondutorMdfeRequest'
+              $ref: '#/components/schemas/IncluirCondutorMdfeRequestDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4557,7 +4588,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/IncluirCondutorMdfeModal'
+                  $ref: '#/components/schemas/IncluirCondutorMdfeModalDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4580,7 +4611,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4605,7 +4636,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/IncluirCondutorMdfeReturn'
+                  $ref: '#/components/schemas/IncluirCondutorMdfeReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4620,14 +4651,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IncluirDfe'
+              $ref: '#/components/schemas/IncluirDfeDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionID'
+                $ref: '#/components/schemas/TransactionIDDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4650,7 +4681,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4673,7 +4704,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IncluirDfeReturn'
+                $ref: '#/components/schemas/IncluirDfeReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4688,14 +4719,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MdfeCreate'
+              $ref: '#/components/schemas/MdfeCreateDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MdfeInfoRetorno'
+                $ref: '#/components/schemas/MdfeInfoRetornoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -4716,7 +4747,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MdfeCreate'
+              $ref: '#/components/schemas/MdfeCreateDto'
       responses:
         200:
           description: successful operation
@@ -5100,7 +5131,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MdfeCreate'
+                $ref: '#/components/schemas/MdfeCreateDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -5253,7 +5284,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CriarConfiguracoesPadrao'
+              $ref: '#/components/schemas/CriarConfiguracoesPadraoDto'
       responses:
         200:
           description: successful operation
@@ -5386,7 +5417,7 @@ paths:
                   content:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Motorista'
+                      $ref: '#/components/schemas/MotoristaDto_1'
                   param:
                     $ref: '#/components/schemas/RequestParam'
                   requestUrl:
@@ -5404,14 +5435,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MotoristaCreate'
+              $ref: '#/components/schemas/MotoristaCreateDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateEntityReturn'
+                $ref: '#/components/schemas/CreateEntityReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -5456,7 +5487,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Motorista'
+                $ref: '#/components/schemas/MotoristaDto_1'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -5513,7 +5544,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/MotoristaSuggestion'
+                  $ref: '#/components/schemas/MotoristaSuggestionDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -5536,7 +5567,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Motorista'
+                $ref: '#/components/schemas/MotoristaDto_1'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -5556,7 +5587,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MotoristaCreate'
+              $ref: '#/components/schemas/MotoristaCreateDto'
       responses:
         200:
           description: successful operation
@@ -5703,7 +5734,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PropriedadeAplicacao'
+                $ref: '#/components/schemas/PropriedadeAplicacaoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -5792,7 +5823,7 @@ paths:
                   content:
                     type: array
                     items:
-                      $ref: '#/components/schemas/UfPercursoConfiguracaoResponse'
+                      $ref: '#/components/schemas/UfPercursoConfiguracaoResponseDto'
                   param:
                     $ref: '#/components/schemas/RequestParam'
                   requestUrl:
@@ -5816,14 +5847,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UfPercursoConfiguracaoCreate'
+              $ref: '#/components/schemas/UfPercursoConfiguracaoCreateDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateEntityReturn'
+                $ref: '#/components/schemas/CreateEntityReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -5846,7 +5877,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UfPercursoConfiguracaoResponse'
+                $ref: '#/components/schemas/UfPercursoConfiguracaoResponseDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -5866,7 +5897,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UfPercursoConfiguracaoCreate'
+              $ref: '#/components/schemas/UfPercursoConfiguracaoCreateDto'
       responses:
         200:
           description: successful operation
@@ -5945,7 +5976,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UfPercursoSugestaoResponse'
+                $ref: '#/components/schemas/UfPercursoSugestaoResponseDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -6000,7 +6031,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UfPercursoSugestaoResponse'
+                $ref: '#/components/schemas/UfPercursoSugestaoResponseDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -6015,7 +6046,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VeiculoCadastroColunaCustomizadaRequest'
+              $ref: '#/components/schemas/VeiculoCadastroColunaCustomizadaRequestDto'
       responses:
         200:
           description: successful operation
@@ -6039,7 +6070,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VeiculoCadastroColunaCustomizadaRequest'
+              $ref: '#/components/schemas/VeiculoCadastroColunaCustomizadaRequestDto'
       responses:
         200:
           description: successful operation
@@ -6145,14 +6176,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VeiculoCreate'
+              $ref: '#/components/schemas/VeiculoCreateDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateEntityReturn'
+                $ref: '#/components/schemas/CreateEntityReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -6195,7 +6226,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VeiculoCreate'
+              $ref: '#/components/schemas/VeiculoCreateDto'
       responses:
         200:
           description: successful operation
@@ -6225,7 +6256,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Veiculo'
+                $ref: '#/components/schemas/VeiculoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -6395,14 +6426,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VeiculoCreate'
+              $ref: '#/components/schemas/VeiculoCreateDto'
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateEntityReturn'
+                $ref: '#/components/schemas/CreateEntityReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -6514,7 +6545,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/VeiculoSuggestion'
+                  $ref: '#/components/schemas/VeiculoSuggestionDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -6649,7 +6680,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Veiculo'
+                $ref: '#/components/schemas/VeiculoDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -6669,7 +6700,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VeiculoCreate'
+              $ref: '#/components/schemas/VeiculoCreateDto'
       responses:
         200:
           description: successful operation
@@ -6783,7 +6814,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateEntityReturn'
+                $ref: '#/components/schemas/CreateEntityReturnDto'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -7060,7 +7091,7 @@ components:
         dVoo:
           type: string
           format: date-time
-    AmbienteCreate:
+    AmbienteCreateDto:
       type: object
       properties:
         id:
@@ -7091,7 +7122,7 @@ components:
         tipoEmitente:
           $ref: '#/components/schemas/TipoEmitente_1'
         cnae:
-          $ref: '#/components/schemas/Cnae'
+          $ref: '#/components/schemas/CnaeDto'
         tipoAmbiente:
           $ref: '#/components/schemas/TipoAmbiente'
         cpfCnpjContabilidade:
@@ -7122,7 +7153,7 @@ components:
           type: string
         planoTms:
           type: boolean
-    AmbienteOnboarding:
+    AmbienteOnboardingDto:
       type: object
       properties:
         id:
@@ -7153,7 +7184,7 @@ components:
         tipoEmitente:
           $ref: '#/components/schemas/TipoEmitente_1'
         cnae:
-          $ref: '#/components/schemas/Cnae'
+          $ref: '#/components/schemas/CnaeDto'
         tipoAmbiente:
           $ref: '#/components/schemas/TipoAmbiente'
         cpfCnpjContabilidade:
@@ -7213,7 +7244,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InfUnidCargaVaziaDto'
-    Armazenamento:
+    ArmazenamentoAmbienteDto:
       type: object
       properties:
         ilimitado:
@@ -7281,13 +7312,6 @@ components:
           type: string
         tipoDocumento:
           $ref: '#/components/schemas/TipoDocumento'
-    Banco:
-      type: object
-      properties:
-        codigo:
-          type: string
-        nome:
-          type: string
     BancoDto:
       type: object
       properties:
@@ -7295,24 +7319,31 @@ components:
           type: string
         nome:
           type: string
+    BancoDto_1:
+      type: object
+      properties:
+        codigo:
+          type: string
+        nome:
+          type: string
     CadastrarEmpresaCiotDto:
-      description: "Classe para cadastro de empresa no sistema CIOT.\r\nContÃ©m os\
-        \ dados necessÃ¡rios para realizar o cadastro de uma empresa\r\nque utilizarÃ\
-        ¡ os serviÃ§os do CIOT (CÃ³digo Identificador da OperaÃ§Ã£o de Transporte)."
+      description: "Classe para cadastro de empresa no sistema CIOT.\r\nContém os\
+        \ dados necessários para realizar o cadastro de uma empresa\r\nque utilizará\
+        \ os serviços do CIOT (Código Identificador da Operação de Transporte)."
       required:
         - cpfResponsavel
         - dtNascResponsavel
       type: object
       properties:
         cpfResponsavel:
-          description: "CPF do responsÃ¡vel pelo cadastro da empresa.\r\nCampo obrigatÃ\
-            ³rio que deve conter um CPF vÃ¡lido do responsÃ¡vel legal\r\nque estÃ¡\
-            \ realizando o cadastro da empresa no sistema CIOT."
+          description: "CPF do responsável pelo cadastro da empresa.\r\nCampo obrigató\
+            rio que deve conter um CPF válido do responsável legal\r\nque está realizando\
+            \ o cadastro da empresa no sistema CIOT."
           type: string
         dtNascResponsavel:
-          description: "Data de nascimento do responsÃ¡vel pelo cadastro.\r\nCampo\
-            \ obrigatÃ³rio utilizado para validaÃ§Ã£o e identificaÃ§Ã£o do responsÃ\
-            ¡vel\r\nlegal que estÃ¡ realizando o cadastro da empresa."
+          description: "Data de nascimento do responsável pelo cadastro.\r\nCampo\
+            \ obrigatório utilizado para validação e identificação do responsável\r\
+            \nlegal que está realizando o cadastro da empresa."
           type: string
           format: date-time
         planoSelecionado:
@@ -7327,7 +7358,7 @@ components:
           type: string
         emailResponsavel:
           type: string
-    CadastroColunaCustomizada:
+    CadastroColunaCustomizadaDto:
       required:
         - nomeEntidade
         - colunaList
@@ -7351,7 +7382,6 @@ components:
           type: string
         linkFatura:
           type: string
-          description: Link da fatura gerada na Bsoft para os planos de CIOT contratados
     CalcularFreteMinimoDto:
       type: object
       properties:
@@ -7396,7 +7426,7 @@ components:
         protocoloServico: 4438611
         sucesso: true
         mensagem: ""
-    CancelarMdfe:
+    CancelarMdfeDto:
       required:
         - idMdfeList
         - dataCancelamento
@@ -7414,7 +7444,7 @@ components:
           type: string
           minLength: 15
           maxLength: 255
-    CancelarMdfeModal:
+    CancelarMdfeModalDto:
       type: object
       properties:
         id:
@@ -7429,7 +7459,7 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/StatusMdfe'
-    CancelarMdfeReturn:
+    CancelarMdfeReturnDto:
       type: object
       properties:
         id:
@@ -7466,7 +7496,7 @@ components:
         codigoTipoCarga:
           type: integer
           format: int32
-    CepIntegrationTypeResponse:
+    CepIntegrationTypeResponseDto:
       type: object
       properties:
         cep:
@@ -7491,7 +7521,7 @@ components:
           type: string
         longitude:
           type: string
-    Certificado:
+    CertificadoDto:
       type: object
       properties:
         validade:
@@ -7508,7 +7538,7 @@ components:
         exibidoNoDia:
           type: boolean
         periodoValidadeCertificado:
-          $ref: '#/components/schemas/PeriodoValidadeCertificado'
+          $ref: '#/components/schemas/PeriodoValidadeCertificadoDto'
     Charset:
       type: object
       properties:
@@ -7542,14 +7572,14 @@ components:
           $ref: '#/components/schemas/SituacaoCiot'
         isContingencia:
           type: boolean
-    Cnae:
+    CnaeDto:
       type: object
       properties:
         codigo:
           type: string
         descricao:
           type: string
-    CnaeDto:
+    CnaeDto_1:
       type: object
       properties:
         codigo:
@@ -7584,14 +7614,14 @@ components:
           type: string
         celular:
           type: string
-    ConfiguraCertificadoCreate:
+    ConfiguraCertificadoCreateDto:
       required:
         - token
         - cnpj
       type: object
       properties:
         token:
-          $ref: '#/components/schemas/Token'
+          $ref: '#/components/schemas/TokenDto'
         cnpj:
           type: string
     ConfiguracaoColunaDto:
@@ -7657,6 +7687,8 @@ components:
           type: boolean
         preencherNcmAutomaticamente:
           type: boolean
+        validarDocumentoJaUtilizado:
+          type: boolean
     ConfigurarCertificadoWrapper:
       type: object
       properties:
@@ -7682,12 +7714,12 @@ components:
         endereco:
           $ref: '#/components/schemas/EnderecoApiSintegraDto'
         cnae:
-          $ref: '#/components/schemas/CnaeDto'
+          $ref: '#/components/schemas/CnaeDto_1'
         tipoEmitente:
           type: string
         crt:
           type: string
-    ConsultaCertificadoReturn:
+    ConsultaCertificadoReturnDto:
       type: object
       properties:
         tipoCertificado:
@@ -7752,13 +7784,13 @@ components:
           type: boolean
         planoAtivo:
           type: boolean
-    ConsultaSintegraLandingPage:
+    ConsultaSintegraLandingPageDto:
       type: object
       properties:
         pessoaJuridicaSintegra:
           $ref: '#/components/schemas/ConsultaApiSintegraDto'
         usuarioLandingPage:
-          $ref: '#/components/schemas/UsuarioLandingPage'
+          $ref: '#/components/schemas/UsuarioLandingPageDto'
     ConsultaSituacaoTransportadorRequestDto:
       type: object
       properties:
@@ -7831,14 +7863,14 @@ components:
           type: string
         mensagem:
           type: string
-    ConsultaStatusServicoSefaz:
+    ConsultaStatusServicoSefazDto:
       type: object
       properties:
         servicoSefazNormal:
-          $ref: '#/components/schemas/StatusServicoSefaz'
+          $ref: '#/components/schemas/StatusServicoSefazDto'
         servicoSefazContingencia:
-          $ref: '#/components/schemas/StatusServicoSefaz'
-    ConsultaStatusTransacao:
+          $ref: '#/components/schemas/StatusServicoSefazDto'
+    ConsultaStatusTransacaoDto:
       type: object
       properties:
         status:
@@ -7866,7 +7898,7 @@ components:
           format: double
         vencimento:
           type: string
-    ConsultarMdfeNaoEncerradoReturn:
+    ConsultarMdfeNaoEncerradoReturnDto:
       type: object
       properties:
         id:
@@ -7877,7 +7909,7 @@ components:
           type: string
         chaveAcesso:
           type: string
-    ConsultarMdfeReturn:
+    ConsultarMdfeReturnDto:
       type: object
       properties:
         id:
@@ -7896,7 +7928,7 @@ components:
           $ref: '#/components/schemas/StatusMdfe'
         chaveAcesso:
           type: string
-    Contratante:
+    ContratanteDto:
       type: object
       properties:
         documento:
@@ -7910,12 +7942,12 @@ components:
           type: string
         cpf:
           type: string
-    CreateEntityReturn:
+    CreateEntityReturnDto:
       type: object
       properties:
         id:
           type: string
-    CriarConfiguracoesPadrao:
+    CriarConfiguracoesPadraoDto:
       required:
         - serie
         - canalVerde
@@ -7938,6 +7970,8 @@ components:
         alertaNaoAverbados:
           type: boolean
         preencherNcmAutomaticamente:
+          type: boolean
+        validarDocumentoJaUtilizado:
           type: boolean
     CteDadosDto:
       type: object
@@ -7993,7 +8027,7 @@ components:
           type: boolean
         planosSemProduto:
           type: string
-    DadosCte:
+    DadosCteDto:
       type: object
       properties:
         serie:
@@ -8015,7 +8049,7 @@ components:
           format: double
         averbado:
           type: boolean
-    DadosDocumentoFiscal:
+    DadosDocumentoFiscalDto:
       type: object
       properties:
         chaveAcesso:
@@ -8023,9 +8057,9 @@ components:
         tipoDocumento:
           $ref: '#/components/schemas/TipoDocumentoFiscal'
         localCarregamento:
-          $ref: '#/components/schemas/Municipio'
+          $ref: '#/components/schemas/MunicipioDto'
         localDescarregamento:
-          $ref: '#/components/schemas/Municipio'
+          $ref: '#/components/schemas/MunicipioDto'
         valorTotal:
           type: number
           format: double
@@ -8074,7 +8108,16 @@ components:
           type: boolean
         tipoOperacaoEntrada:
           type: boolean
-    DadosEmpresaExistenteOnboarding:
+        mdfesJaUtilizandoEsseDocumento:
+          type: array
+          items:
+            type: string
+        alertarDocumentoJaUtilizado:
+          type: boolean
+        dataHoraEmissao:
+          type: string
+          format: date-time
+    DadosEmpresaExistenteOnboardingDto:
       type: object
       properties:
         empresaCadastrada:
@@ -8083,17 +8126,19 @@ components:
           type: array
           items:
             type: string
-    DadosImportacaoDocumentoFiscal:
+    DadosImportacaoDocumentoFiscalDto:
       type: object
       properties:
         chaveAcesso:
           type: string
+        numero:
+          type: string
         tipoDocumento:
           $ref: '#/components/schemas/TipoDocumentoFiscal'
         localCarregamento:
-          $ref: '#/components/schemas/Municipio'
+          $ref: '#/components/schemas/MunicipioDto'
         localDescarregamento:
-          $ref: '#/components/schemas/Municipio'
+          $ref: '#/components/schemas/MunicipioDto'
         valorTotal:
           type: number
           format: double
@@ -8125,7 +8170,13 @@ components:
         valorTotalPrestacao:
           type: number
           format: double
-    DesativarEmpresasResponse:
+        mdfesJaUtilizandoEsseDocumento:
+          type: array
+          items:
+            type: string
+        alertarDocumentoJaUtilizado:
+          type: boolean
+    DesativarEmpresasResponseDto:
       type: object
       properties:
         isSucesso:
@@ -8135,7 +8186,7 @@ components:
         situacaoEmpresaAdicionalList:
           type: array
           items:
-            $ref: '#/components/schemas/SituacaoEmpresaAdicional'
+            $ref: '#/components/schemas/SituacaoEmpresaAdicionalDto'
     DestinatarioCiotDto:
       description: "Classe para dados do destinatário da operação CIOT.\r\nContém\
         \ as informações de identificação e endereço\r\ndo destinatário da operaçã\
@@ -8209,7 +8260,7 @@ components:
           type: string
         nomeMunicipioDescarregamento:
           type: string
-    DocumentosFiscais:
+    DocumentosFiscaisDto:
       type: object
       properties:
         listaPorUf:
@@ -8217,11 +8268,11 @@ components:
           additionalProperties:
             type: array
             items:
-              $ref: '#/components/schemas/DadosImportacaoDocumentoFiscal'
+              $ref: '#/components/schemas/DadosImportacaoDocumentoFiscalDto'
         listaSemUf:
           type: array
           items:
-            $ref: '#/components/schemas/DadosImportacaoDocumentoFiscal'
+            $ref: '#/components/schemas/DadosImportacaoDocumentoFiscalDto'
         totalNfes:
           type: integer
           format: int32
@@ -8272,7 +8323,7 @@ components:
         - SE
         - SP
         - TO
-    Emissoes:
+    EmissoesDto:
       type: object
       properties:
         ilimitado:
@@ -8298,7 +8349,7 @@ components:
           type: string
         enderEmit:
           $ref: '#/components/schemas/EndeEmiDto'
-    EmitirContingenciaMdfe:
+    EmitirContingenciaMdfeDto:
       type: object
       properties:
         idList:
@@ -8307,7 +8358,7 @@ components:
             type: string
         idEmitente:
           type: string
-    EmitirMdfe:
+    EmitirMdfeDto:
       type: object
       properties:
         idList:
@@ -8334,13 +8385,13 @@ components:
         documento:
           type: string
         tipoAtivacao:
-          $ref: '#/components/schemas/TipoAtivacaoEmpresaAdicional'
-    EmpresaAtualizaRntrc:
+          $ref: '#/components/schemas/TipoAtivacaoEmpresaAdicionalDto'
+    EmpresaAtualizaRntrcDto:
       type: object
       properties:
         rntrc:
           type: string
-    EmpresaCreate:
+    EmpresaCreateDto:
       required:
         - nome
         - tipoEmitente
@@ -8390,12 +8441,16 @@ components:
           type: string
         pixProprietario:
           type: string
+        tipoChavePixProprietario:
+          $ref: '#/components/schemas/TipoChavePixDto'
         contaBancariaProprietario:
           type: string
         tipoContaBancariaProprietario:
           type: string
         situacao:
-          $ref: '#/components/schemas/SituacaoEmpresa'
+          description: Situação inicial da empresa no cadastro (opcional; ausente
+            equivale a ATIVADA). Ignorada em alterações.
+          $ref: '#/components/schemas/SituacaoCadastroEmpresa'
     EmpresaDto:
       type: object
       properties:
@@ -8424,7 +8479,7 @@ components:
         cnpj:
           type: string
         certificado:
-          $ref: '#/components/schemas/Certificado'
+          $ref: '#/components/schemas/CertificadoDto'
         logomarca:
           type: array
           items:
@@ -8452,6 +8507,8 @@ components:
           type: string
         pixProprietario:
           type: string
+        tipoChavePixProprietario:
+          $ref: '#/components/schemas/TipoChavePixDto'
         contaBancariaProprietario:
           type: string
         tipoContaBancariaProprietario:
@@ -8490,7 +8547,7 @@ components:
           type: string
         matriz:
           type: boolean
-    EmpresaSuggestion:
+    EmpresaSuggestionDto:
       type: object
       properties:
         id:
@@ -8505,7 +8562,7 @@ components:
           type: string
         endereco:
           $ref: '#/components/schemas/LocalidadeDto'
-    EncerrarMdfe:
+    EncerrarMdfeDto:
       required:
         - idMdfeList
         - dataEncerramento
@@ -8520,10 +8577,10 @@ components:
           type: string
           format: date-time
         municipio:
-          $ref: '#/components/schemas/Municipio'
+          $ref: '#/components/schemas/MunicipioDto'
         dataEvento:
           type: string
-    EncerrarMdfeModal:
+    EncerrarMdfeModalDto:
       type: object
       properties:
         id:
@@ -8540,7 +8597,7 @@ components:
           $ref: '#/components/schemas/StatusMdfe'
         municipioDescarregamento:
           type: string
-    EncerrarMdfeOutroSistema:
+    EncerrarMdfeOutroSistemaDto:
       required:
         - chaveAcesso
         - dataEncerramento
@@ -8553,12 +8610,12 @@ components:
           type: string
           format: date-time
         municipio:
-          $ref: '#/components/schemas/Municipio'
+          $ref: '#/components/schemas/MunicipioDto'
         protocoloAutorizacao:
           type: string
         dataEvento:
           type: string
-    EncerrarMdfeOutroSistemaReturn:
+    EncerrarMdfeOutroSistemaReturnDto:
       type: object
       properties:
         sucesso:
@@ -8571,7 +8628,7 @@ components:
         serie:
           type: integer
           format: int32
-    EncerrarMdfeReturn:
+    EncerrarMdfeReturnDto:
       type: object
       properties:
         id:
@@ -8660,7 +8717,7 @@ components:
           type: string
         estado:
           $ref: '#/components/schemas/EstadoDto'
-    EnvolvidoSuggestionResponse:
+    EnvolvidoSuggestionResponseDto:
       type: object
       properties:
         id:
@@ -8670,7 +8727,7 @@ components:
         nome:
           type: string
         municipio:
-          $ref: '#/components/schemas/Municipio'
+          $ref: '#/components/schemas/MunicipioDto'
         ie:
           type: string
         logradouro:
@@ -8700,7 +8757,7 @@ components:
           type: string
         codigo:
           type: string
-    ExibidoInfoCertificadoExpiracao:
+    ExibidoInfoCertificadoExpiracaoDto:
       type: object
       properties:
         exibido15Dias:
@@ -8709,13 +8766,13 @@ components:
           type: boolean
         exibidoNoDia:
           type: boolean
-    ExisteTenantCadastrado:
+    ExisteTenantCadastradoDto:
       type: object
       properties:
         tenantCadastrado:
           type: boolean
         usuarioLandingPage:
-          $ref: '#/components/schemas/UsuarioLandingPage'
+          $ref: '#/components/schemas/UsuarioLandingPageDto'
         tenantIdAutoSelecionado:
           type: string
     ExtratoAvulsoDto:
@@ -8751,7 +8808,7 @@ components:
       type: object
       properties:
         banco:
-          $ref: '#/components/schemas/BancoDto'
+          $ref: '#/components/schemas/BancoDto_1'
         codigoAgencia:
           type: string
         cnpjInstituicaoPagamento:
@@ -8764,6 +8821,11 @@ components:
           type: string
         tipoContaBancaria:
           type: string
+    FormatoDocumentosWebhookDto:
+      type: string
+      enum:
+        - BASE64
+        - S3
     FreteDto:
       type: object
       properties:
@@ -8928,7 +8990,7 @@ components:
         dataFimViagem:
           type: string
           format: date-time
-    GoogleTagManagerInfo:
+    GoogleTagManagerInfoDto:
       type: object
       properties:
         login:
@@ -8974,6 +9036,8 @@ components:
           type: string
         planoGratuito:
           type: boolean
+        sistemaPagamento:
+          type: string
         filtrarEmpresaAtivada:
           type: boolean
         usouConsultaGarantida:
@@ -9043,9 +9107,9 @@ components:
         verProc:
           type: string
         ufIni:
-          $ref: '#/components/schemas/Uf'
+          $ref: '#/components/schemas/UfDto'
         ufFim:
-          $ref: '#/components/schemas/Uf'
+          $ref: '#/components/schemas/UfDto'
         infMunCarrega:
           type: array
           items:
@@ -9128,7 +9192,7 @@ components:
             o Nacional de Aprendizagem\r\ndo Transporte (SENAT)."
           type: number
           format: double
-    ImprimirMdfesReturn:
+    ImprimirMdfesReturnDto:
       type: object
       properties:
         sucesso:
@@ -9147,7 +9211,7 @@ components:
             $ref: '#/components/schemas/byte'
         url:
           type: string
-    IncluirCondutorMdfe:
+    IncluirCondutorMdfeDto:
       required:
         - idMdfe
         - nomeCondutor
@@ -9164,7 +9228,7 @@ components:
           type: string
           minLength: 11
           maxLength: 11
-    IncluirCondutorMdfeModal:
+    IncluirCondutorMdfeModalDto:
       type: object
       properties:
         id:
@@ -9178,15 +9242,15 @@ components:
         nomeMotorista:
           type: string
         status:
-          $ref: '#/components/schemas/StatusMdfe_1'
-    IncluirCondutorMdfeRequest:
+          $ref: '#/components/schemas/StatusMdfeDto'
+    IncluirCondutorMdfeRequestDto:
       type: object
       properties:
         condutores:
           type: array
           items:
-            $ref: '#/components/schemas/IncluirCondutorMdfe'
-    IncluirCondutorMdfeReturn:
+            $ref: '#/components/schemas/IncluirCondutorMdfeDto'
+    IncluirCondutorMdfeReturnDto:
       type: object
       properties:
         id:
@@ -9212,7 +9276,7 @@ components:
           type: string
         chaveAcesso:
           type: string
-    IncluirDfe:
+    IncluirDfeDto:
       required:
         - mdfeId
         - municipioCarregamento
@@ -9222,12 +9286,12 @@ components:
         mdfeId:
           type: string
         municipioCarregamento:
-          $ref: '#/components/schemas/Municipio'
+          $ref: '#/components/schemas/MunicipioDto'
         incluirDfeInfoList:
           type: array
           items:
-            $ref: '#/components/schemas/IncluirDfeInfo'
-    IncluirDfeInfo:
+            $ref: '#/components/schemas/IncluirDfeInfoDto'
+    IncluirDfeInfoDto:
       required:
         - chaveNfe
         - municipioDescarregamento
@@ -9238,20 +9302,20 @@ components:
         chaveNfe:
           type: string
         municipioDescarregamento:
-          $ref: '#/components/schemas/Municipio'
+          $ref: '#/components/schemas/MunicipioDto'
         valorNota:
           type: number
           format: double
         pesoNota:
           type: number
           format: double
-    IncluirDfeReturn:
+    IncluirDfeReturnDto:
       type: object
       properties:
         message:
           type: string
         status:
-          $ref: '#/components/schemas/ResultadoStatus'
+          $ref: '#/components/schemas/ResultadoStatusDto'
         incluirDFeResponseList:
           type: array
           items:
@@ -9511,7 +9575,7 @@ components:
         cnpj:
           type: string
         uf:
-          $ref: '#/components/schemas/Uf'
+          $ref: '#/components/schemas/UfDto'
         nnf:
           type: string
         serie:
@@ -9591,7 +9655,7 @@ components:
       type: object
       properties:
         ufPer:
-          $ref: '#/components/schemas/Uf'
+          $ref: '#/components/schemas/UfDto'
     InfPrazoDto:
       type: object
       properties:
@@ -9687,17 +9751,17 @@ components:
       properties:
         nLacre:
           type: string
-    Licenca:
+    LicencaAmbienteDto:
       type: object
       properties:
         contaId:
           type: string
         plano:
-          $ref: '#/components/schemas/Plano'
+          $ref: '#/components/schemas/PlanoAmbienteDto'
         emissoes:
-          $ref: '#/components/schemas/Emissoes'
+          $ref: '#/components/schemas/EmissoesDto'
         armazenamento:
-          $ref: '#/components/schemas/Armazenamento'
+          $ref: '#/components/schemas/ArmazenamentoAmbienteDto'
         statusLicenca:
           $ref: '#/components/schemas/StatusLicenca'
         precoAvulso:
@@ -9766,12 +9830,12 @@ components:
       enum:
         - MANUAL
         - AUTOMATICA
-    MdfeAvulsoCreate:
+    MdfeAvulsoCreateDto:
       type: object
       properties:
         empresaId:
           type: string
-    MdfeAvulsoResponse:
+    MdfeAvulsoResponseDto:
       type: object
       properties:
         id:
@@ -9783,7 +9847,7 @@ components:
         dataCadastramento:
           type: string
           format: date-time
-    MdfeCreate:
+    MdfeCreateDto:
       type: object
       properties:
         infMDFe:
@@ -9820,15 +9884,15 @@ components:
         chaveAcesso:
           type: string
         ufCarregamento:
-          $ref: '#/components/schemas/Uf'
+          $ref: '#/components/schemas/UfDto'
         ufDescarregamento:
-          $ref: '#/components/schemas/Uf'
+          $ref: '#/components/schemas/UfDto'
         ufPercursoList:
           type: array
           items:
-            $ref: '#/components/schemas/Uf'
+            $ref: '#/components/schemas/UfDto'
         statusMdfe:
-          $ref: '#/components/schemas/StatusMdfe_1'
+          $ref: '#/components/schemas/StatusMdfeDto'
         tipoEmissao:
           $ref: '#/components/schemas/TipoEmissao'
         xmlExportado:
@@ -9883,6 +9947,8 @@ components:
           type: string
         usuarioCadastramento:
           type: string
+        usuarioAlteracao:
+          type: string
         damdfeImpresso:
           type: boolean
         integrationId:
@@ -9894,7 +9960,7 @@ components:
         dadosVeiculo:
           $ref: '#/components/schemas/VeicDto'
         tipoRodado:
-          $ref: '#/components/schemas/TipoRodado_2'
+          $ref: '#/components/schemas/TipoRodadoDto'
         autorizadoXmlList:
           type: array
           items:
@@ -9904,7 +9970,7 @@ components:
         informacoesInteresseContribuinte:
           type: string
         statusAverbacao:
-          $ref: '#/components/schemas/StatusAverbacao'
+          $ref: '#/components/schemas/StatusAverbacaoDto'
         inclusaoCondutorList:
           type: array
           items:
@@ -9924,7 +9990,7 @@ components:
         dataEncerramento:
           type: string
           format: date-time
-    MdfeEmissaoRetorno:
+    MdfeEmissaoRetornoDto:
       type: object
       properties:
         id:
@@ -9947,7 +10013,7 @@ components:
           type: string
         idMdfe:
           type: string
-    MdfeInfoRetorno:
+    MdfeInfoRetornoDto:
       type: object
       properties:
         id:
@@ -9959,18 +10025,18 @@ components:
           type: integer
           format: int32
         status:
-          $ref: '#/components/schemas/StatusMdfe_1'
+          $ref: '#/components/schemas/StatusMdfeDto'
         nomeMotorista:
           type: string
         statusCiot:
-          $ref: '#/components/schemas/StatusCiot'
-    MdfeRetorno:
+          $ref: '#/components/schemas/StatusCiotDto'
+    MdfeRetornoDto:
       type: object
       properties:
         mdfesRetorno:
           type: array
           items:
-            $ref: '#/components/schemas/MdfeEmissaoRetorno'
+            $ref: '#/components/schemas/MdfeEmissaoRetornoDto'
         erroConfigurarCertificado:
           type: boolean
         erroAceiteAvulso:
@@ -9984,7 +10050,7 @@ components:
           type: string
         versaoDocumento:
           type: string
-    MensagemResposta:
+    MensagemRespostaDto:
       type: object
       properties:
         id:
@@ -10000,26 +10066,7 @@ components:
         - AEREO
         - DUTOVIARIO
         - AQUAVIARIO
-    Motorista:
-      type: object
-      properties:
-        id:
-          type: string
-        nome:
-          type: string
-        cpf:
-          type: string
-        cnh:
-          type: string
-        celular:
-          type: string
-        usuarioCadastramento:
-          type: string
-        usuarioAtualizacao:
-          type: string
-        observacao:
-          type: string
-    MotoristaCreate:
+    MotoristaCreateDto:
       required:
         - nome
         - cpf
@@ -10050,6 +10097,25 @@ components:
           type: string
         observacoes:
           type: string
+    MotoristaDto_1:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        cpf:
+          type: string
+        cnh:
+          type: string
+        celular:
+          type: string
+        usuarioCadastramento:
+          type: string
+        usuarioAtualizacao:
+          type: string
+        observacao:
+          type: string
     MotoristaParam:
       type: object
       properties:
@@ -10069,7 +10135,7 @@ components:
           type: string
         celular:
           type: string
-    MotoristaSuggestion:
+    MotoristaSuggestionDto:
       type: object
       properties:
         hashCode:
@@ -10087,11 +10153,11 @@ components:
           type: string
         observacao:
           type: string
-    Municipio:
+    MunicipioDto:
       type: object
       properties:
         uf:
-          $ref: '#/components/schemas/Uf'
+          $ref: '#/components/schemas/UfDto'
         codigoUf:
           type: string
         nomeMunicipio:
@@ -10231,7 +10297,7 @@ components:
         totalPages:
           type: integer
           format: int64
-    ParametroEnvioEmailMdfe:
+    ParametroEnvioEmailMdfeDto:
       required:
         - idList
       type: object
@@ -10248,7 +10314,7 @@ components:
             type: string
         enviarEmitente:
           type: boolean
-    ParametrosConsultaBanco:
+    ParametrosConsultaBancoDto:
       type: object
       properties:
         campoBusca:
@@ -10256,7 +10322,7 @@ components:
         limite:
           type: integer
           format: int32
-    ParametrosConsultaMunicipios:
+    ParametrosConsultaMunicipiosDto:
       type: object
       properties:
         uf:
@@ -10266,7 +10332,7 @@ components:
         limite:
           type: integer
           format: int32
-    ParametrosExportacaoXls:
+    ParametrosExportacaoXlsDto:
       required:
         - reportTitle
         - headersTitles
@@ -10283,7 +10349,7 @@ components:
           type: array
           items:
             type: string
-    ParametrosImportacaoComCertificado:
+    ParametrosImportacaoComCertificadoDto:
       required:
         - chaveAcesso
         - tipoDocumento
@@ -10296,7 +10362,7 @@ components:
           $ref: '#/components/schemas/TipoDocumentoFiscal'
         idEmpresa:
           type: string
-    ParametrosImprimirMdfes:
+    ParametrosImprimirMdfesDto:
       required:
         - idMdfeList
       type: object
@@ -10355,7 +10421,7 @@ components:
           type: string
         qVolTipo:
           type: string
-    PeriodoValidadeCertificado:
+    PeriodoValidadeCertificadoDto:
       type: string
       enum:
         - VALIDO_POR_MAIS_DE_30_DIAS
@@ -10390,7 +10456,7 @@ components:
         dataFinal:
           type: string
           format: date-time
-    Plano:
+    PlanoAmbienteDto:
       type: object
       properties:
         nome:
@@ -10403,6 +10469,33 @@ components:
         dataTerminoPlano:
           type: string
           format: date-time
+    PlanoBsoftDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        descricao:
+          type: string
+        idProduto:
+          type: integer
+          format: int32
+        produto:
+          type: string
+        limite:
+          type: integer
+          format: int32
+        tipoCiclo:
+          type: string
+        valorAquisicao:
+          type: number
+          format: double
+        valorMensalidade:
+          type: number
+          format: double
+        valorTotalCiclo:
+          type: number
+          format: double
     PlanoDto:
       type: object
       properties:
@@ -10440,10 +10533,10 @@ components:
         ie:
           type: string
         uf:
-          $ref: '#/components/schemas/Uf'
+          $ref: '#/components/schemas/UfDto'
         tpProp:
           $ref: '#/components/schemas/TipoProprietario_1'
-    PropriedadeAplicacao:
+    PropriedadeAplicacaoDto:
       type: object
       properties:
         idAppProperty:
@@ -10485,7 +10578,7 @@ components:
       enum:
         - EMITENTE
         - CONTRATANTE
-    RespostaSimples:
+    RespostaSimplesDto:
       type: object
       properties:
         texto:
@@ -10518,13 +10611,13 @@ components:
         codigo:
           description: Código de identificação da mensagem de erro. Em caso de erro
           type: string
-    ResultadoStatus:
+    ResultadoStatusDto:
       type: string
       enum:
         - POSITIVO
         - NEGATIVO
         - PARCIAL
-    RetornoExportacaoXls:
+    RetornoExportacaoXlsDto:
       type: object
       properties:
         url:
@@ -10533,78 +10626,14 @@ components:
           type: string
         success:
           type: boolean
-    RetornoExportacaoXmlMdfes:
+    RetornoExportacaoXmlMdfesDto:
       type: object
       properties:
         idArquivo:
           type: string
         url:
           type: string
-    RetornoImportacao:
-      type: object
-      properties:
-        documentosFiscais:
-          $ref: '#/components/schemas/DocumentosFiscais'
-        arquivosComErro:
-          type: array
-          items:
-            $ref: '#/components/schemas/ImportacaoComErro'
-        opcoesUfs:
-          type: array
-          items:
-            type: string
-        tipoDocumento:
-          $ref: '#/components/schemas/TipoDocumentoFiscal'
-        tipoEmitente:
-          $ref: '#/components/schemas/TipoEmitente_2'
-        produtoPredominante:
-          type: string
-        qtProdutoPredominante:
-          type: number
-          format: double
-        ncm:
-          type: string
-        tipoCarga:
-          type: string
-        localCarregamento:
-          $ref: '#/components/schemas/Municipio'
-        localDescarregamento:
-          $ref: '#/components/schemas/Municipio'
-        valorTotalCarga:
-          type: number
-          format: double
-        pesoTotal:
-          type: number
-          format: double
-        contratantes:
-          type: array
-          items:
-            type: string
-        contratanteDocumentos:
-          type: array
-          items:
-            $ref: '#/components/schemas/Contratante'
-        tipoOperacaoEntrada:
-          type: boolean
-        cepCarregamento:
-          type: string
-        cepDescarregamento:
-          type: string
-        cteSeguros:
-          type: array
-          items:
-            $ref: '#/components/schemas/CteSeguroDadosDto'
-        consultaNfe:
-          type: boolean
-        hasPdf:
-          type: boolean
-        limiteExcedidoNfe:
-          type: boolean
-        msgConsultaNfe:
-          type: string
-        temPlanoAtivo:
-          type: boolean
-    RetornoImportacaoCalculo:
+    RetornoImportacaoCalculoDto:
       type: object
       properties:
         produtoPredominante:
@@ -10638,7 +10667,71 @@ components:
         contratanteDocumentos:
           type: array
           items:
-            $ref: '#/components/schemas/Contratante'
+            $ref: '#/components/schemas/ContratanteDto'
+    RetornoImportacaoDto:
+      type: object
+      properties:
+        documentosFiscais:
+          $ref: '#/components/schemas/DocumentosFiscaisDto'
+        arquivosComErro:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportacaoComErro'
+        opcoesUfs:
+          type: array
+          items:
+            type: string
+        tipoDocumento:
+          $ref: '#/components/schemas/TipoDocumentoFiscal'
+        tipoEmitente:
+          $ref: '#/components/schemas/TipoEmitenteDto'
+        produtoPredominante:
+          type: string
+        qtProdutoPredominante:
+          type: number
+          format: double
+        ncm:
+          type: string
+        tipoCarga:
+          type: string
+        localCarregamento:
+          $ref: '#/components/schemas/MunicipioDto'
+        localDescarregamento:
+          $ref: '#/components/schemas/MunicipioDto'
+        valorTotalCarga:
+          type: number
+          format: double
+        pesoTotal:
+          type: number
+          format: double
+        contratantes:
+          type: array
+          items:
+            type: string
+        contratanteDocumentos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContratanteDto'
+        tipoOperacaoEntrada:
+          type: boolean
+        cepCarregamento:
+          type: string
+        cepDescarregamento:
+          type: string
+        cteSeguros:
+          type: array
+          items:
+            $ref: '#/components/schemas/CteSeguroDadosDto'
+        consultaNfe:
+          type: boolean
+        hasPdf:
+          type: boolean
+        limiteExcedidoNfe:
+          type: boolean
+        msgConsultaNfe:
+          type: string
+        temPlanoAtivo:
+          type: boolean
     RodoDto:
       type: object
       properties:
@@ -10675,7 +10768,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NumeroAverbDto'
-    SeguroCreate:
+    SeguroCreateDto:
       type: object
       properties:
         seguroList:
@@ -10687,7 +10780,7 @@ components:
     SeguroDados:
       type: object
       properties:
-        TAMANHO_INVALIDO_CPF_CNPJ_CONTRATANTE:
+        tamanhoInvalidoCpfCnpjContratante:
           type: string
         sempre:
           type: boolean
@@ -10736,7 +10829,7 @@ components:
           type: array
           items:
             type: string
-    ServicoSefazStatus:
+    ServicoSefazStatusDto:
       type: string
       enum:
         - EM_OPERACAO
@@ -10774,6 +10867,11 @@ components:
           $ref: '#/components/schemas/Charset'
         originalPath:
           type: string
+    SituacaoCadastroEmpresa:
+      type: string
+      enum:
+        - ATIVADA
+        - DESATIVADA
     SituacaoCiot:
       type: string
       enum:
@@ -10793,7 +10891,7 @@ components:
       enum:
         - ATIVADA
         - DESATIVADA
-    SituacaoEmpresaAdicional:
+    SituacaoEmpresaAdicionalDto:
       type: object
       properties:
         situacao:
@@ -10828,14 +10926,14 @@ components:
         dataCriacao:
           type: string
           format: date-time
-    StatusAverbacao:
+    StatusAverbacaoDto:
       type: string
       enum:
         - SEM_AVERBACAO
         - AVERBADO
         - ENCERRADO
         - FALHA_AVERBACAO
-    StatusCiot:
+    StatusCiotDto:
       type: string
       enum:
         - REJEITADO
@@ -10877,7 +10975,7 @@ components:
         - AUTORIZADO
         - ASSINADO
         - CONTINGENCIA
-    StatusMdfe_1:
+    StatusMdfeDto:
       type: string
       enum:
         - VALIDADO
@@ -10890,11 +10988,11 @@ components:
         - AUTORIZADO
         - ASSINADO
         - CONTINGENCIA
-    StatusServicoSefaz:
+    StatusServicoSefazDto:
       type: object
       properties:
         servicoSefazStatus:
-          $ref: '#/components/schemas/ServicoSefazStatus'
+          $ref: '#/components/schemas/ServicoSefazStatusDto'
         uf:
           type: string
         dataRecebimento:
@@ -10905,7 +11003,7 @@ components:
         dataProximaAtualizacao:
           type: string
           format: date-time
-    StatusTransacao:
+    StatusTransacaoDto:
       type: object
       properties:
         concluida:
@@ -10929,13 +11027,13 @@ components:
           type: boolean
         nomePlano:
           type: string
-    TermosServico:
+    TermosServicoDto:
       type: object
       properties:
         cpfCnpj:
           type: string
         tipo:
-          $ref: '#/components/schemas/TipoTermosServico'
+          $ref: '#/components/schemas/TipoTermosServicoDto'
         accepted:
           type: boolean
     TermosServicoInfoDto:
@@ -10960,7 +11058,7 @@ components:
       enum:
         - HOMOLOGACAO
         - PRODUCAO
-    TipoAtivacaoEmpresaAdicional:
+    TipoAtivacaoEmpresaAdicionalDto:
       type: string
       enum:
         - MANUAL
@@ -11004,12 +11102,14 @@ components:
         - A1
         - A3
         - CS
-    TipoContaBancaria:
+    TipoChavePixDto:
       type: string
       enum:
-        - CONTA_CORRENTE
-        - CONTA_POUPANCA
-        - CONTA_PAGAMENTO
+        - CPF
+        - CNPJ
+        - TELEFONE
+        - EMAIL
+        - CHAVE_ALEATORIA
     TipoContaBancariaDto:
       type: string
       enum:
@@ -11050,13 +11150,13 @@ components:
         - SERVICO
         - PROPRIO
         - GLOBALIZADO
-    TipoEmitente_1:
+    TipoEmitenteDto:
       type: string
       enum:
         - SERVICO
         - PROPRIO
         - GLOBALIZADO
-    TipoEmitente_2:
+    TipoEmitente_1:
       type: string
       enum:
         - SERVICO
@@ -11090,7 +11190,7 @@ components:
       enum:
         - PROPRIO
         - TERCEIRO
-    TipoPropriedade_1:
+    TipoPropriedadeDto:
       type: string
       enum:
         - PROPRIO
@@ -11121,6 +11221,15 @@ components:
         - VAN
         - UTILITARIO
         - OUTROS
+    TipoRodadoDto:
+      type: string
+      enum:
+        - TRUCK
+        - TOCO
+        - CAVALOMECANICO
+        - VAN
+        - UTILITARIO
+        - OUTROS
     TipoRodado_1:
       type: string
       enum:
@@ -11130,16 +11239,7 @@ components:
         - VAN
         - UTILITARIO
         - OUTROS
-    TipoRodado_2:
-      type: string
-      enum:
-        - TRUCK
-        - TOCO
-        - CAVALOMECANICO
-        - VAN
-        - UTILITARIO
-        - OUTROS
-    TipoTermosServico:
+    TipoTermosServicoDto:
       type: string
       enum:
         - ACEITE
@@ -11166,12 +11266,12 @@ components:
       enum:
         - TRACAO
         - REBOQUE
-    TipoVerificacao:
+    TipoVerificacaoDto:
       type: string
       enum:
         - CADASTRO_EMPRESA
         - ATIVAR_EMPRESA
-    Token:
+    TokenDto:
       required:
         - token
       type: object
@@ -11211,7 +11311,7 @@ components:
         - ULD
         - PALLET
         - OUTROS
-    TransactionID:
+    TransactionIDDto:
       type: object
       properties:
         id:
@@ -11247,7 +11347,7 @@ components:
         veiculos:
           type: array
           items:
-            $ref: '#/components/schemas/Veiculo'
+            $ref: '#/components/schemas/VeiculoDto'
         numeroEixos:
           type: string
         motoristas:
@@ -11260,7 +11360,7 @@ components:
           type: boolean
         composicaoVeicular:
           type: boolean
-    Uf:
+    UfDto:
       type: string
       enum:
         - DF
@@ -11291,7 +11391,7 @@ components:
         - AC
         - RO
         - EX
-    UfPercursoConfiguracaoCreate:
+    UfPercursoConfiguracaoCreateDto:
       required:
         - ufCarregamento
         - ufDescarregamento
@@ -11306,7 +11406,7 @@ components:
           type: string
         ufPercurso:
           type: string
-    UfPercursoConfiguracaoResponse:
+    UfPercursoConfiguracaoResponseDto:
       type: object
       properties:
         id:
@@ -11322,7 +11422,7 @@ components:
           format: date-time
         usuario:
           type: string
-    UfPercursoSugestaoResponse:
+    UfPercursoSugestaoResponseDto:
       type: object
       properties:
         ufPercurso:
@@ -11379,7 +11479,7 @@ components:
         quantidade:
           type: integer
           format: int32
-    UsuarioCreate:
+    UsuarioCreateDto:
       required:
         - login
         - role
@@ -11419,7 +11519,7 @@ components:
           type: string
         email:
           type: string
-    UsuarioLandingPage:
+    UsuarioLandingPageDto:
       type: object
       properties:
         nome:
@@ -11484,9 +11584,9 @@ components:
         prop:
           $ref: '#/components/schemas/PropDto'
         tpPropriedade:
-          $ref: '#/components/schemas/TipoPropriedade_1'
+          $ref: '#/components/schemas/TipoPropriedadeDto'
         uf:
-          $ref: '#/components/schemas/Uf'
+          $ref: '#/components/schemas/UfDto'
         tpCar:
           $ref: '#/components/schemas/TipoCarroceria_1'
         renavam:
@@ -11494,7 +11594,7 @@ components:
         cpfCnpjProprietario:
           type: string
         bancoProprietario:
-          $ref: '#/components/schemas/Banco'
+          $ref: '#/components/schemas/BancoDto'
         codAgenciaProprietario:
           type: string
         contaBancariaProprietario:
@@ -11505,6 +11605,8 @@ components:
           type: string
         pixProprietario:
           type: string
+        tipoChavePixProprietario:
+          $ref: '#/components/schemas/TipoChavePixDto'
         numeroEixos:
           type: integer
           format: int32
@@ -11524,87 +11626,7 @@ components:
           $ref: '#/components/schemas/VeicDto'
         tpRod:
           $ref: '#/components/schemas/TipoRodado_1'
-    Veiculo:
-      type: object
-      properties:
-        id:
-          type: string
-        renavam:
-          type: string
-        placa:
-          type: string
-        numeroEixos:
-          type: integer
-          format: int32
-        taraKG:
-          type: integer
-          format: int32
-        capacidadeKG:
-          type: integer
-          format: int32
-        capacidadeM3:
-          type: integer
-          format: int32
-        tipoVeiculo:
-          $ref: '#/components/schemas/TipoVeiculo'
-        tipoRodado:
-          $ref: '#/components/schemas/TipoRodado'
-        tipoCarroceria:
-          $ref: '#/components/schemas/TipoCarroceria'
-        ufLicenciamento:
-          type: string
-        tipoPropriedade:
-          $ref: '#/components/schemas/TipoPropriedade'
-        tipoDocumento:
-          $ref: '#/components/schemas/TipoDocumento_2'
-        cpfCnpj:
-          type: string
-        rntrc:
-          type: string
-        nome:
-          type: string
-        ie:
-          type: string
-        uf:
-          type: string
-        tipoProprietario:
-          $ref: '#/components/schemas/TipoProprietario'
-        tipoTransportador:
-          $ref: '#/components/schemas/TipoTransportador'
-        observacao:
-          type: string
-        usuarioCadastramento:
-          type: string
-        usuarioAtualizacao:
-          type: string
-        dataCadastramento:
-          type: string
-          format: date-time
-        motorista:
-          $ref: '#/components/schemas/Motorista'
-        motorista2:
-          $ref: '#/components/schemas/Motorista'
-        motorista3:
-          $ref: '#/components/schemas/Motorista'
-        veiculoReboque:
-          $ref: '#/components/schemas/Veiculo'
-        veiculoReboque2:
-          $ref: '#/components/schemas/Veiculo'
-        veiculoReboque3:
-          $ref: '#/components/schemas/Veiculo'
-        codBancoProprietario:
-          type: string
-        codAgenciaProprietario:
-          type: string
-        cnpjIpefProprietario:
-          type: string
-        pixProprietario:
-          type: string
-        contaBancariaProprietario:
-          type: string
-        tipoContaBancariaProprietario:
-          type: string
-    VeiculoCadastroColunaCustomizadaRequest:
+    VeiculoCadastroColunaCustomizadaRequestDto:
       required:
         - nomeEntidade
         - colunaList
@@ -11646,7 +11668,7 @@ components:
           type: string
         FazParteDaFrota:
           type: boolean
-    VeiculoCreate:
+    VeiculoCreateDto:
       required:
         - renavam
         - placa
@@ -11713,15 +11735,99 @@ components:
           type: string
         pixProprietario:
           type: string
+        tipoChavePixProprietario:
+          $ref: '#/components/schemas/TipoChavePixDto'
         contaBancariaProprietario:
           type: string
         tipoContaBancariaProprietario:
-          $ref: '#/components/schemas/TipoContaBancaria'
+          $ref: '#/components/schemas/TipoContaBancariaDto'
         tipoTransportador:
           $ref: '#/components/schemas/TipoTransportador'
         observacao:
           type: string
-    VeiculoSuggestion:
+    VeiculoDto:
+      type: object
+      properties:
+        id:
+          type: string
+        renavam:
+          type: string
+        placa:
+          type: string
+        numeroEixos:
+          type: integer
+          format: int32
+        taraKG:
+          type: integer
+          format: int32
+        capacidadeKG:
+          type: integer
+          format: int32
+        capacidadeM3:
+          type: integer
+          format: int32
+        tipoVeiculo:
+          $ref: '#/components/schemas/TipoVeiculo'
+        tipoRodado:
+          $ref: '#/components/schemas/TipoRodado'
+        tipoCarroceria:
+          $ref: '#/components/schemas/TipoCarroceria'
+        ufLicenciamento:
+          type: string
+        tipoPropriedade:
+          $ref: '#/components/schemas/TipoPropriedade'
+        tipoDocumento:
+          $ref: '#/components/schemas/TipoDocumento_2'
+        cpfCnpj:
+          type: string
+        rntrc:
+          type: string
+        nome:
+          type: string
+        ie:
+          type: string
+        uf:
+          type: string
+        tipoProprietario:
+          $ref: '#/components/schemas/TipoProprietario'
+        tipoTransportador:
+          $ref: '#/components/schemas/TipoTransportador'
+        observacao:
+          type: string
+        usuarioCadastramento:
+          type: string
+        usuarioAtualizacao:
+          type: string
+        dataCadastramento:
+          type: string
+          format: date-time
+        motorista:
+          $ref: '#/components/schemas/MotoristaDto_1'
+        motorista2:
+          $ref: '#/components/schemas/MotoristaDto_1'
+        motorista3:
+          $ref: '#/components/schemas/MotoristaDto_1'
+        veiculoReboque:
+          $ref: '#/components/schemas/VeiculoDto'
+        veiculoReboque2:
+          $ref: '#/components/schemas/VeiculoDto'
+        veiculoReboque3:
+          $ref: '#/components/schemas/VeiculoDto'
+        codBancoProprietario:
+          type: string
+        codAgenciaProprietario:
+          type: string
+        cnpjIpefProprietario:
+          type: string
+        pixProprietario:
+          type: string
+        tipoChavePixProprietario:
+          $ref: '#/components/schemas/TipoChavePixDto'
+        contaBancariaProprietario:
+          type: string
+        tipoContaBancariaProprietario:
+          type: string
+    VeiculoSuggestionDto:
       type: object
       properties:
         hashCode:
@@ -11794,7 +11900,7 @@ components:
         rntrcReboque3:
           type: string
         bancoProprietario:
-          $ref: '#/components/schemas/Banco'
+          $ref: '#/components/schemas/BancoDto'
         codAgenciaProprietario:
           type: string
         contaBancariaProprietario:
@@ -11805,6 +11911,8 @@ components:
           type: string
         pixProprietario:
           type: string
+        tipoChavePixProprietario:
+          $ref: '#/components/schemas/TipoChavePixDto'
         cpfCnpjProprietarioReboque:
           type: string
         cpfCnpjProprietarioReboque2:
@@ -11848,7 +11956,7 @@ components:
         cnpj:
           type: string
         tipoVerificacao:
-          $ref: '#/components/schemas/TipoVerificacao'
+          $ref: '#/components/schemas/TipoVerificacaoDto'
     VerificarAutorizacaoMultEmpresaDto:
       type: object
       properties:
@@ -11858,12 +11966,6 @@ components:
             type: string
     Void:
       type: object
-    FormatoDocumentosWebhookDto:
-      type: string
-      description: Formato do XML no payload do webhook. O PDF (DAMDFE) e sempre link S3. Padrao BASE64
-      enum:
-        - BASE64
-        - S3
     WebhookCreateDto:
       required:
         - url
@@ -11877,7 +11979,6 @@ components:
             $ref: '#/components/schemas/WebhookHeaderDto'
         incluirPdf:
           type: boolean
-          description: Inclui o PDF (DAMDFE) no payload, sempre como link S3. Padrao false
         formatoDocumentos:
           $ref: '#/components/schemas/FormatoDocumentosWebhookDto'
     WebhookDto:
