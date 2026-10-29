@@ -49,6 +49,7 @@ tags:
   - name: Importar Dce
   - name: Imprimir Carta Correcao
   - name: Imprimir Documento Cte
+  - name: Imprimir Insucesso Entrega
   - name: Imprimir Relatorios Cte
   - name: Informacao Cte Globalizado
   - name: Insucesso Entrega
@@ -4189,9 +4190,9 @@ paths:
         - Empresa Adicional
       operationId: EmpresaAdicionalControllerImp.historicoAdicionalCobranca
       parameters:
-        - name: arg0
+        - name: tenantId
           in: query
-          required: true
+          required: false
           schema:
             type: string
       responses:
@@ -6633,6 +6634,33 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: imprimirDocumentoCteSiplificado
+  /v1/ctes/imprimir-insucesso-entrega:
+    get:
+      tags:
+        - Imprimir Insucesso Entrega
+      operationId: ImprimirInsucessoEntregaControllerImp.imprimirInsucessoEntrega
+      parameters:
+        - name: arg0
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/byte'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: imprimirInsucessoEntrega
   /v1/ctes/imprimir-relatorio-cte:
     post:
       tags:
@@ -9416,6 +9444,8 @@ components:
           type: string
         nomeUsuarioCriacao:
           type: string
+        nomeUsuarioAlteracao:
+          type: string
         nomeUsuarioEmissao:
           type: string
         nomeUsuarioCancelamento:
@@ -9950,6 +9980,8 @@ components:
           $ref: '#/components/schemas/EnvolvidoSummary'
         destinatario:
           $ref: '#/components/schemas/EnvolvidoSummary'
+        recebedor:
+          $ref: '#/components/schemas/EnvolvidoSummary'
         valorTotalCarga:
           type: number
           format: double
@@ -9982,6 +10014,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ImportarCteNfeFiles'
+        dataHoraEmissao:
+          type: string
+          format: date-time
       example:
         remetente:
           id: 99e39200-3bfb-465f-886f-85ee28e8cfda
@@ -11112,6 +11147,11 @@ components:
         - PAGAMENTO_A_PAGAR
         - PAGAMENTO_OUTROS
         - PAGAMENTO_RECEBIDO
+    FormatoDocumentosWebhookDto:
+      type: string
+      enum:
+        - BASE64
+        - S3
     FormatoImpressao:
       type: string
       enum:
@@ -11424,6 +11464,8 @@ components:
         remetente:
           $ref: '#/components/schemas/EnvolvidoSummary'
         destinatario:
+          $ref: '#/components/schemas/EnvolvidoSummary'
+        recebedor:
           $ref: '#/components/schemas/EnvolvidoSummary'
         tomador:
           $ref: '#/components/schemas/EnvolvidoSummary'
@@ -12595,6 +12637,8 @@ components:
         tenantCteHom:
           $ref: '#/components/schemas/TenantDtoReduzido'
         tenantMdfeHom:
+          $ref: '#/components/schemas/TenantDtoReduzido'
+        tenantEdi:
           $ref: '#/components/schemas/TenantDtoReduzido'
     OutroDocumentoCreate:
       type: object
@@ -14157,6 +14201,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WebhookHeaderDto'
+        incluirPdf:
+          type: boolean
+        formatoDocumentos:
+          $ref: '#/components/schemas/FormatoDocumentosWebhookDto'
     WebhookDto:
       type: object
       properties:
@@ -14180,6 +14228,10 @@ components:
           format: date-time
         usuarioDesativacao:
           type: string
+        incluirPdf:
+          type: boolean
+        formatoDocumentos:
+          $ref: '#/components/schemas/FormatoDocumentosWebhookDto'
     WebhookEventoDto:
       type: object
       properties:
@@ -14197,6 +14249,10 @@ components:
           type: string
         sucesso:
           type: boolean
+        cnpjEmitente:
+          type: string
+        webhookUrl:
+          type: string
         dataCriacao:
           type: string
           format: date-time
