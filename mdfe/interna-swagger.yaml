@@ -225,6 +225,12 @@ paths:
       tags:
         - Ambientes
       operationId: AmbientesControllerImp.licenca
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
       responses:
         200:
           description: successful operation
@@ -3369,6 +3375,28 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: enviarEmail
+  /v1/envolvidos:
+    post:
+      tags:
+        - Envolvidos
+      operationId: EnvolvidosControllerImp.cadastrar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvolvidoDocumentoFiscalDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvolvidoSuggestionResponseDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: cadastrar
   /v1/envolvidos/suggestion:
     get:
       tags:
@@ -8176,6 +8204,10 @@ components:
             type: string
         alertarDocumentoJaUtilizado:
           type: boolean
+        tomador:
+          $ref: '#/components/schemas/EnvolvidoDocumentoFiscalDto'
+        destinatario:
+          $ref: '#/components/schemas/EnvolvidoDocumentoFiscalDto'
     DesativarEmpresasResponseDto:
       type: object
       properties:
@@ -8694,6 +8726,46 @@ components:
           type: string
         complemento:
           type: string
+    EnderecoDocumentoDto:
+      type: object
+      properties:
+        logradouro:
+          type: string
+        numero:
+          type: string
+        complemento:
+          type: string
+        bairro:
+          type: string
+        cep:
+          type: string
+        municipio:
+          type: string
+        codigoMunicipio:
+          type: string
+        uf:
+          type: string
+        pais:
+          type: string
+        codigoPais:
+          type: string
+    EnvolvidoDocumentoFiscalDto:
+      type: object
+      properties:
+        cpfCnpj:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          type: string
+        ie:
+          type: string
+        telefone:
+          type: string
+        email:
+          type: string
+        endereco:
+          $ref: '#/components/schemas/EnderecoDocumentoDto'
     EnvolvidoDto:
       type: object
       properties:
@@ -9421,6 +9493,8 @@ components:
         valor:
           type: number
           format: double
+        destinatarioDocumento:
+          type: string
         chCTe:
           type: string
         indReentrega:
@@ -9618,6 +9692,8 @@ components:
         valor:
           type: number
           format: double
+        destinatarioDocumento:
+          type: string
         chNFe:
           type: string
     InfPagDto:
