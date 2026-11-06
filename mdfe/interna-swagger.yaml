@@ -8535,6 +8535,8 @@ components:
           type: boolean
         codBancoProprietario:
           type: string
+        bancoProprietario:
+          $ref: '#/components/schemas/Banco'
         codAgenciaProprietario:
           type: string
         pixProprietario:
@@ -9455,6 +9457,8 @@ components:
           type: string
         pix:
           type: string
+        banco:
+          $ref: '#/components/schemas/Banco'
     InfCIOTDto:
       type: object
       properties:
@@ -11702,6 +11706,88 @@ components:
           $ref: '#/components/schemas/VeicDto'
         tpRod:
           $ref: '#/components/schemas/TipoRodado_1'
+    Veiculo:
+      type: object
+      properties:
+        id:
+          type: string
+        renavam:
+          type: string
+        placa:
+          type: string
+        numeroEixos:
+          type: integer
+          format: int32
+        taraKG:
+          type: integer
+          format: int32
+        capacidadeKG:
+          type: integer
+          format: int32
+        capacidadeM3:
+          type: integer
+          format: int32
+        tipoVeiculo:
+          $ref: '#/components/schemas/TipoVeiculo'
+        tipoRodado:
+          $ref: '#/components/schemas/TipoRodado'
+        tipoCarroceria:
+          $ref: '#/components/schemas/TipoCarroceria'
+        ufLicenciamento:
+          type: string
+        tipoPropriedade:
+          $ref: '#/components/schemas/TipoPropriedade'
+        tipoDocumento:
+          $ref: '#/components/schemas/TipoDocumento_2'
+        cpfCnpj:
+          type: string
+        rntrc:
+          type: string
+        nome:
+          type: string
+        ie:
+          type: string
+        uf:
+          type: string
+        tipoProprietario:
+          $ref: '#/components/schemas/TipoProprietario'
+        tipoTransportador:
+          $ref: '#/components/schemas/TipoTransportador'
+        observacao:
+          type: string
+        usuarioCadastramento:
+          type: string
+        usuarioAtualizacao:
+          type: string
+        dataCadastramento:
+          type: string
+          format: date-time
+        motorista:
+          $ref: '#/components/schemas/Motorista'
+        motorista2:
+          $ref: '#/components/schemas/Motorista'
+        motorista3:
+          $ref: '#/components/schemas/Motorista'
+        veiculoReboque:
+          $ref: '#/components/schemas/Veiculo'
+        veiculoReboque2:
+          $ref: '#/components/schemas/Veiculo'
+        veiculoReboque3:
+          $ref: '#/components/schemas/Veiculo'
+        codBancoProprietario:
+          type: string
+        bancoProprietario:
+          $ref: '#/components/schemas/Banco'
+        codAgenciaProprietario:
+          type: string
+        cnpjIpefProprietario:
+          type: string
+        pixProprietario:
+          type: string
+        contaBancariaProprietario:
+          type: string
+        tipoContaBancariaProprietario:
+          type: string
     VeiculoCadastroColunaCustomizadaRequestDto:
       required:
         - nomeEntidade
