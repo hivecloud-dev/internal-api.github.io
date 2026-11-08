@@ -44,6 +44,7 @@ tags:
   - name: Exportacao Xls Motorista
   - name: Exportacao Xls Veiculo
   - name: Google Tag Manager Controller
+  - name: Importacao Cadastros
   - name: Importacao Documentos
   - name: Importar Mdfe
   - name: Imprimir Mdfe
@@ -4150,6 +4151,97 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: getUsersTenant
+  /v1/importacao-cadastros:
+    post:
+      tags:
+        - Importacao Cadastros
+      operationId: ImportacaoCadastrosControllerImp.importar
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: object
+              properties:
+                arquivo:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionIDDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: importar
+  /v1/importacao-cadastros/modelo:
+    get:
+      tags:
+        - Importacao Cadastros
+      operationId: ImportacaoCadastrosControllerImp.baixarModelo
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/byte'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: baixarModelo
+  /v1/importacao-cadastros/{id}/consultar-status:
+    get:
+      tags:
+        - Importacao Cadastros
+      operationId: ImportacaoCadastrosControllerImp.consultarStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarStatus
+  /v1/importacao-cadastros/{id}/obter-resultado:
+    get:
+      tags:
+        - Importacao Cadastros
+      operationId: ImportacaoCadastrosControllerImp.obterResultado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultadoImportacaoCadastrosDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: obterResultado
   /v1/mdfe/calcular-importacao:
     post:
       tags:
@@ -7092,6 +7184,13 @@ paths:
       x-operation-name: testar
 components:
   schemas:
+    AbaNaoProcessadaDto:
+      type: object
+      properties:
+        aba:
+          type: string
+        motivo:
+          type: string
     AceiteAvulso:
       type: object
       properties:
@@ -7956,6 +8055,15 @@ components:
           $ref: '#/components/schemas/StatusMdfe'
         chaveAcesso:
           type: string
+    ContagemImportacaoDto:
+      type: object
+      properties:
+        criados:
+          type: integer
+          format: int32
+        atualizados:
+          type: integer
+          format: int32
     ContratanteDto:
       type: object
       properties:
@@ -8536,7 +8644,7 @@ components:
         codBancoProprietario:
           type: string
         bancoProprietario:
-          $ref: '#/components/schemas/Banco'
+          $ref: '#/components/schemas/BancoDto'
         codAgenciaProprietario:
           type: string
         pixProprietario:
@@ -8813,6 +8921,18 @@ components:
         cep:
           type: string
         pais:
+          type: string
+    ErroImportacaoDto:
+      type: object
+      properties:
+        aba:
+          type: string
+        linha:
+          type: integer
+          format: int32
+        coluna:
+          type: string
+        mensagem:
           type: string
     EstadoDto:
       type: object
@@ -9458,7 +9578,7 @@ components:
         pix:
           type: string
         banco:
-          $ref: '#/components/schemas/Banco'
+          $ref: '#/components/schemas/BancoDto'
     InfCIOTDto:
       type: object
       properties:
@@ -10691,6 +10811,25 @@ components:
         codigo:
           description: Código de identificação da mensagem de erro. Em caso de erro
           type: string
+    ResultadoImportacaoCadastrosDto:
+      type: object
+      properties:
+        sucesso:
+          type: boolean
+        motoristas:
+          $ref: '#/components/schemas/ContagemImportacaoDto'
+        veiculos:
+          $ref: '#/components/schemas/ContagemImportacaoDto'
+        abasNaoProcessadas:
+          type: array
+          items:
+            $ref: '#/components/schemas/AbaNaoProcessadaDto'
+        erros:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErroImportacaoDto'
+        urlPlanilhaErros:
+          type: string
     ResultadoStatusDto:
       type: string
       enum:
@@ -11706,88 +11845,6 @@ components:
           $ref: '#/components/schemas/VeicDto'
         tpRod:
           $ref: '#/components/schemas/TipoRodado_1'
-    Veiculo:
-      type: object
-      properties:
-        id:
-          type: string
-        renavam:
-          type: string
-        placa:
-          type: string
-        numeroEixos:
-          type: integer
-          format: int32
-        taraKG:
-          type: integer
-          format: int32
-        capacidadeKG:
-          type: integer
-          format: int32
-        capacidadeM3:
-          type: integer
-          format: int32
-        tipoVeiculo:
-          $ref: '#/components/schemas/TipoVeiculo'
-        tipoRodado:
-          $ref: '#/components/schemas/TipoRodado'
-        tipoCarroceria:
-          $ref: '#/components/schemas/TipoCarroceria'
-        ufLicenciamento:
-          type: string
-        tipoPropriedade:
-          $ref: '#/components/schemas/TipoPropriedade'
-        tipoDocumento:
-          $ref: '#/components/schemas/TipoDocumento_2'
-        cpfCnpj:
-          type: string
-        rntrc:
-          type: string
-        nome:
-          type: string
-        ie:
-          type: string
-        uf:
-          type: string
-        tipoProprietario:
-          $ref: '#/components/schemas/TipoProprietario'
-        tipoTransportador:
-          $ref: '#/components/schemas/TipoTransportador'
-        observacao:
-          type: string
-        usuarioCadastramento:
-          type: string
-        usuarioAtualizacao:
-          type: string
-        dataCadastramento:
-          type: string
-          format: date-time
-        motorista:
-          $ref: '#/components/schemas/Motorista'
-        motorista2:
-          $ref: '#/components/schemas/Motorista'
-        motorista3:
-          $ref: '#/components/schemas/Motorista'
-        veiculoReboque:
-          $ref: '#/components/schemas/Veiculo'
-        veiculoReboque2:
-          $ref: '#/components/schemas/Veiculo'
-        veiculoReboque3:
-          $ref: '#/components/schemas/Veiculo'
-        codBancoProprietario:
-          type: string
-        bancoProprietario:
-          $ref: '#/components/schemas/Banco'
-        codAgenciaProprietario:
-          type: string
-        cnpjIpefProprietario:
-          type: string
-        pixProprietario:
-          type: string
-        contaBancariaProprietario:
-          type: string
-        tipoContaBancariaProprietario:
-          type: string
     VeiculoCadastroColunaCustomizadaRequestDto:
       required:
         - nomeEntidade
@@ -11977,6 +12034,8 @@ components:
           $ref: '#/components/schemas/VeiculoDto'
         codBancoProprietario:
           type: string
+        bancoProprietario:
+          $ref: '#/components/schemas/BancoDto'
         codAgenciaProprietario:
           type: string
         cnpjIpefProprietario:
