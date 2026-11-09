@@ -43,15 +43,23 @@ tags:
   - name: Exportacao Xls Mdfe
   - name: Exportacao Xls Motorista
   - name: Exportacao Xls Veiculo
+  - name: Feature Flag
+    description: Feature flags liberadas no banco (accounts). O front usa para liberar
+      funcionalidades em lançamento.
   - name: Google Tag Manager Controller
   - name: Importacao Cadastros
   - name: Importacao Documentos
+  - name: Importacao Parceiro
+    description: "Importação de rotas de parceiros para emissão em lote de MDF-e (ADO-100741).\
+      \ Busca assíncrona: o {@code POST}\r\ndevolve um {@code TransactionID}; o resultado\
+      \ vem de {@code consultar-status} e {@code obter-resultado}."
   - name: Importar Mdfe
   - name: Imprimir Mdfe
   - name: Incluir Condutor Mdfe
   - name: Incuir Dfe Mdfe
   - name: Mdfe Configuracao
   - name: Mdfe
+  - name: Mercado Livre Configuracao
   - name: Motoristas
   - name: Nstech
   - name: Pesquisa
@@ -4128,6 +4136,33 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: exportarXlsReturnValue
+  /v1/feature-flags/{flag}:
+    get:
+      tags:
+        - Feature Flag
+      operationId: FeatureFlagControllerImp.buscar
+      description: "Consulta se uma feature flag está ativa no accounts. A flag é\
+        \ global por produto, não depende de tenant\r\nou empresa. Nome inválido devolve\
+        \ 400; flag inexistente devolve 404; falha de comunicação com o accounts\r\
+        \ndevolve a flag como desligada."
+      parameters:
+        - name: flag
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: a flag e se ela está ativa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlagStatusDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: buscar
   /v1/configuracoes/gtm:
     get:
       tags:
@@ -4540,6 +4575,325 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: importarNfePorChave
+  /v1/importacoes-parceiro:
+    get:
+      tags:
+        - Importacao Parceiro
+      operationId: ImportacaoParceiroControllerImp.listar
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: empresaId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/StatusImportacaoParceiroDto'
+        - name: rotaId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: dataRotaInicial
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dataRotaFinal
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ImportacaoParceiroDto'
+                  param:
+                    $ref: '#/components/schemas/RequestParam'
+                  requestUrl:
+                    $ref: '#/components/schemas/ServletUriComponentsBuilder'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: listar
+    put:
+      tags:
+        - Importacao Parceiro
+      operationId: ImportacaoParceiroControllerImp.salvar
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ImportacaoParceiroEdicaoDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImportacaoParceiroDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: salvar
+  /v1/importacoes-parceiro/emitir:
+    post:
+      tags:
+        - Importacao Parceiro
+      operationId: ImportacaoParceiroControllerImp.emitir
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmitirImportacaoParceiroDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionIDDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: emitir
+  /v1/importacoes-parceiro/emitir/{id}/consultar-status:
+    get:
+      tags:
+        - Importacao Parceiro
+      operationId: ImportacaoParceiroControllerImp.consultarStatusEmissao
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarStatusEmissao
+  /v1/importacoes-parceiro/emitir/{id}/obter-resultado:
+    get:
+      tags:
+        - Importacao Parceiro
+      operationId: ImportacaoParceiroControllerImp.obterResultadoEmissao
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultadoEmissaoParceiroDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: obterResultadoEmissao
+  /v1/importacoes-parceiro/excluir:
+    post:
+      tags:
+        - Importacao Parceiro
+      operationId: ImportacaoParceiroControllerImp.excluir
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExcluirImportacaoParceiroDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: excluir
+  /v1/importacoes-parceiro/mercado-livre/buscar-rotas:
+    post:
+      tags:
+        - Importacao Parceiro
+      operationId: ImportacaoParceiroControllerImp.buscarRotas
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuscaRotasParceiroDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionIDDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: buscarRotas
+  /v1/importacoes-parceiro/mercado-livre/buscar-rotas/{id}/consultar-status:
+    get:
+      tags:
+        - Importacao Parceiro
+      operationId: ImportacaoParceiroControllerImp.consultarStatusBusca
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacaoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarStatusBusca
+  /v1/importacoes-parceiro/mercado-livre/buscar-rotas/{id}/obter-resultado:
+    get:
+      tags:
+        - Importacao Parceiro
+      operationId: ImportacaoParceiroControllerImp.obterResultadoBusca
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumoBuscaRotasParceiroDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: obterResultadoBusca
+  /v1/importacoes-parceiro/{id}/documentos:
+    get:
+      tags:
+        - Importacao Parceiro
+      operationId: ImportacaoParceiroControllerImp.documentos
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImportacaoParceiroDocumentoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: documentos
   /v1/mdfes/importar:
     post:
       tags:
@@ -5477,6 +5831,79 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: listarSeguro
+  /v1/configuracoes/integracoes/mercado-livre:
+    get:
+      tags:
+        - Mercado Livre Configuracao
+      operationId: MercadoLivreConfiguracaoControllerImp.buscar
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MercadoLivreConfiguracaoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: buscar
+    delete:
+      tags:
+        - Mercado Livre Configuracao
+      operationId: MercadoLivreConfiguracaoControllerImp.remover
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: remover
+  /v1/configuracoes/integracoes/mercado-livre/ativar:
+    post:
+      tags:
+        - Mercado Livre Configuracao
+      operationId: MercadoLivreConfiguracaoControllerImp.ativar
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MercadoLivreConfiguracaoDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MercadoLivreConfiguracaoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: ativar
   /v1/motoristas:
     get:
       tags:
@@ -7453,6 +7880,17 @@ components:
           type: string
         nome:
           type: string
+    BuscaRotasParceiroDto:
+      description: "Pedido de busca de rotas do parceiro (ADO-100741). As datas seguem\
+        \ o formato {@code yyyy-MM-dd}."
+      type: object
+      properties:
+        dataInicial:
+          type: string
+        dataFinal:
+          type: string
+        stepType:
+          type: string
     CadastrarEmpresaCiotDto:
       description: "Classe para cadastro de empresa no sistema CIOT.\r\nContém os\
         \ dados necessários para realizar o cadastro de uma empresa\r\nque utilizará\
@@ -8498,6 +8936,14 @@ components:
             type: string
         idEmitente:
           type: string
+    EmitirImportacaoParceiroDto:
+      description: Rotas a emitir em lote (ADO-100741).
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
     EmitirMdfeDto:
       type: object
       properties:
@@ -8944,6 +9390,16 @@ components:
           format: int32
         nome:
           type: string
+    EtapaErroImportacaoParceiroDto:
+      type: string
+      enum:
+        - VALIDACAO
+        - CRIACAO_MDFE
+        - MONTAGEM_CIOT
+        - CIOT
+        - SEFAZ
+        - PROCESSAMENTO
+        - DENEGADO
     ExcecaoConsultaSituacaoTransportadorResponseDto:
       type: object
       properties:
@@ -8951,6 +9407,14 @@ components:
           type: string
         codigo:
           type: string
+    ExcluirImportacaoParceiroDto:
+      description: Rotas a excluir da grade de emissão em lote (ADO-100741).
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
     ExibidoInfoCertificadoExpiracaoDto:
       type: object
       properties:
@@ -8998,6 +9462,14 @@ components:
         valorTotal:
           type: number
           format: float
+    FeatureFlagStatusDto:
+      description: Feature flag liberada no banco do accounts (tabela account_FeatureFlag).
+      type: object
+      properties:
+        flag:
+          type: string
+        ativo:
+          type: boolean
     FormaPagamentoDto:
       type: object
       properties:
@@ -9326,6 +9798,245 @@ components:
           type: string
         msgErro:
           type: string
+    ImportacaoParceiroDocumentoDto:
+      description: "CT-e de uma rota importada, sem o XML (ADO-100741)."
+      type: object
+      properties:
+        id:
+          type: string
+        chaveAcesso:
+          type: string
+        shipmentId:
+          type: string
+        tipoCte:
+          $ref: '#/components/schemas/TipoCteImportacaoParceiroDto'
+        pesoKg:
+          type: number
+          format: double
+        valorPrestacao:
+          type: number
+          format: double
+        municipioDescarga:
+          type: string
+        ufIni:
+          type: string
+        ufFim:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusDocumentoImportacaoParceiroDto'
+        erro:
+          type: string
+        cnpjEmitente:
+          type: string
+        placa:
+          type: string
+        renavam:
+          type: string
+        cpfMotorista:
+          type: string
+        nomeMotorista:
+          type: string
+        tipoVeiculo:
+          type: string
+        linha:
+          type: string
+        pedido:
+          type: string
+        rotaXml:
+          type: string
+        obsCont:
+          type: string
+    ImportacaoParceiroDto:
+      description: "Rota importada de um parceiro, como a grade de emissão em lote\
+        \ a exibe (ADO-100741)."
+      type: object
+      properties:
+        id:
+          type: string
+        version:
+          type: integer
+          format: int32
+        identificadorExterno:
+          type: string
+        rotaId:
+          type: string
+        dataRota:
+          type: string
+          format: date-time
+        stepType:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusImportacaoParceiroDto'
+        mensagemErro:
+          type: string
+        mdfeId:
+          type: string
+        etapaErro:
+          $ref: '#/components/schemas/EtapaErroImportacaoParceiroDto'
+        numeroCiot:
+          type: string
+        statusMdfe:
+          $ref: '#/components/schemas/StatusMdfeDto'
+        editavel:
+          type: boolean
+        ufIni:
+          type: string
+        ufFim:
+          type: string
+        municipiosDescarga:
+          type: string
+        pesoTotal:
+          type: number
+          format: double
+        valorCarga:
+          type: number
+          format: double
+        valorPrestacao:
+          type: number
+          format: double
+        quantidadeDocumentos:
+          type: integer
+          format: int32
+        linha:
+          type: string
+        placaXml:
+          type: string
+        renavamXml:
+          type: string
+        tipoVeiculoXml:
+          type: string
+        cpfMotoristaXml:
+          type: string
+        nomeMotoristaXml:
+          type: string
+        veiculoDoXml:
+          type: boolean
+        motoristaDoXml:
+          type: boolean
+        avisos:
+          type: string
+        produtoPredominante:
+          type: string
+        ncm:
+          type: string
+        tipoCarga:
+          $ref: '#/components/schemas/TipoCargaDto'
+        veiculoTracaoId:
+          type: string
+        veiculoReboque1Id:
+          type: string
+        veiculoReboque2Id:
+          type: string
+        veiculoReboque3Id:
+          type: string
+        motorista1Id:
+          type: string
+        motorista2Id:
+          type: string
+        motorista3Id:
+          type: string
+        veiculoTracao:
+          $ref: '#/components/schemas/VeiculoSuggestionDto'
+        veiculoReboque1:
+          $ref: '#/components/schemas/VeiculoSuggestionDto'
+        veiculoReboque2:
+          $ref: '#/components/schemas/VeiculoSuggestionDto'
+        veiculoReboque3:
+          $ref: '#/components/schemas/VeiculoSuggestionDto'
+        motorista1:
+          $ref: '#/components/schemas/MotoristaSuggestionDto'
+        motorista2:
+          $ref: '#/components/schemas/MotoristaSuggestionDto'
+        motorista3:
+          $ref: '#/components/schemas/MotoristaSuggestionDto'
+        ciotAdiantamento:
+          type: number
+          format: double
+        ciotSaldo:
+          type: number
+          format: double
+        ciotPedagio:
+          type: number
+          format: double
+        ciotIrrf:
+          type: number
+          format: double
+        ciotInss:
+          type: number
+          format: double
+        ciotSestSenat:
+          type: number
+          format: double
+        ciotDataQuitacao:
+          type: string
+          format: date-time
+        ciotEixos:
+          type: integer
+          format: int32
+        ciotKm:
+          type: integer
+          format: int32
+        ciotRetornoVazio:
+          type: boolean
+    ImportacaoParceiroEdicaoDto:
+      description: "Campos editáveis de uma rota importada, enviados ao salvar o lote\
+        \ (ADO-100741).\r\nO {@code version} detecta edição concorrente."
+      type: object
+      properties:
+        id:
+          type: string
+        version:
+          type: integer
+          format: int32
+        produtoPredominante:
+          type: string
+        ncm:
+          type: string
+        tipoCarga:
+          $ref: '#/components/schemas/TipoCargaDto'
+        veiculoTracaoId:
+          type: string
+        veiculoReboque1Id:
+          type: string
+        veiculoReboque2Id:
+          type: string
+        veiculoReboque3Id:
+          type: string
+        motorista1Id:
+          type: string
+        motorista2Id:
+          type: string
+        motorista3Id:
+          type: string
+        ciotAdiantamento:
+          type: number
+          format: double
+        ciotSaldo:
+          type: number
+          format: double
+        ciotPedagio:
+          type: number
+          format: double
+        ciotIrrf:
+          type: number
+          format: double
+        ciotInss:
+          type: number
+          format: double
+        ciotSestSenat:
+          type: number
+          format: double
+        ciotDataQuitacao:
+          type: string
+          format: date-time
+        ciotEixos:
+          type: integer
+          format: int32
+        ciotKm:
+          type: integer
+          format: int32
+        ciotRetornoVazio:
+          type: boolean
     ImportarMdfeListReturnWrapper:
       type: object
       properties:
@@ -10259,6 +10970,18 @@ components:
           type: boolean
         mensagem:
           type: string
+    MercadoLivreConfiguracaoDto:
+      description: "Configuração da integração com o Mercado Livre. Na resposta, {@code\
+        \ clientSecret} vem mascarado; ao enviar o\r\nvalor\r\nmascarado (ou vazio)\
+        \ na ativação, o secret salvo é mantido."
+      type: object
+      properties:
+        ativo:
+          type: boolean
+        clientId:
+          type: string
+        clientSecret:
+          type: string
     Modal:
       type: string
       enum:
@@ -10811,6 +11534,44 @@ components:
         codigo:
           description: Código de identificação da mensagem de erro. Em caso de erro
           type: string
+    ResultadoEmissaoParceiroDto:
+      description: "Resultado da emissão em lote de rotas importadas (ADO-100741):\
+        \ totais e o resultado de cada rota."
+      type: object
+      properties:
+        emitidas:
+          type: integer
+          format: int32
+        comErro:
+          type: integer
+          format: int32
+        puladas:
+          type: integer
+          format: int32
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResultadoEmissaoRotaParceiroDto'
+    ResultadoEmissaoRotaParceiroDto:
+      description: Resultado da emissão de uma rota do lote (ADO-100741).
+      type: object
+      properties:
+        importacaoId:
+          type: string
+        rotaId:
+          type: string
+        situacao:
+          type: string
+        etapaErro:
+          type: string
+        mensagem:
+          type: string
+        mdfeId:
+          type: string
+        statusMdfe:
+          type: string
+        numeroCiot:
+          type: string
     ResultadoImportacaoCadastrosDto:
       type: object
       properties:
@@ -10836,6 +11597,30 @@ components:
         - POSITIVO
         - NEGATIVO
         - PARCIAL
+    ResumoBuscaRotasParceiroDto:
+      description: "Resultado da busca de rotas do parceiro (ADO-100741): quantidades\
+        \ por situação e mensagens."
+      type: object
+      properties:
+        novas:
+          type: integer
+          format: int32
+        reimportadas:
+          type: integer
+          format: int32
+        ignoradas:
+          type: integer
+          format: int32
+        conflitos:
+          type: integer
+          format: int32
+        comErro:
+          type: integer
+          format: int32
+        mensagens:
+          type: array
+          items:
+            type: string
     RetornoExportacaoXlsDto:
       type: object
       properties:
@@ -11160,6 +11945,20 @@ components:
         - CANCELADO
         - ENCERRADO
         - EM_DIGITACAO
+    StatusDocumentoImportacaoParceiroDto:
+      type: string
+      enum:
+        - OK
+        - ERRO_DOWNLOAD
+        - INVALIDO
+    StatusImportacaoParceiroDto:
+      type: string
+      enum:
+        - IMPORTADO
+        - ERRO_IMPORTACAO
+        - EM_EMISSAO
+        - EMITIDO
+        - ERRO_EMISSAO
     StatusIntegracao:
       type: string
       enum:
@@ -11282,6 +12081,21 @@ components:
       enum:
         - MANUAL
         - AUTOMATICA
+    TipoCargaDto:
+      type: string
+      enum:
+        - GRANEL_SOLIDO
+        - GRANEL_LIQUIDO
+        - FRIGORIFICADA
+        - CONTEINERIZADA
+        - CARGA_GERAL
+        - NEOGRANEL
+        - PERIGOSA_GRANEL_SOLIDO
+        - PERIGOSA_GRANEL_LIQUIDO
+        - PERIGOSA_CARGA_FRIGORIFICADA
+        - PERIGOSA_CONTEINERIZADA
+        - PERIGOSA_CARGA_GERAL
+        - GRANEL_PRESSURIZADA
     TipoCargaProdPred:
       type: string
       enum:
@@ -11335,6 +12149,11 @@ components:
         - CONTA_CORRENTE
         - CONTA_POUPANCA
         - CONTA_PAGAMENTO
+    TipoCteImportacaoParceiroDto:
+      type: string
+      enum:
+        - NORMAL
+        - COMPLEMENTAR
     TipoDocumento:
       type: string
       enum:
