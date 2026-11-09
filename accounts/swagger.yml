@@ -521,10 +521,24 @@ paths:
       tags:
         - Feature Flag
       operationId: FeatureFlagControllerImp.getFeatureFlags
-      description: Recupera a lista de Feature Flags disponíveis
+      description: "Recupera a lista de Feature Flags, opcionalmente filtrada por\
+        \ produto e/ou nome da flag"
+      parameters:
+        - name: produto
+          description: Produto ao qual a Feature Flag pertence (opcional)
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: flag
+          description: Identificador (nome) da Feature Flag (opcional)
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         200:
-          description: Lista de Feature Flags
+          description: Lista de Feature Flags correspondentes aos filtros informados
           content:
             application/json:
               schema:
@@ -541,12 +555,20 @@ paths:
       tags:
         - Feature Flag
       operationId: FeatureFlagControllerImp.getFeatureFlag
-      description: Recupera uma Feature Flag a partir do identificador
+      description: "Recupera uma Feature Flag a partir do identificador. Como o mesmo\
+        \ nome pode existir em produtos\r\ndiferentes, informe o produto para obter\
+        \ a flag correta."
       parameters:
         - name: flag
           description: Identificador (nome) da Feature Flag
           in: path
           required: true
+          schema:
+            type: string
+        - name: produto
+          description: Produto ao qual a Feature Flag pertence (opcional)
+          in: query
+          required: false
           schema:
             type: string
       responses:
@@ -2535,6 +2557,7 @@ components:
       enum:
         - SL
         - CORE
+        - VINCULADO
     SituacaoAtivacaoDto:
       type: string
       enum:
@@ -2720,16 +2743,6 @@ components:
         liberado:
           description: Indica se a conta está liberada (SituacaoClienteSistemaPagamento.ATIVO).
           type: boolean
-        planoJaLiberadoTemporariamente:
-          description: Deprecated. A liberação temporária foi descontinuada; sempre
-            false. Mantido por compatibilidade.
-          type: boolean
-          deprecated: true
-        planoLiberadoAte:
-          description: Deprecated. A liberação temporária foi descontinuada; sempre
-            null. Mantido por compatibilidade.
-          type: string
-          deprecated: true
         cte:
           description: Plano contratado para emissão de CT-e.
           $ref: '#/components/schemas/PlanoItemDto'
