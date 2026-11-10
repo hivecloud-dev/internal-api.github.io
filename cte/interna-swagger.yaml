@@ -8208,6 +8208,8 @@ components:
           type: array
           items:
             type: string
+        subcontratado:
+          $ref: '#/components/schemas/SubcontratadoDto'
     AverbacaoAtmPropertiesDto:
       type: object
       properties:
@@ -12509,6 +12511,8 @@ components:
           type: boolean
         freteAutomaticoSubcontratacao:
           type: boolean
+        habilitarIntegracaoHub:
+          type: boolean
         validarDocumentoJaUtilizado:
           type: boolean
     OperacaoCalculoIcms:
@@ -13408,6 +13412,15 @@ components:
         - NOTSTARTED
         - EXECUTING
         - COMPLETE
+    SubcontratadoDto:
+      type: object
+      properties:
+        cnpj:
+          type: string
+        componentesFrete:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponenteFrete_1'
     Substituicao:
       type: object
       properties:
