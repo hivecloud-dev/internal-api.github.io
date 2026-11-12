@@ -1002,36 +1002,6 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: gerarCiotSimples
-  /v1/ciot/gerar-ciot/{idMdfe}:
-    post:
-      tags:
-        - Ciot
-      operationId: CiotControllerImp.gerarCiot
-      description: Gera CIOT para o MDF-e especificado.
-      deprecated: true
-      parameters:
-        - name: idMdfe
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GerarCiotDto'
-      responses:
-        200:
-          description: resposta da geração do CIOT
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GerarCiotResponseDto'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: gerarCiot
   /v1/ciot/obter-pdf/{idMdfe}:
     get:
       tags:
@@ -8765,41 +8735,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SituacaoEmpresaAdicionalDto'
-    DestinatarioCiotDto:
-      description: "Classe para dados do destinatário da operação CIOT.\r\nContém\
-        \ as informações de identificação e endereço\r\ndo destinatário da operaçã\
-        o de transporte, necessárias para a\r\nemissão do CIOT."
-      type: object
-      properties:
-        cpfCnpj:
-          description: "CPF ou CNPJ do destinatário.\r\nNúmero de identificação fiscal\
-            \ do destinatário da operação.\r\nPode ser CPF para pessoa física ou CNPJ\
-            \ para pessoa jurídica."
-          type: string
-        nome:
-          description: "Nome completo do destinatário.\r\nNome ou razão social do\
-            \ destinatário da operação de transporte."
-          type: string
-        cep:
-          description: "CEP do endereço do destinatário.\r\nCódigo de Endereçamento\
-            \ Postal para localização do destinatário."
-          type: string
-        rua:
-          description: "Nome da rua/avenida do endereço.\r\nLogradouro do endereç\
-            o completo do destinatário."
-          type: string
-        numero:
-          description: "Número do endereço.\r\nNúmero da residência ou estabelecimento\
-            \ do destinatário."
-          type: string
-        bairro:
-          description: "Bairro do endereço.\r\nNome do bairro onde se localiza o endereç\
-            o do destinatário."
-          type: string
-        codMunicipio:
-          description: "Código do município.\r\nCódigo IBGE do município onde se localiza\
-            \ o destinatário."
-          type: string
     DispDto:
       type: object
       properties:
@@ -9532,57 +9467,6 @@ components:
         distancia:
           type: integer
           format: int32
-    GerarCiotDto:
-      description: "Classe para requisição de geração de CIOT.\r\nContém os dados\
-        \ necessários para gerar um novo CIOT (Código Identificador\r\nda Operaçã\
-        o de Transporte) associado a um MDF-e. Reflete os campos mínimos\r\ndo modelo\
-        \ de domínio necessários para a operação."
-      type: object
-      properties:
-        destinatario:
-          description: "Dados do destinatário da operação de transporte.\r\nConté\
-            m informações completas do destinatário incluindo CPF/CNPJ, nome,\r\n\
-            endereço completo e outros dados de identificação necessários\r\npara\
-            \ a emissão do CIOT."
-          $ref: '#/components/schemas/DestinatarioCiotDto'
-        pagamentos:
-          description: "Lista de pagamentos associados à operação CIOT.\r\nContém\
-            \ informações sobre os valores pagos, datas de pagamento\r\ne outros detalhes\
-            \ financeiros relacionados à operação\r\nde transporte."
-          type: array
-          items:
-            $ref: '#/components/schemas/PagamentoCiotDto'
-        imposto:
-          description: "Informações sobre os impostos da operação.\r\nContém os valores\
-            \ dos tributos incidentes sobre a operação\r\nde transporte, incluindo\
-            \ IRRF, INSS, ISSQN e SEST/SENAT."
-          $ref: '#/components/schemas/ImpostoCiotDto'
-        informacoesBancarias:
-          description: "Dados bancários para recebimento dos valores.\r\nContém informaç\
-            ões sobre a instituição bancária, agência\r\ne conta onde serão depositados\
-            \ os valores da operação\r\nde transporte."
-          $ref: '#/components/schemas/InformacoesBancariasCiotDto'
-      example:
-        destinatario:
-          cpfCnpj: '01014373000265'
-          nome: Fernando Castro
-          cep: 52070010
-          rua: Cons. Nabuco
-          numero: 360
-          bairro: Casa Amarela
-          codMunicipio: 2607901
-        pagamentos:
-          - valorPagamento: 300.0
-            dataPagamento: null
-        imposto:
-          irrf: 10.0
-          inss: 0.0
-          issqn: 20.0
-          sestSenat: 30.0
-        informacoesBancarias:
-          instituicaoBancaria: 237
-          agencia: 3477
-          conta: 14272-7
     GerarCiotResponseDto:
       description: "Classe para resposta de geração de CIOT.\r\nContém os dados retornados\
         \ pelo sistema após a solicitação\r\nde geração de um novo CIOT, incluindo\
@@ -10067,36 +9951,6 @@ components:
           type: string
         protAutorizacao:
           type: boolean
-    ImpostoCiotDto:
-      description: "Classe para dados de impostos da operação CIOT.\r\nContém os valores\
-        \ dos tributos incidentes\r\nsobre a operação de transporte, conforme legislaç\
-        ão vigente."
-      type: object
-      properties:
-        irrf:
-          description: "Valor do Imposto de Renda Retido na Fonte (IRRF).\r\nValor\
-            \ do tributo federal incidente sobre os rendimentos\r\ndo transportador,\
-            \ retido na fonte conforme tabela progressiva."
-          type: number
-          format: double
-        inss:
-          description: "Valor da contribuição para o Instituto Nacional do Seguro\
-            \ Social (INSS).\r\nValor da contribuição previdenciária incidente sobre\r\
-            \nos serviços de transporte autônomo."
-          type: number
-          format: double
-        issqn:
-          description: "Valor do Imposto Sobre Serviços (ISSQN).\r\nValor do tributo\
-            \ municipal incidente sobre os serviços\r\nde transporte prestados no\
-            \ município."
-          type: number
-          format: double
-        sestSenat:
-          description: "Valor das contribuições para o SEST/SENAT.\r\nValor das contribuiç\
-            ões obrigatórias para o Serviço Social\r\ndo Transporte (SEST) e Serviç\
-            o Nacional de Aprendizagem\r\ndo Transporte (SENAT)."
-          type: number
-          format: double
     ImprimirMdfesReturnDto:
       type: object
       properties:
@@ -10639,24 +10493,6 @@ components:
           type: string
         tpUnidTranspVazia:
           type: string
-    InformacoesBancariasCiotDto:
-      description: "Classe para dados bancários da operação CIOT.\r\nContém as informaç\
-        ões bancárias necessárias\r\npara o recebimento dos valores referentes à operaç\
-        ão de transporte."
-      type: object
-      properties:
-        instituicaoBancaria:
-          description: "Nome da instituição bancária.\r\nNome completo do banco onde\
-            \ será realizada a transferência\r\ndos valores da operação de transporte."
-          type: string
-        agencia:
-          description: "Número da agência bancária.\r\nCódigo da agência bancária\
-            \ onde está cadastrada a conta\r\npara recebimento dos valores."
-          type: string
-        conta:
-          description: "Número da conta bancária.\r\nNúmero da conta corrente ou poupanç\
-            a onde serão depositados\r\nos valores referentes à operação de transporte."
-          type: string
     LacreDto:
       type: object
       properties:
@@ -11190,21 +11026,6 @@ components:
           $ref: '#/components/schemas/TenantDtoReduzido'
         tenantEdi:
           $ref: '#/components/schemas/TenantDtoReduzido'
-    PagamentoCiotDto:
-      description: "Classe para dados de pagamento da operação CIOT.\r\nContém as\
-        \ informações financeiras sobre\r\nos pagamentos realizados na operação de\
-        \ transporte."
-      type: object
-      properties:
-        valorPagamento:
-          description: "Valor do pagamento realizado.\r\nValor monetário pago referente\
-            \ à operação de transporte."
-          type: number
-          format: double
-        dataPagamento:
-          description: "Data do pagamento.\r\nData em que o pagamento foi efetuado."
-          type: string
-          format: date-time
     PageMetadata:
       type: object
       properties:
