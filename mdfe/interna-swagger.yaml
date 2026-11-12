@@ -7893,6 +7893,9 @@ components:
           type: string
         emailResponsavel:
           type: string
+        admin:
+          description: "Quando true, nao chama o CORE, nao registra no admin nem envia notificacoes ao Teams."
+          type: boolean
     CadastroColunaCustomizadaDto:
       required:
         - nomeEntidade
@@ -9951,6 +9954,36 @@ components:
           type: string
         protAutorizacao:
           type: boolean
+    ImpostoCiotDto:
+      description: "Classe para dados de impostos da operação CIOT.\r\nContém os valores\
+        \ dos tributos incidentes\r\nsobre a operação de transporte, conforme legislaç\
+        ão vigente."
+      type: object
+      properties:
+        irrf:
+          description: "Valor do Imposto de Renda Retido na Fonte (IRRF).\r\nValor\
+            \ do tributo federal incidente sobre os rendimentos\r\ndo transportador,\
+            \ retido na fonte conforme tabela progressiva."
+          type: number
+          format: double
+        inss:
+          description: "Valor da contribuição para o Instituto Nacional do Seguro\
+            \ Social (INSS).\r\nValor da contribuição previdenciária incidente sobre\r\
+            \nos serviços de transporte autônomo."
+          type: number
+          format: double
+        issqn:
+          description: "Valor do Imposto Sobre Serviços (ISSQN).\r\nValor do tributo\
+            \ municipal incidente sobre os serviços\r\nde transporte prestados no\
+            \ município."
+          type: number
+          format: double
+        sestSenat:
+          description: "Valor das contribuições para o SEST/SENAT.\r\nValor das contribuiç\
+            ões obrigatórias para o Serviço Social\r\ndo Transporte (SEST) e Serviç\
+            o Nacional de Aprendizagem\r\ndo Transporte (SENAT)."
+          type: number
+          format: double
     ImprimirMdfesReturnDto:
       type: object
       properties:
