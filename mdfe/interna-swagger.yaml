@@ -1052,6 +1052,34 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: consultarValoresPlanos
+  /v1/ciot/vincular-filial:
+    post:
+      tags:
+        - Ciot
+      operationId: CiotControllerImp.vincularFilial
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VincularFilialCiotDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: vincularFilial
   /v1/colunas-customizadas/atualizar:
     put:
       tags:
@@ -7894,7 +7922,9 @@ components:
         emailResponsavel:
           type: string
         admin:
-          description: "Quando true, nao chama o CORE, nao registra no admin nem envia notificacoes ao Teams."
+          description: "Indica que o cadastro está sendo feito por um administrador.\r\
+            \nQuando true, não são feitas chamadas ao CORE, ao registro no admin nem\
+            \ enviadas notificações ao Teams."
           type: boolean
     CadastroColunaCustomizadaDto:
       required:
@@ -9328,6 +9358,14 @@ components:
           format: int32
         nome:
           type: string
+    EstadoImportacaoAutomaticaDto:
+      description: |
+        Situação da importação automática de rotas do Mercado Livre (ADO-101089).
+      type: string
+      enum:
+        - ATIVA
+        - PAUSADA
+        - CANCELADA
     EtapaErroImportacaoParceiroDto:
       type: string
       enum:
@@ -9954,36 +9992,6 @@ components:
           type: string
         protAutorizacao:
           type: boolean
-    ImpostoCiotDto:
-      description: "Classe para dados de impostos da operação CIOT.\r\nContém os valores\
-        \ dos tributos incidentes\r\nsobre a operação de transporte, conforme legislaç\
-        ão vigente."
-      type: object
-      properties:
-        irrf:
-          description: "Valor do Imposto de Renda Retido na Fonte (IRRF).\r\nValor\
-            \ do tributo federal incidente sobre os rendimentos\r\ndo transportador,\
-            \ retido na fonte conforme tabela progressiva."
-          type: number
-          format: double
-        inss:
-          description: "Valor da contribuição para o Instituto Nacional do Seguro\
-            \ Social (INSS).\r\nValor da contribuição previdenciária incidente sobre\r\
-            \nos serviços de transporte autônomo."
-          type: number
-          format: double
-        issqn:
-          description: "Valor do Imposto Sobre Serviços (ISSQN).\r\nValor do tributo\
-            \ municipal incidente sobre os serviços\r\nde transporte prestados no\
-            \ município."
-          type: number
-          format: double
-        sestSenat:
-          description: "Valor das contribuições para o SEST/SENAT.\r\nValor das contribuiç\
-            ões obrigatórias para o Serviço Social\r\ndo Transporte (SEST) e Serviç\
-            o Nacional de Aprendizagem\r\ndo Transporte (SENAT)."
-          type: number
-          format: double
     ImprimirMdfesReturnDto:
       type: object
       properties:
@@ -10850,6 +10858,21 @@ components:
         clientId:
           type: string
         clientSecret:
+          type: string
+        importacaoAutomatica:
+          description: "Pedido: {@code null} (não informado) preserva a escolha atual;\
+            \ {@code true}/{@code false} é escolha explícita.\r\nResposta: se o cliente\
+            \ optou pela importação automática."
+          type: boolean
+        estadoAutomatica:
+          description: Somente leitura (ignorados no pedido).
+          $ref: '#/components/schemas/EstadoImportacaoAutomaticaDto'
+        erroAutomatica:
+          type: string
+        ultimaExecucaoAutomatica:
+          type: string
+          format: date-time
+        ultimoResultadoAutomatica:
           type: string
     Modal:
       type: string
@@ -12858,6 +12881,13 @@ components:
           type: array
           items:
             type: string
+    VincularFilialCiotDto:
+      required:
+        - empresaIdMatriz
+      type: object
+      properties:
+        empresaIdMatriz:
+          type: string
     Void:
       type: object
     WebhookCreateDto:
