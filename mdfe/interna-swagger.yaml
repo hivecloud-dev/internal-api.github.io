@@ -11491,6 +11491,8 @@ components:
         conflitos:
           type: integer
           format: int32
+          deprecated: true
+          description: Sempre 0 desde o ADO-101385; será removido.
         comErro:
           type: integer
           format: int32
