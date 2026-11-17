@@ -65,6 +65,16 @@ tags:
   - name: Pesquisa
   - name: Properties Tenant Facade
   - name: Receita Federal
+  - name: Subcontratacao
+    description: |-
+      Cadastro das tabelas e regras de preço do cálculo de subcontratação (por tenant). O status da chave liga/desliga
+      fica em {@link SubcontratacaoStatusControllerImp}, porque é o único endpoint que responde para tenant desligado.
+      Escrita só para admin do tenant; {@code simular} roda o cálculo sem gravar nada. O header {@code empresaId} é
+      aceito como nos endpoints vizinhos, mas o cadastro é do tenant, não da empresa.
+  - name: Subcontratacao Status
+    description: |-
+      Status da chave liga/desliga da subcontratação. Fica fora de {@link SubcontratacaoControllerImp} porque é o único
+      endpoint que responde com o cálculo desligado; o front decide por ele se mostra a aba.
   - name: Uf Percurso Sugestao
   - name: Veiculo Colunas Customizadas
   - name: Veiculos
@@ -6308,6 +6318,592 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: registrarAcessoProduto
+  /v1/mdfes/configuracoes/subcontratacao/simular:
+    post:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.simular
+      description: |-
+        Roda o cálculo com os dados de viagem informados, sem gravar nada, e devolve o resultado completo com 200
+        ({@code CALCULADO}, {@code SEM_REGRA} ou {@code DADOS_INSUFICIENTES}). Serve para validar a tabela cadastrada.
+        Tenant desligado recebe 404 (pelo {@code @ModelAttribute}); {@code DESABILITADO} só aparece para chamadores
+        Java do {@link CalculoSubcontratacaoService}.
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SimulacaoSubcontratacaoDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultadoSimulacaoSubcontratacaoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: simular
+  /v1/mdfes/configuracoes/subcontratacao/tabelas:
+    get:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.listarTabelas
+      description: "Lista paginada das tabelas de preço do tenant, ordenada por nome."
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: ativo
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TabelaPrecoSubcontratacaoDto'
+                  param:
+                    $ref: '#/components/schemas/RequestParam'
+                  requestUrl:
+                    $ref: '#/components/schemas/ServletUriComponentsBuilder'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: listarTabelas
+    post:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.criarTabela
+      description: Cria uma tabela de preço ativa.
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TabelaPrecoSubcontratacaoDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEntityReturnDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: criarTabela
+  /v1/mdfes/configuracoes/subcontratacao/tabelas/importar-planilha:
+    post:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.importarPlanilha
+      description: |-
+        Cria uma tabela de preço ativa com todas as regras de uma planilha {@code .xlsx} (até 2 MB e 200 faixas) no
+        layout da tabela de faixas de km da Meli: veículos na linha de cabeçalho ({@code KM INICIAL}, {@code KM FINAL},
+        VUC, Médio...), {@code Ida}/{@code Volta} na linha seguinte, uma linha por faixa e a linha {@code KM ADICIONAL}.
+        Os critérios informados valem para todas as regras. Tudo ou nada: com erros nas células, 400 com um item em
+        {@code validations} por célula ({@code "C12: <mensagem>"}) e nada é gravado. 201 com o {@code Location} da
+        tabela, o id e a quantidade de regras criadas.
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: nome
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: vigenciaInicio
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: vigenciaFim
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: documentoContratado
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: ufOrigem
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: ufDestino
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: percentualAdiantamento
+          in: query
+          required: false
+          schema:
+            type: number
+            format: double
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                arquivo:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TabelaPrecoImportadaDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: importarPlanilha
+  /v1/mdfes/configuracoes/subcontratacao/tabelas/{id}:
+    get:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.buscarTabela
+      description: Detalhe de uma tabela de preço do tenant.
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TabelaPrecoSubcontratacaoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: buscarTabela
+    put:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.editarTabela
+      description: Edita nome e vigência de uma tabela de preço.
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TabelaPrecoSubcontratacaoDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: editarTabela
+    delete:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.inativarTabela
+      description: Inativa uma tabela de preço (não apaga).
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: inativarTabela
+  /v1/mdfes/configuracoes/subcontratacao/tabelas/{id}/reativar:
+    put:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.reativarTabela
+      description: Reativa uma tabela de preço inativada.
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: reativarTabela
+  /v1/mdfes/configuracoes/subcontratacao/tabelas/{id}/regras:
+    get:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.listarRegras
+      description: |-
+        Regras (ativas e inativas) de uma tabela de preço, em ordem de cadastro, sem paginação. Mantida para o front
+        atual; a versão paginada é {@link #listarRegrasPaginadas}.
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RegraPrecoSubcontratacaoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: listarRegras
+    post:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.criarRegra
+      description: Cria uma regra ativa na tabela de preço; os critérios são gravados
+        normalizados.
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegraPrecoSubcontratacaoDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEntityReturnDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: criarRegra
+  /v1/mdfes/configuracoes/subcontratacao/tabelas/{id}/regras-paginadas:
+    get:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.listarRegrasPaginadas
+      description: |-
+        Página de regras de uma tabela de preço, em ordem de cadastro, no mesmo formato de {@code /tabelas}
+        ({@code pageNumber}, {@code pageSize}); {@code ativo} filtra (vazio lista todas). Path paralelo a
+        {@code /regras}, que segue devolvendo a lista inteira: OpenAPI não descreve duas operações no mesmo path.
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: ativo
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RegraPrecoSubcontratacaoDto'
+                  param:
+                    $ref: '#/components/schemas/RequestParam'
+                  requestUrl:
+                    $ref: '#/components/schemas/ServletUriComponentsBuilder'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: listarRegrasPaginadas
+  /v1/mdfes/configuracoes/subcontratacao/tabelas/{id}/regras/{regraId}:
+    put:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.editarRegra
+      description: "Edita critérios, forma de valor e adiantamento de uma regra da\
+        \ tabela."
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: regraId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegraPrecoSubcontratacaoDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: editarRegra
+    delete:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.inativarRegra
+      description: Inativa uma regra da tabela (não apaga).
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: regraId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: inativarRegra
+  /v1/mdfes/configuracoes/subcontratacao/tabelas/{id}/regras/{regraId}/reativar:
+    put:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.reativarRegra
+      description: Reativa uma regra inativada; 400 se a faixa de km dela se sobrepõe
+        à de outra regra ativa da tabela.
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: regraId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: reativarRegra
+  /v1/mdfes/configuracoes/subcontratacao/status:
+    get:
+      tags:
+        - Subcontratacao Status
+      operationId: SubcontratacaoStatusControllerImp.consultarStatus
+      description: Diz se o cálculo de subcontratação está habilitado.
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubcontratacaoStatusDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarStatus
   /v1/mdfe/uf-percurso-sugestao/configuracao:
     get:
       tags:
@@ -7983,6 +8579,23 @@ components:
           format: int32
         retornoVazio:
           type: boolean
+    CalculoCiotImportacaoParceiroDto:
+      description: |-
+        Resultado do cálculo de subcontratação na última tentativa (busca ou salvar) de uma rota importada, para a grade
+        explicar o pré-preenchimento do CIOT (ADO-101032, BD-11). Somente leitura. {@code status} é {@code CALCULADO},
+        {@code SEM_REGRA} ou {@code DADOS_INSUFICIENTES} ({@code DESABILITADO} não aparece: a rota fica sem resultado).
+        {@code regraId} vem em {@code CALCULADO} e {@code DADOS_INSUFICIENTES}; {@code motivo} em {@code SEM_REGRA} e
+        {@code DADOS_INSUFICIENTES}; {@code campo} só em {@code DADOS_INSUFICIENTES}.
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/StatusCalculoDto'
+        regraId:
+          type: string
+        motivo:
+          type: string
+        campo:
+          type: string
     CancelarCiotResponseDto:
       type: object
       properties:
@@ -8064,6 +8677,19 @@ components:
         codigoTipoCarga:
           type: integer
           format: int32
+    CategoriaVeiculoDto:
+      description: |
+        Espelho de {@code CategoriaVeiculo} da regra de preço de subcontratação.
+      type: string
+      enum:
+        - VUC
+        - MEDIO
+        - TOCO
+        - TRUCK
+        - CARRETA_4_EIXOS
+        - CARRETA_5_EIXOS
+        - BITREM_7_EIXOS
+        - BITREM_9_EIXOS
     CepIntegrationTypeResponseDto:
       type: object
       properties:
@@ -9463,6 +10089,14 @@ components:
           type: string
         tipoContaBancaria:
           type: string
+    FormaValorDto:
+      description: |
+        Espelho de {@code FormaValor} da regra de preço de subcontratação.
+      type: string
+      enum:
+        - VALOR_FIXO
+        - TARIFA
+        - PERCENTUAL_REPASSE
     FormatoDocumentosWebhookDto:
       type: string
       enum:
@@ -9903,6 +10537,11 @@ components:
           format: int32
         ciotRetornoVazio:
           type: boolean
+        calculoCiot:
+          description: |-
+            Resultado do cálculo de subcontratação na última tentativa; {@code null} quando não houve cálculo aplicável
+            (ADO-101032, BD-11).
+          $ref: '#/components/schemas/CalculoCiotImportacaoParceiroDto'
     ImportacaoParceiroEdicaoDto:
       description: "Campos editáveis de uma rota importada, enviados ao salvar o lote\
         \ (ADO-100741).\r\nO {@code version} detecta edição concorrente."
@@ -10146,6 +10785,15 @@ components:
           type: string
         cpfCondutor:
           type: string
+    IndicadorDto:
+      description: |
+        Espelho de {@code Indicador} da regra de preço de subcontratação.
+      type: string
+      enum:
+        - KM
+        - PESO
+        - QUANTIDADE
+        - VALOR_MERCADORIA
     InfANTTDto:
       type: object
       properties:
@@ -11362,6 +12010,64 @@ components:
         quantidadeEmpresasFiliais:
           type: integer
           format: int64
+    RegraPrecoSubcontratacaoDto:
+      description: |-
+        Regra de preço de uma tabela de subcontratação. Critérios vazios são curinga; podem vir com máscara e em qualquer
+        caixa (são gravados normalizados). {@code id}, {@code tabelaId} e {@code ativo} são só de leitura: ignorados na
+        escrita. Faixa de km opcional: casa quando {@code kmInicial < km <= kmFinal} (ponta vazia aberta); com
+        {@code tarifaKmAdicional} (exige {@code kmFinal}), casa também acima de {@code kmFinal} e soma o km excedente.
+      required:
+        - formaValor
+      type: object
+      properties:
+        id:
+          type: string
+        tabelaId:
+          type: string
+        documentoContratado:
+          type: string
+        cpfMotorista:
+          type: string
+        placa:
+          type: string
+        ufOrigem:
+          type: string
+        ufDestino:
+          type: string
+        kmInicial:
+          type: number
+          format: double
+        kmFinal:
+          type: number
+          format: double
+        categoriaVeiculo:
+          $ref: '#/components/schemas/CategoriaVeiculoDto'
+        sentido:
+          $ref: '#/components/schemas/SentidoViagemDto'
+        formaValor:
+          $ref: '#/components/schemas/FormaValorDto'
+        valor:
+          type: number
+          format: double
+        tarifa:
+          type: number
+          format: double
+        tarifaKmAdicional:
+          type: number
+          format: double
+        indicador:
+          $ref: '#/components/schemas/IndicadorDto'
+        percentualRepasse:
+          type: number
+          format: double
+        percentualAdiantamento:
+          type: number
+          format: double
+        valorAdiantamento:
+          type: number
+          format: double
+        ativo:
+          type: boolean
     RequestParam:
       type: object
       properties:
@@ -11468,6 +12174,43 @@ components:
             $ref: '#/components/schemas/ErroImportacaoDto'
         urlPlanilhaErros:
           type: string
+    ResultadoSimulacaoSubcontratacaoDto:
+      description: |-
+        Resultado da simulação do cálculo de subcontratação. {@code valorTotal}, {@code valorAdiantamento} e
+        {@code valorSaldo} só vêm preenchidos em {@code CALCULADO}; nos demais status {@code motivo} explica a razão e,
+        em {@code DADOS_INSUFICIENTES}, {@code campo} diz o dado da viagem ou da regra que faltou. Composição (aditiva):
+        {@code valorKmAdicional} é a parcela do km adicional dentro do {@code valorTotal} ({@code 0.00} quando não houve; só
+        em {@code CALCULADO}); {@code kmInicial} e {@code kmFinal} são a faixa da regra aplicada ({@code null} sem faixa).
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/StatusCalculoDto'
+        valorTotal:
+          type: number
+          format: double
+        valorAdiantamento:
+          type: number
+          format: double
+        valorSaldo:
+          type: number
+          format: double
+        regraId:
+          type: string
+        formaValor:
+          $ref: '#/components/schemas/FormaValorDto'
+        motivo:
+          type: string
+        campo:
+          type: string
+        valorKmAdicional:
+          type: number
+          format: double
+        kmInicial:
+          type: number
+          format: double
+        kmFinal:
+          type: number
+          format: double
     ResultadoStatusDto:
       type: string
       enum:
@@ -11712,6 +12455,13 @@ components:
           type: array
           items:
             type: string
+    SentidoViagemDto:
+      description: |
+        Espelho de {@code SentidoViagem} da regra de preço de subcontratação.
+      type: string
+      enum:
+        - IDA
+        - VOLTA
     ServicoSefazStatusDto:
       type: string
       enum:
@@ -11750,6 +12500,46 @@ components:
           $ref: '#/components/schemas/Charset'
         originalPath:
           type: string
+    SimulacaoSubcontratacaoDto:
+      description: |-
+        Dados de viagem informados para simular o cálculo de subcontratação. Nenhum campo é obrigatório: critério vazio só
+        casa com regra que o deixa vazio, e só o indicador exigido pela regra vencedora é usado. Critérios podem vir com
+        máscara e em qualquer caixa (o cálculo normaliza). Indicadores com até 15 dígitos inteiros e 6 decimais.
+        {@code dataReferencia} é um dia ({@code yyyy-MM-dd}); vazia vale hoje.
+      type: object
+      properties:
+        documentoContratado:
+          type: string
+        cpfMotorista:
+          type: string
+        placa:
+          type: string
+        ufOrigem:
+          type: string
+        ufDestino:
+          type: string
+        categoriaVeiculo:
+          $ref: '#/components/schemas/CategoriaVeiculoDto'
+        sentido:
+          $ref: '#/components/schemas/SentidoViagemDto'
+        km:
+          type: number
+          format: double
+        peso:
+          type: number
+          format: double
+        quantidade:
+          type: number
+          format: double
+        valorMercadoria:
+          type: number
+          format: double
+        totalPrestacao:
+          type: number
+          format: double
+        dataReferencia:
+          type: string
+          format: date-time
     SituacaoCadastroEmpresa:
       type: string
       enum:
@@ -11816,6 +12606,15 @@ components:
         - AVERBADO
         - ENCERRADO
         - FALHA_AVERBACAO
+    StatusCalculoDto:
+      description: |
+        Espelho de {@code StatusCalculo} do cálculo de subcontratação.
+      type: string
+      enum:
+        - CALCULADO
+        - SEM_REGRA
+        - DADOS_INSUFICIENTES
+        - DESABILITADO
     StatusCiotDto:
       type: string
       enum:
@@ -11904,6 +12703,43 @@ components:
       type: object
       properties:
         concluida:
+          type: boolean
+    SubcontratacaoStatusDto:
+      description: Indica se o cálculo de subcontratação está habilitado;
+        o front decide se mostra a aba.
+      type: object
+      properties:
+        habilitado:
+          type: boolean
+    TabelaPrecoImportadaDto:
+      description: "Retorno da importação de tabela de preço por planilha: id da tabela\
+        \ criada e quantas regras ela recebeu."
+      type: object
+      properties:
+        id:
+          type: string
+        quantidadeRegras:
+          type: integer
+          format: int32
+    TabelaPrecoSubcontratacaoDto:
+      description: |-
+        Tabela de preço de subcontratação (cabeçalho). {@code id} e {@code ativo} são só de leitura: ignorados na escrita.
+        A vigência é por dia ({@code yyyy-MM-dd}) e as duas pontas são opcionais.
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+          minLength: 0
+          maxLength: 100
+        vigenciaInicio:
+          type: string
+          format: date-time
+        vigenciaFim:
+          type: string
+          format: date-time
+        ativo:
           type: boolean
     TenantDtoReduzido:
       type: object
