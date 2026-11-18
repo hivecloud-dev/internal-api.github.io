@@ -67,14 +67,9 @@ tags:
   - name: Receita Federal
   - name: Subcontratacao
     description: |-
-      Cadastro das tabelas e regras de preço do cálculo de subcontratação (por tenant). O status da chave liga/desliga
-      fica em {@link SubcontratacaoStatusControllerImp}, porque é o único endpoint que responde para tenant desligado.
+      Cadastro das tabelas e regras de preço do cálculo de subcontratação (por tenant).
       Escrita só para admin do tenant; {@code simular} roda o cálculo sem gravar nada. O header {@code empresaId} é
       aceito como nos endpoints vizinhos, mas o cadastro é do tenant, não da empresa.
-  - name: Subcontratacao Status
-    description: |-
-      Status da chave liga/desliga da subcontratação. Fica fora de {@link SubcontratacaoControllerImp} porque é o único
-      endpoint que responde com o cálculo desligado; o front decide por ele se mostra a aba.
   - name: Uf Percurso Sugestao
   - name: Veiculo Colunas Customizadas
   - name: Veiculos
@@ -4617,10 +4612,14 @@ paths:
           schema:
             type: string
         - name: status
+          description: "ADO-101394: aceita mais de um valor ({@code ?status=A&status=B});\
+            \ {@code ?status=A} continua igual."
           in: query
           required: false
           schema:
-            $ref: '#/components/schemas/StatusImportacaoParceiroDto'
+            type: array
+            items:
+              $ref: '#/components/schemas/StatusImportacaoParceiroDto'
         - name: rotaId
           in: query
           required: false
@@ -4638,6 +4637,25 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: ocultarResolvidos
+          description: "ADO-101394: true tira as rotas resolvidas (status EMITIDO)."
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: ocultarEmGeracao
+          description: "ADO-101394: true tira as rotas ainda em geração no parceiro\
+            \ (statusRota diferente de GENERATED; sem status conta como completa)."
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: exibirOcultas
+          description: "ADO-101394: ausente ou {@code false} esconde as rotas ocultas."
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: successful operation
@@ -4872,6 +4890,67 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: obterResultadoBusca
+  /v1/importacoes-parceiro/ocultar:
+    post:
+      tags:
+        - Importacao Parceiro
+      operationId: ImportacaoParceiroControllerImp.ocultar
+      description: "Oculta a rota inteira de cada id (a busca deixa de trazê-la);\
+        \ não apaga nada. Endpoint próprio para que um\r\nback que não o conheça responda\
+        \ 404, em vez de tratar a chamada como exclusão."
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdsImportacaoParceiroDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: ocultar
+  /v1/importacoes-parceiro/reexibir:
+    post:
+      tags:
+        - Importacao Parceiro
+      operationId: ImportacaoParceiroControllerImp.reexibir
+      description: "Desfaz a ocultação da rota inteira de cada id, sem apagar nada;\
+        \ a próxima busca volta a trazê-la."
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdsImportacaoParceiroDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: reexibir
   /v1/importacoes-parceiro/{id}/documentos:
     get:
       tags:
@@ -6326,8 +6405,6 @@ paths:
       description: |-
         Roda o cálculo com os dados de viagem informados, sem gravar nada, e devolve o resultado completo com 200
         ({@code CALCULADO}, {@code SEM_REGRA} ou {@code DADOS_INSUFICIENTES}). Serve para validar a tabela cadastrada.
-        Tenant desligado recebe 404 (pelo {@code @ModelAttribute}); {@code DESABILITADO} só aparece para chamadores
-        Java do {@link CalculoSubcontratacaoService}.
       parameters:
         - name: empresaId
           in: header
@@ -6880,30 +6957,6 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: reativarRegra
-  /v1/mdfes/configuracoes/subcontratacao/status:
-    get:
-      tags:
-        - Subcontratacao Status
-      operationId: SubcontratacaoStatusControllerImp.consultarStatus
-      description: Diz se o cálculo de subcontratação está habilitado.
-      parameters:
-        - name: empresaId
-          in: header
-          required: false
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SubcontratacaoStatusDto'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: consultarStatus
   /v1/mdfe/uf-percurso-sugestao/configuracao:
     get:
       tags:
@@ -8583,7 +8636,7 @@ components:
       description: |-
         Resultado do cálculo de subcontratação na última tentativa (busca ou salvar) de uma rota importada, para a grade
         explicar o pré-preenchimento do CIOT (ADO-101032, BD-11). Somente leitura. {@code status} é {@code CALCULADO},
-        {@code SEM_REGRA} ou {@code DADOS_INSUFICIENTES} ({@code DESABILITADO} não aparece: a rota fica sem resultado).
+        {@code SEM_REGRA} ou {@code DADOS_INSUFICIENTES}.
         {@code regraId} vem em {@code CALCULADO} e {@code DADOS_INSUFICIENTES}; {@code motivo} em {@code SEM_REGRA} e
         {@code DADOS_INSUFICIENTES}; {@code campo} só em {@code DADOS_INSUFICIENTES}.
       type: object
@@ -10438,6 +10491,13 @@ components:
           $ref: '#/components/schemas/StatusMdfeDto'
         editavel:
           type: boolean
+        oculto:
+          description: "ADO-101394: rota oculta da grade; a busca não a traz de volta.\
+            \ Excluir com \"reimportar\" desfaz."
+          type: boolean
+        dataOcultacao:
+          type: string
+          format: date-time
         ufIni:
           type: string
         ufFim:
@@ -10445,6 +10505,9 @@ components:
         municipiosDescarga:
           type: string
         pesoTotal:
+          type: number
+          format: double
+        quantidadeCarga:
           type: number
           format: double
         valorCarga:
@@ -10474,6 +10537,14 @@ components:
           type: boolean
         avisos:
           type: string
+        statusRota:
+          description: "Status da rota no Mercado Livre ({@code GENERATING} ou {@code\
+            \ GENERATED}); {@code null} quando a API não\r\ninformou (ADO-101499)."
+          type: string
+        rotaCompleta:
+          description: "{@code false} enquanto a rota está incompleta: CIOT e MDF-e\
+            \ ficam bloqueados (ADO-101499)."
+          type: boolean
         produtoPredominante:
           type: string
         ncm:
@@ -11673,6 +11744,15 @@ components:
         pdfUrl: https://mock-s3-url.com/pdf/test-pdf.pdf
         sucesso: true
         mensagem: ""
+    IdsImportacaoParceiroDto:
+      description: Ids das rotas a ocultar ou reexibir na grade de importação de
+        parceiro (ADO-101394). Cada id vale para a rota inteira dele.
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
     OrganizacaoAcessoDtoReduzido:
       type: object
       properties:
@@ -12232,11 +12312,15 @@ components:
           type: integer
           format: int32
         conflitos:
+          description: "Sempre 0 desde o ADO-101385: a busca não gera mais conflito\
+            \ (rota que reaparece recebe os CT-es novos). Mantido\r\npelo protocolo\
+            \ de break-change; remover depois de um ciclo de deploy do front."
           type: integer
           format: int32
-          deprecated: true
-          description: Sempre 0 desde o ADO-101385; será removido.
         comErro:
+          type: integer
+          format: int32
+        ocultas:
           type: integer
           format: int32
         mensagens:
@@ -12614,7 +12698,6 @@ components:
         - CALCULADO
         - SEM_REGRA
         - DADOS_INSUFICIENTES
-        - DESABILITADO
     StatusCiotDto:
       type: string
       enum:
@@ -12703,13 +12786,6 @@ components:
       type: object
       properties:
         concluida:
-          type: boolean
-    SubcontratacaoStatusDto:
-      description: Indica se o cálculo de subcontratação está habilitado;
-        o front decide se mostra a aba.
-      type: object
-      properties:
-        habilitado:
           type: boolean
     TabelaPrecoImportadaDto:
       description: "Retorno da importação de tabela de preço por planilha: id da tabela\
