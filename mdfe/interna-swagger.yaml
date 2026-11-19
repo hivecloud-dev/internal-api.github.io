@@ -10613,6 +10613,16 @@ components:
             Resultado do cálculo de subcontratação na última tentativa; {@code null} quando não houve cálculo aplicável
             (ADO-101032, BD-11).
           $ref: '#/components/schemas/CalculoCiotImportacaoParceiroDto'
+        emitentePrestadorServico:
+          description: |-
+            Emitente prestador de serviço: com tração própria a rota é frota própria e o CIOT não informa impostos
+            (ADO-101725). O front combina com a propriedade da tração escolhida na grade.
+          type: boolean
+        emitenteGlobalizado:
+          description: |-
+            Emitente transportador de CT-e globalizado: o CIOT é exigido com qualquer tração, inclusive própria, sem
+            cálculo automático dos valores (ADO-101725).
+          type: boolean
     ImportacaoParceiroEdicaoDto:
       description: "Campos editáveis de uma rota importada, enviados ao salvar o lote\
         \ (ADO-100741).\r\nO {@code version} detecta edição concorrente."
