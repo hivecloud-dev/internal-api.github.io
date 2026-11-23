@@ -66,10 +66,10 @@ tags:
   - name: Properties Tenant Facade
   - name: Receita Federal
   - name: Subcontratacao
-    description: |-
-      Cadastro das tabelas e regras de preço do cálculo de subcontratação (por tenant).
-      Escrita só para admin do tenant; {@code simular} roda o cálculo sem gravar nada. O header {@code empresaId} é
-      aceito como nos endpoints vizinhos, mas o cadastro é do tenant, não da empresa.
+    description: "Cadastro das tabelas e regras de preço do cálculo de subcontrataç\
+      ão (por tenant).\r\nEscrita só para admin do tenant; {@code simular} roda o\
+      \ cálculo sem gravar nada. O header {@code empresaId} é\r\naceito como nos endpoints\
+      \ vizinhos, mas o cadastro é do tenant, não da empresa."
   - name: Uf Percurso Sugestao
   - name: Veiculo Colunas Customizadas
   - name: Veiculos
@@ -3199,6 +3199,29 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: atualizarInformacaoDeExibicao
+  /v1/empresas/certificado/{empresaId}/cnpj:
+    get:
+      tags:
+        - Empresas Certificado
+      operationId: EmpresasCertificadoControllerImp.getCnpjCertificado
+      parameters:
+        - name: empresaId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CnpjCertificadoResponseDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getCnpjCertificado
   /v1/mdfes/encerrar:
     post:
       tags:
@@ -4638,14 +4661,11 @@ paths:
             type: string
             format: date-time
         - name: ocultarResolvidos
-          description: "ADO-101394: true tira as rotas resolvidas (status EMITIDO)."
           in: query
           required: false
           schema:
             type: boolean
         - name: ocultarEmGeracao
-          description: "ADO-101394: true tira as rotas ainda em geração no parceiro\
-            \ (statusRota diferente de GENERATED; sem status conta como completa)."
           in: query
           required: false
           schema:
@@ -6402,9 +6422,9 @@ paths:
       tags:
         - Subcontratacao
       operationId: SubcontratacaoControllerImp.simular
-      description: |-
-        Roda o cálculo com os dados de viagem informados, sem gravar nada, e devolve o resultado completo com 200
-        ({@code CALCULADO}, {@code SEM_REGRA} ou {@code DADOS_INSUFICIENTES}). Serve para validar a tabela cadastrada.
+      description: "Roda o cálculo com os dados de viagem informados, sem gravar nada,\
+        \ e devolve o resultado completo com 200\r\n({@code CALCULADO}, {@code SEM_REGRA}\
+        \ ou {@code DADOS_INSUFICIENTES}). Serve para validar a tabela cadastrada."
       parameters:
         - name: empresaId
           in: header
@@ -6517,83 +6537,6 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: criarTabela
-  /v1/mdfes/configuracoes/subcontratacao/tabelas/importar-planilha:
-    post:
-      tags:
-        - Subcontratacao
-      operationId: SubcontratacaoControllerImp.importarPlanilha
-      description: |-
-        Cria uma tabela de preço ativa com todas as regras de uma planilha {@code .xlsx} (até 2 MB e 200 faixas) no
-        layout da tabela de faixas de km da Meli: veículos na linha de cabeçalho ({@code KM INICIAL}, {@code KM FINAL},
-        VUC, Médio...), {@code Ida}/{@code Volta} na linha seguinte, uma linha por faixa e a linha {@code KM ADICIONAL}.
-        Os critérios informados valem para todas as regras. Tudo ou nada: com erros nas células, 400 com um item em
-        {@code validations} por célula ({@code "C12: <mensagem>"}) e nada é gravado. 201 com o {@code Location} da
-        tabela, o id e a quantidade de regras criadas.
-      parameters:
-        - name: empresaId
-          in: header
-          required: false
-          schema:
-            type: string
-        - name: nome
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: vigenciaInicio
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date
-        - name: vigenciaFim
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date
-        - name: documentoContratado
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: ufOrigem
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: ufDestino
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: percentualAdiantamento
-          in: query
-          required: false
-          schema:
-            type: number
-            format: double
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                arquivo:
-                  type: string
-                  format: binary
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TabelaPrecoImportadaDto'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: importarPlanilha
   /v1/mdfes/configuracoes/subcontratacao/tabelas/{id}:
     get:
       tags:
@@ -6718,9 +6661,9 @@ paths:
       tags:
         - Subcontratacao
       operationId: SubcontratacaoControllerImp.listarRegras
-      description: |-
-        Regras (ativas e inativas) de uma tabela de preço, em ordem de cadastro, sem paginação. Mantida para o front
-        atual; a versão paginada é {@link #listarRegrasPaginadas}.
+      description: "Regras (ativas e inativas) de uma tabela de preço, na ordem da\
+        \ posição, sem paginação. Mantida para o front\r\natual; a versão paginada\
+        \ é {@link #listarRegrasPaginadas}."
       parameters:
         - name: empresaId
           in: header
@@ -6785,10 +6728,11 @@ paths:
       tags:
         - Subcontratacao
       operationId: SubcontratacaoControllerImp.listarRegrasPaginadas
-      description: |-
-        Página de regras de uma tabela de preço, em ordem de cadastro, no mesmo formato de {@code /tabelas}
-        ({@code pageNumber}, {@code pageSize}); {@code ativo} filtra (vazio lista todas). Path paralelo a
-        {@code /regras}, que segue devolvendo a lista inteira: OpenAPI não descreve duas operações no mesmo path.
+      description: "Página de regras de uma tabela de preço, na ordem da posição,\
+        \ no mesmo formato de {@code /tabelas}\r\n({@code pageNumber}, {@code pageSize});\
+        \ {@code ativo} filtra (vazio lista todas). Path paralelo a\r\n{@code /regras},\
+        \ que segue devolvendo a lista inteira: OpenAPI não descreve duas operaçõ\
+        es no mesmo path."
       parameters:
         - name: empresaId
           in: header
@@ -6922,6 +6866,47 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: inativarRegra
+  /v1/mdfes/configuracoes/subcontratacao/tabelas/{id}/regras/{regraId}/posicao:
+    put:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.moverRegra
+      description: "Move a regra para a posição informada (1 = primeira) e renumera\
+        \ a tabela; na mesma tabela, entre regras com a\r\nmesma especificidade e\
+        \ vigência, vence a de menor posição. 400 se a posição está fora de 1..n."
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: regraId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PosicaoRegraPrecoDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: moverRegra
   /v1/mdfes/configuracoes/subcontratacao/tabelas/{id}/regras/{regraId}/reativar:
     put:
       tags:
@@ -8599,6 +8584,8 @@ components:
           type: string
         linkFatura:
           type: string
+        mensagemErro:
+          type: string
     CalcularFreteMinimoDto:
       type: object
       properties:
@@ -8633,12 +8620,13 @@ components:
         retornoVazio:
           type: boolean
     CalculoCiotImportacaoParceiroDto:
-      description: |-
-        Resultado do cálculo de subcontratação na última tentativa (busca ou salvar) de uma rota importada, para a grade
-        explicar o pré-preenchimento do CIOT (ADO-101032, BD-11). Somente leitura. {@code status} é {@code CALCULADO},
-        {@code SEM_REGRA} ou {@code DADOS_INSUFICIENTES}.
-        {@code regraId} vem em {@code CALCULADO} e {@code DADOS_INSUFICIENTES}; {@code motivo} em {@code SEM_REGRA} e
-        {@code DADOS_INSUFICIENTES}; {@code campo} só em {@code DADOS_INSUFICIENTES}.
+      description: "Resultado do cálculo de subcontratação na última tentativa (busca\
+        \ ou salvar) de uma rota importada, para a grade\r\nexplicar o pré-preenchimento\
+        \ do CIOT (ADO-101032, BD-11). Somente leitura. {@code status} é {@code CALCULADO},\r\
+        \n{@code SEM_REGRA} ou {@code DADOS_INSUFICIENTES}.\r\n{@code regraId} vem\
+        \ em {@code CALCULADO} e {@code DADOS_INSUFICIENTES}; {@code motivo} em {@code\
+        \ SEM_REGRA} e\r\n{@code DADOS_INSUFICIENTES}; {@code campo} só em {@code\
+        \ DADOS_INSUFICIENTES}."
       type: object
       properties:
         status:
@@ -8832,6 +8820,11 @@ components:
         codigo:
           type: string
         descricao:
+          type: string
+    CnpjCertificadoResponseDto:
+      type: object
+      properties:
+        cnpjCertificado:
           type: string
     CompDto:
       type: object
@@ -10403,6 +10396,15 @@ components:
           type: boolean
         indCarregaPosterior:
           type: boolean
+    IdsImportacaoParceiroDto:
+      description: "Ids das rotas a ocultar ou reexibir na grade de importação de\
+        \ parceiro (ADO-101394). Cada id vale para a rota\r\ninteira dele."
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
     ImportacaoComErro:
       type: object
       properties:
@@ -10609,19 +10611,18 @@ components:
         ciotRetornoVazio:
           type: boolean
         calculoCiot:
-          description: |-
-            Resultado do cálculo de subcontratação na última tentativa; {@code null} quando não houve cálculo aplicável
-            (ADO-101032, BD-11).
+          description: "Resultado do cálculo de subcontratação na última tentativa;\
+            \ {@code null} quando não houve cálculo aplicável\r\n(ADO-101032, BD-11)."
           $ref: '#/components/schemas/CalculoCiotImportacaoParceiroDto'
         emitentePrestadorServico:
-          description: |-
-            Emitente prestador de serviço: com tração própria a rota é frota própria e o CIOT não informa impostos
-            (ADO-101725). O front combina com a propriedade da tração escolhida na grade.
+          description: "Emitente prestador de serviço: com tração própria a rota é\
+            \ frota própria e o CIOT não informa impostos\r\n(ADO-101725). O front\
+            \ combina com a propriedade da tração escolhida na grade."
           type: boolean
         emitenteGlobalizado:
-          description: |-
-            Emitente transportador de CT-e globalizado: o CIOT é exigido com qualquer tração, inclusive própria, sem
-            cálculo automático dos valores (ADO-101725).
+          description: "Emitente transportador de CT-e globalizado: o CIOT é exigido\
+            \ com qualquer tração, inclusive própria, sem\r\ncálculo automático dos\
+            \ valores (ADO-101725)."
           type: boolean
     ImportacaoParceiroEdicaoDto:
       description: "Campos editáveis de uma rota importada, enviados ao salvar o lote\
@@ -11754,15 +11755,6 @@ components:
         pdfUrl: https://mock-s3-url.com/pdf/test-pdf.pdf
         sucesso: true
         mensagem: ""
-    IdsImportacaoParceiroDto:
-      description: Ids das rotas a ocultar ou reexibir na grade de importação de
-        parceiro (ADO-101394). Cada id vale para a rota inteira dele.
-      type: object
-      properties:
-        ids:
-          type: array
-          items:
-            type: string
     OrganizacaoAcessoDtoReduzido:
       type: object
       properties:
@@ -12044,6 +12036,16 @@ components:
         trialAte:
           type: string
           format: date-time
+    PosicaoRegraPrecoDto:
+      description: "Nova posição de uma regra na tabela de preço (1 = primeira), entre\
+        \ todas as regras da tabela, ativas e inativas."
+      required:
+        - posicao
+      type: object
+      properties:
+        posicao:
+          type: integer
+          format: int32
     ProdPredDto:
       type: object
       properties:
@@ -12101,11 +12103,13 @@ components:
           type: integer
           format: int64
     RegraPrecoSubcontratacaoDto:
-      description: |-
-        Regra de preço de uma tabela de subcontratação. Critérios vazios são curinga; podem vir com máscara e em qualquer
-        caixa (são gravados normalizados). {@code id}, {@code tabelaId} e {@code ativo} são só de leitura: ignorados na
-        escrita. Faixa de km opcional: casa quando {@code kmInicial < km <= kmFinal} (ponta vazia aberta); com
-        {@code tarifaKmAdicional} (exige {@code kmFinal}), casa também acima de {@code kmFinal} e soma o km excedente.
+      description: "Regra de preço de uma tabela de subcontratação. Critérios vazios\
+        \ são curinga; podem vir com máscara e em qualquer\r\ncaixa (são gravados\
+        \ normalizados). {@code id}, {@code tabelaId} e {@code ativo} são só de leitura:\
+        \ ignorados na\r\nescrita. Faixa de km opcional: casa quando {@code kmInicial\
+        \ < km <= kmFinal} (ponta vazia aberta); com\r\n{@code tarifaKmAdicional}\
+        \ (exige {@code kmFinal}), casa também acima de {@code kmFinal} e soma o km\
+        \ excedente."
       required:
         - formaValor
       type: object
@@ -12156,6 +12160,16 @@ components:
         valorAdiantamento:
           type: number
           format: double
+        diasQuitacao:
+          description: Dias somados à data do cálculo para a data de quitação do CIOT
+            (0 a 365); vazio não preenche a data.
+          type: integer
+          format: int32
+        ordem:
+          description: "Posição da regra na tabela (1 = primeira); só leitura, muda\
+            \ por {@code PUT .../posicao}."
+          type: integer
+          format: int32
         ativo:
           type: boolean
     RequestParam:
@@ -12265,12 +12279,14 @@ components:
         urlPlanilhaErros:
           type: string
     ResultadoSimulacaoSubcontratacaoDto:
-      description: |-
-        Resultado da simulação do cálculo de subcontratação. {@code valorTotal}, {@code valorAdiantamento} e
-        {@code valorSaldo} só vêm preenchidos em {@code CALCULADO}; nos demais status {@code motivo} explica a razão e,
-        em {@code DADOS_INSUFICIENTES}, {@code campo} diz o dado da viagem ou da regra que faltou. Composição (aditiva):
-        {@code valorKmAdicional} é a parcela do km adicional dentro do {@code valorTotal} ({@code 0.00} quando não houve; só
-        em {@code CALCULADO}); {@code kmInicial} e {@code kmFinal} são a faixa da regra aplicada ({@code null} sem faixa).
+      description: "Resultado da simulação do cálculo de subcontratação. {@code valorTotal},\
+        \ {@code valorAdiantamento} e\r\n{@code valorSaldo} só vêm preenchidos em\
+        \ {@code CALCULADO}; nos demais status {@code motivo} explica a razão e,\r\
+        \nem {@code DADOS_INSUFICIENTES}, {@code campo} diz o dado da viagem ou da\
+        \ regra que faltou. Composição (aditiva):\r\n{@code valorKmAdicional} é a\
+        \ parcela do km adicional dentro do {@code valorTotal} ({@code 0.00} quando\
+        \ não houve; só\r\nem {@code CALCULADO}); {@code kmInicial} e {@code kmFinal}\
+        \ são a faixa da regra aplicada ({@code null} sem faixa)."
       type: object
       properties:
         status:
@@ -12301,6 +12317,11 @@ components:
         kmFinal:
           type: number
           format: double
+        dataQuitacao:
+          description: "Data de quitação prevista: dia do cálculo + dias da regra\
+            \ aplicada; vazia se a regra não tem dias."
+          type: string
+          format: date-time
     ResultadoStatusDto:
       type: string
       enum:
@@ -12595,11 +12616,12 @@ components:
         originalPath:
           type: string
     SimulacaoSubcontratacaoDto:
-      description: |-
-        Dados de viagem informados para simular o cálculo de subcontratação. Nenhum campo é obrigatório: critério vazio só
-        casa com regra que o deixa vazio, e só o indicador exigido pela regra vencedora é usado. Critérios podem vir com
-        máscara e em qualquer caixa (o cálculo normaliza). Indicadores com até 15 dígitos inteiros e 6 decimais.
-        {@code dataReferencia} é um dia ({@code yyyy-MM-dd}); vazia vale hoje.
+      description: "Dados de viagem informados para simular o cálculo de subcontrataç\
+        ão. Nenhum campo é obrigatório: critério vazio só\r\ncasa com regra que o\
+        \ deixa vazio, e só o indicador exigido pela regra vencedora é usado. Crité\
+        rios podem vir com\r\nmáscara e em qualquer caixa (o cálculo normaliza). Indicadores\
+        \ com até 15 dígitos inteiros e 6 decimais.\r\n{@code dataReferencia} é um\
+        \ dia ({@code yyyy-MM-dd}); vazia vale hoje."
       type: object
       properties:
         documentoContratado:
@@ -12797,20 +12819,10 @@ components:
       properties:
         concluida:
           type: boolean
-    TabelaPrecoImportadaDto:
-      description: "Retorno da importação de tabela de preço por planilha: id da tabela\
-        \ criada e quantas regras ela recebeu."
-      type: object
-      properties:
-        id:
-          type: string
-        quantidadeRegras:
-          type: integer
-          format: int32
     TabelaPrecoSubcontratacaoDto:
-      description: |-
-        Tabela de preço de subcontratação (cabeçalho). {@code id} e {@code ativo} são só de leitura: ignorados na escrita.
-        A vigência é por dia ({@code yyyy-MM-dd}) e as duas pontas são opcionais.
+      description: "Tabela de preço de subcontratação (cabeçalho). {@code id} e {@code\
+        \ ativo} são só de leitura: ignorados na escrita.\r\nA vigência é por dia\
+        \ ({@code yyyy-MM-dd}) e as duas pontas são opcionais."
       type: object
       properties:
         id:
