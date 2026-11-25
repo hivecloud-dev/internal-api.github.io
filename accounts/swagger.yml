@@ -2558,6 +2558,7 @@ components:
         - SL
         - CORE
         - VINCULADO
+        - DESVINCULADO
     SituacaoAtivacaoDto:
       type: string
       enum:
