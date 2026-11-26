@@ -6453,7 +6453,8 @@ paths:
       tags:
         - Subcontratacao
       operationId: SubcontratacaoControllerImp.listarTabelas
-      description: "Lista paginada das tabelas de preço do tenant, ordenada por nome."
+      description: "Lista paginada das tabelas de preço do tenant, na ordem do cá\
+        lculo: as com vínculo pela posição, depois as\r\ngerais pela posição."
       parameters:
         - name: empresaId
           in: header
@@ -6570,7 +6571,8 @@ paths:
       tags:
         - Subcontratacao
       operationId: SubcontratacaoControllerImp.editarTabela
-      description: Edita nome e vigência de uma tabela de preço.
+      description: "Edita nome, vigência, vínculos (lista completa) e condições de\
+        \ pagamento de uma tabela de preço."
       parameters:
         - name: empresaId
           in: header
@@ -6627,6 +6629,43 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: inativarTabela
+  /v1/mdfes/configuracoes/subcontratacao/tabelas/{id}/posicao:
+    put:
+      tags:
+        - Subcontratacao
+      operationId: SubcontratacaoControllerImp.moverTabela
+      description: "Move a tabela para a posição informada (1 = primeira) na ordem\
+        \ das tabelas e renumera; no cálculo vale a\r\nprimeira tabela, na ordem,\
+        \ que atende à viagem e tem regra para ela. As tabelas com vínculo ficam antes\
+        \ das\r\ngerais: 400 se a posição está fora de 1..n ou fora do grupo da tabela."
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PosicaoDto'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: moverTabela
   /v1/mdfes/configuracoes/subcontratacao/tabelas/{id}/reativar:
     put:
       tags:
@@ -6798,8 +6837,7 @@ paths:
       tags:
         - Subcontratacao
       operationId: SubcontratacaoControllerImp.editarRegra
-      description: "Edita critérios, forma de valor e adiantamento de uma regra da\
-        \ tabela."
+      description: Edita critérios e forma de valor de uma regra da tabela.
       parameters:
         - name: empresaId
           in: header
@@ -6872,8 +6910,8 @@ paths:
         - Subcontratacao
       operationId: SubcontratacaoControllerImp.moverRegra
       description: "Move a regra para a posição informada (1 = primeira) e renumera\
-        \ a tabela; na mesma tabela, entre regras com a\r\nmesma especificidade e\
-        \ vigência, vence a de menor posição. 400 se a posição está fora de 1..n."
+        \ a tabela; na mesma tabela, entre regras com a\r\nmesma especificidade, vence\
+        \ a de menor posição. 400 se a posição está fora de 1..n."
       parameters:
         - name: empresaId
           in: header
@@ -6894,7 +6932,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PosicaoRegraPrecoDto'
+              $ref: '#/components/schemas/PosicaoDto'
       responses:
         200:
           description: successful operation
@@ -8626,7 +8664,8 @@ components:
         \n{@code SEM_REGRA} ou {@code DADOS_INSUFICIENTES}.\r\n{@code regraId} vem\
         \ em {@code CALCULADO} e {@code DADOS_INSUFICIENTES}; {@code motivo} em {@code\
         \ SEM_REGRA} e\r\n{@code DADOS_INSUFICIENTES}; {@code campo} só em {@code\
-        \ DADOS_INSUFICIENTES}."
+        \ DADOS_INSUFICIENTES}. {@code data} é quando o cálculo\r\nfoi feito (ADO-102114),\
+        \ para comparar com a última atualização da tabela de preço."
       type: object
       properties:
         status:
@@ -8637,6 +8676,9 @@ components:
           type: string
         campo:
           type: string
+        data:
+          type: string
+          format: date-time
     CancelarCiotResponseDto:
       type: object
       properties:
@@ -10673,6 +10715,9 @@ components:
           type: number
           format: double
         ciotDataQuitacao:
+          description: "Dia escolhido na tela ({@code yyyy-MM-dd}), lido à meia-noite\
+            \ de Brasília: sem o fuso, o Jackson lê em UTC, que\r\nem Brasília é o\
+            \ dia anterior (ADO-101877)."
           type: string
           format: date-time
         ciotEixos:
@@ -12036,9 +12081,10 @@ components:
         trialAte:
           type: string
           format: date-time
-    PosicaoRegraPrecoDto:
-      description: "Nova posição de uma regra na tabela de preço (1 = primeira), entre\
-        \ todas as regras da tabela, ativas e inativas."
+    PosicaoDto:
+      description: "Nova posição (1 = primeira) de uma tabela de preço entre as tabelas\
+        \ do tenant, ou de uma regra entre as regras da\r\ntabela, contando ativas\
+        \ e inativas."
       required:
         - posicao
       type: object
@@ -12103,13 +12149,13 @@ components:
           type: integer
           format: int64
     RegraPrecoSubcontratacaoDto:
-      description: "Regra de preço de uma tabela de subcontratação. Critérios vazios\
-        \ são curinga; podem vir com máscara e em qualquer\r\ncaixa (são gravados\
-        \ normalizados). {@code id}, {@code tabelaId} e {@code ativo} são só de leitura:\
-        \ ignorados na\r\nescrita. Faixa de km opcional: casa quando {@code kmInicial\
-        \ < km <= kmFinal} (ponta vazia aberta); com\r\n{@code tarifaKmAdicional}\
-        \ (exige {@code kmFinal}), casa também acima de {@code kmFinal} e soma o km\
-        \ excedente."
+      description: "Regra de preço de uma tabela de subcontratação: qual viagem e\
+        \ quanto (quem a tabela atende e como paga ficam na\r\ntabela). Critérios\
+        \ vazios são curinga; UF pode vir em qualquer caixa (é gravada normalizada).\
+        \ {@code id},\r\n{@code tabelaId} e {@code ativo} são só de leitura: ignorados\
+        \ na escrita. Faixa de km opcional: casa quando\r\n{@code kmInicial < km <=\
+        \ kmFinal} (ponta vazia aberta); com {@code tarifaKmAdicional} (exige {@code\
+        \ kmFinal}),\r\ncasa também acima de {@code kmFinal} e soma o km excedente."
       required:
         - formaValor
       type: object
@@ -12117,12 +12163,6 @@ components:
         id:
           type: string
         tabelaId:
-          type: string
-        documentoContratado:
-          type: string
-        cpfMotorista:
-          type: string
-        placa:
           type: string
         ufOrigem:
           type: string
@@ -12154,17 +12194,6 @@ components:
         percentualRepasse:
           type: number
           format: double
-        percentualAdiantamento:
-          type: number
-          format: double
-        valorAdiantamento:
-          type: number
-          format: double
-        diasQuitacao:
-          description: Dias somados à data do cálculo para a data de quitação do CIOT
-            (0 a 365); vazio não preenche a data.
-          type: integer
-          format: int32
         ordem:
           description: "Posição da regra na tabela (1 = primeira); só leitura, muda\
             \ por {@code PUT .../posicao}."
@@ -12318,10 +12347,15 @@ components:
           type: number
           format: double
         dataQuitacao:
-          description: "Data de quitação prevista: dia do cálculo + dias da regra\
-            \ aplicada; vazia se a regra não tem dias."
+          description: "Data de quitação prevista: dia do cálculo + dias da tabela\
+            \ aplicada; vazia se a tabela não tem dias."
           type: string
           format: date-time
+        tabelaId:
+          description: Tabela de preço da regra aplicada; vazia sem regra.
+          type: string
+        tabelaNome:
+          type: string
     ResultadoStatusDto:
       type: string
       enum:
@@ -12820,9 +12854,19 @@ components:
         concluida:
           type: boolean
     TabelaPrecoSubcontratacaoDto:
-      description: "Tabela de preço de subcontratação (cabeçalho). {@code id} e {@code\
-        \ ativo} são só de leitura: ignorados na escrita.\r\nA vigência é por dia\
-        \ ({@code yyyy-MM-dd}) e as duas pontas são opcionais."
+      description: "Tabela de preço de subcontratação (cabeçalho): quem ela atende\
+        \ e como paga. A vigência é por dia\r\n({@code yyyy-MM-dd}): o início é obrigató\
+        rio; o fim vazio é tabela sem data final.\r\n\r\n<p>Quem: {@code transportadores}\
+        \ (CPF ou CNPJ), {@code motoristas} (CPF) e {@code placas}, lista completa\
+        \ a cada\r\ngravação (item ausente é excluído); podem vir com máscara e em\
+        \ qualquer caixa. A tabela atende a viagem se qualquer\r\nitem casar; sem\
+        \ nenhum item é geral e atende a todos. Erro de item volta em {@code validations[].fieldName}\
+        \ como\r\n{@code <lista>.<índice>} (ex.: {@code motoristas.1}).\r\n\r\n<p>Só\
+        \ de leitura, ignorados na escrita: {@code id}, {@code ativo}, {@code possuiVinculo}\
+        \ (falso = tabela geral) e\r\na auditoria. A posição da tabela é o lugar dela\
+        \ na listagem; muda por {@code PUT .../posicao}."
+      required:
+        - vigenciaInicio
       type: object
       properties:
         id:
@@ -12835,10 +12879,41 @@ components:
           type: string
           format: date-time
         vigenciaFim:
+          description: "Opcional: vazio é tabela sem data final, na escrita e na leitura."
           type: string
           format: date-time
         ativo:
           type: boolean
+        transportadores:
+          type: array
+          items:
+            type: string
+        motoristas:
+          type: array
+          items:
+            type: string
+        placas:
+          type: array
+          items:
+            type: string
+        percentualAdiantamento:
+          type: number
+          format: double
+        valorAdiantamento:
+          type: number
+          format: double
+        diasQuitacao:
+          description: Dias somados à data do cálculo para a data de quitação do CIOT
+            (0 a 365); vazio não preenche a data.
+          type: integer
+          format: int32
+        possuiVinculo:
+          type: boolean
+        dataAtualizacao:
+          type: string
+          format: date-time
+        usuarioAtualizacao:
+          type: string
     TenantDtoReduzido:
       type: object
       properties:
