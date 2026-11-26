@@ -34,6 +34,9 @@ tags:
     description: Controller REST responsável pelo gerenciamento de Empresas por tenant.
   - name: Pesquisa V1
     description: Serviços básicos da Pesquisa
+  - name: Product Data Source
+    description: "Datasource global de um produto (banco que não pertence a nenhum\
+      \ tenant).\r\nA resposta contém credenciais: não registrar o corpo em log."
   - name: Tenant
     description: Serviços básicos da entidade Tenant
 paths:
@@ -681,6 +684,37 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: desvincularTenant
+  /v1/organizacoes/por-cnpj-empresa/{cpfCnpj}:
+    get:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.getPorCnpjEmpresa
+      description: "Recupera as Organizações que possuem uma Empresa com o CPF/CNPJ\
+        \ informado. Diferente de\r\n{@code /por-cpf-cnpj/{cpfCnpj}}, a busca é pelo\
+        \ CPF/CNPJ da Empresa, não da Organização, e pode retornar mais\r\nde uma\
+        \ Organização."
+      parameters:
+        - name: cpfCnpj
+          description: CPF/CNPJ da Empresa (somente dígitos)
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 200 com as Organizações encontradas; 204 quando nenhuma Empresa
+            possui o CPF/CNPJ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrganizacaoDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getPorCnpjEmpresa
   /v1/organizacoes/por-cpf-cnpj-list:
     get:
       tags:
@@ -862,6 +896,35 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: getPorUsuario
+  /v1/organizacoes/vincular-conta-faturamento:
+    post:
+      tags:
+        - Organizacao
+      operationId: OrganizacaoControllerImp.vincularContaFaturamento
+      description: "Vincula uma organização a uma conta de faturamento já existentes.\
+        \ A organização precisa existir, não pode ser\r\nprincipal nem vinculada a\
+        \ uma organização principal, e não pode estar vinculada a outra conta; a conta\
+        \ precisa\r\nexistir, não pode pertencer a outra organização nem ser do tipo\
+        \ VINCULADO. O mesmo par já vinculado retorna\r\nsucesso sem alterar nada."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VincularContaFaturamentoRequestDto'
+        description: ids da organização e da conta de faturamento
+      responses:
+        200:
+          description: "200 com {@code sucesso = true}, ou 400 com {@code sucesso\
+            \ = false} e o motivo em {@code mensagem}"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VincularContaFaturamentoResponseDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: vincularContaFaturamento
   /v1/organizacoes/vincular-tenant:
     post:
       tags:
@@ -1203,6 +1266,33 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: retornarPesquisa
+  /v1/product-data-sources/{product}:
+    get:
+      tags:
+        - Product Data Source
+      operationId: ProductDataSourceControllerImp.getByProduct
+      description: Retorna o datasource global do produto informado no path.
+      parameters:
+        - name: product
+          description: "nome do produto (enum, ex.: MDFE)"
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "200 OK com o ProductDataSourceDto, 404 se o produto for desconhecido\
+            \ ou não tiver cadastro, ou\r\n403 se o token não for do emissor do pró\
+            prio produto (ex.: token do CTE pedindo o MDFE)"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDataSourceDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getByProduct
   /v1/tenants/{id}:
     get:
       tags:
@@ -1576,6 +1666,12 @@ components:
         sistemaPagamento:
           description: Sistema de pagamento
           $ref: '#/components/schemas/SistemaPagamentoDto'
+        idOrganizacao:
+          description: "Id da organização a vincular à conta criada (opcional; vazio\
+            \ equivale a não informado). A organização precisa\r\nexistir, não pode\
+            \ ser principal nem vinculada a uma organização principal, e não pode\
+            \ ter outra conta; caso\r\ncontrário a conta não é criada."
+          type: string
       example:
         cnpj: '07960929000101'
         nome: Empresa de Teste
@@ -2528,6 +2624,27 @@ components:
           description: "Data de expiração do período trial (dd/MM/yyyy), preenchida\
             \ apenas para itens sem plano contratado."
           type: string
+    ProductDataSourceDto:
+      description: "Datasource global de um produto (banco que não pertence a nenhum\
+        \ tenant).\r\nContém credenciais: nunca logar este objeto nem incluí-lo em\
+        \ mensagens de erro."
+      type: object
+      properties:
+        id:
+          description: Identificador do registro.
+          type: string
+        produto:
+          description: "Produto dono do datasource (nome do enum, ex.: MDFE)."
+          type: string
+        jdbcUrl:
+          description: URL JDBC de conexão ao banco.
+          type: string
+        usuario:
+          description: Usuário de acesso ao banco.
+          type: string
+        senha:
+          description: Senha de acesso ao banco.
+          type: string
     ProdutoDto:
       type: string
       enum:
@@ -2936,6 +3053,38 @@ components:
         login: loginTest@teste.com
         nome: usuarioTesteMock
         email: loginTest@teste.com
+    VincularContaFaturamentoRequestDto:
+      description: Dados para vincular uma organização a uma conta de faturamento.
+      required:
+        - organizacaoId
+        - contaFaturamentoId
+      type: object
+      properties:
+        organizacaoId:
+          description: Id da organização que recebe a conta
+          type: string
+        contaFaturamentoId:
+          description: Id da conta de faturamento
+          type: integer
+          format: int64
+    VincularContaFaturamentoResponseDto:
+      description: Resultado do vínculo entre organização e conta de faturamento.
+      type: object
+      properties:
+        sucesso:
+          description: Indica se o vínculo foi gravado (ou já existia para o mesmo
+            par)
+          type: boolean
+        mensagem:
+          description: Mensagem de sucesso ou o motivo da recusa
+          type: string
+        organizacaoId:
+          description: Id da organização informada
+          type: string
+        contaFaturamentoId:
+          description: Id da conta de faturamento informada
+          type: integer
+          format: int64
     VincularTenantRequestDto:
       required:
         - tenantId
