@@ -9985,6 +9985,12 @@ components:
           $ref: '#/components/schemas/DadosRetirada'
         dadosRejeicao:
           $ref: '#/components/schemas/DadosRejeicao'
+        tipoDePagamentoAntecipado:
+          type: string
+          nullable: true
+          enum:
+            - ANTECIPACAO
+            - FORNECIMENTO
     DadosNfe:
       type: object
       properties:
